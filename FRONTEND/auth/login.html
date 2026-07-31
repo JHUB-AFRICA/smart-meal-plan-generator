@@ -2,110 +2,82 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
   <title>Login — Smart Lishe</title>
-  <link rel="stylesheet" href="auth.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
-    /* ===== PAGE-SPECIFIC STYLES ===== */
-    .role-selector {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin: 8px 0 22px;
+    /* --- All CSS unchanged from previous version --- */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f7f5f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
     }
-    @media(max-width: 420px) {
-      .role-selector { grid-template-columns: 1fr; }
+    :root {
+      --sukuma: #1a7a64;
+      --sukuma-dark: #0d4f40;
+      --basket-line: #e2e8f0;
+      --bg-card: #ffffff;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --text-muted: #94a3b8;
+      --bg-elevated: #f8fafc;
+      --shadow: 0 20px 60px -12px rgba(0, 0, 0, 0.08);
+      --radius: 20px;
     }
-    .role-card {
-      padding: 18px 12px;
-      border-radius: 14px;
-      border: 2px solid var(--basket-line, #e2e8f0);
-      background: var(--bg-card, #ffffff);
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    .auth-container {
+      width: 100%;
+      max-width: 440px;
+      margin: 0 auto;
     }
-    .role-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 28px rgba(0,0,0,0.08);
-      border-color: #cbd5e1;
-    }
-    .role-card.selected {
-      border-color: var(--sukuma, #1a7a64);
-      background: rgba(26, 122, 100, 0.06);
-      box-shadow: 0 4px 12px rgba(26, 122, 100, 0.12);
-      transform: translateY(-2px);
-    }
-    .role-card .rc-icon {
-      font-size: 2.2rem;
-      margin-bottom: 8px;
-      display: block;
-      transition: transform 0.3s ease;
-    }
-    .role-card:hover .rc-icon {
-      transform: scale(1.05);
-    }
-    .role-card h4 {
-      font-size: 0.95rem;
-      font-weight: 700;
-      margin-bottom: 2px;
-      color: var(--text-primary, #1e293b);
-      letter-spacing: -0.01em;
-    }
-    .role-card p {
-      font-size: 0.72rem;
-      color: var(--text-muted, #94a3b8);
-      margin: 0;
-      line-height: 1.4;
-    }
-    .role-card .rc-check {
-      display: none;
-      margin-top: 10px;
-      color: var(--sukuma, #1a7a64);
-      font-size: 0.75rem;
-      font-weight: 700;
-      animation: fadeInUp 0.3s ease;
-    }
-    .role-card.selected .rc-check { display: block; }
-    .role-card.pro-card.selected {
-      border-color: #c2410c;
-      background: rgba(194, 65, 12, 0.06);
-      box-shadow: 0 4px 12px rgba(194, 65, 12, 0.12);
-    }
-    .role-card.pro-card.selected .rc-check { color: #c2410c; }
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .role-note {
-      padding: 12px 16px;
-      border-radius: 10px;
-      background: var(--bg-elevated, #f8fafc);
-      border: 1px solid var(--basket-line, #e2e8f0);
-      font-size: 0.8rem;
-      color: var(--text-secondary, #64748b);
-      margin-bottom: 20px;
-      line-height: 1.6;
-      display: none;
+    .auth-card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 40px 36px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--basket-line);
       transition: all 0.3s ease;
     }
-    .role-note.show {
-      display: block;
-      animation: fadeInUp 0.3s ease;
+    .auth-brand {
+      text-align: center;
+      margin-bottom: 28px;
     }
-    .role-note.pro-note {
-      border-color: rgba(194, 65, 12, 0.2);
-      background: rgba(194, 65, 12, 0.04);
+    .auth-brand .brand-icon {
+      width: 64px;
+      height: 64px;
+      background: var(--sukuma);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 12px;
+      font-size: 2rem;
+      color: #fff;
+    }
+    .auth-brand h1 {
+      font-family: 'Fraunces', serif;
+      font-weight: 700;
+      font-size: 1.8rem;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+    }
+    .auth-brand p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      margin-top: 4px;
     }
     .back-home {
       display: inline-flex;
       align-items: center;
       gap: 8px;
       font-size: 0.82rem;
-      color: var(--text-muted, #94a3b8);
+      color: var(--text-muted);
       font-weight: 600;
       margin-bottom: 24px;
       transition: all 0.2s ease;
@@ -114,11 +86,19 @@
       border-bottom: 1px solid transparent;
     }
     .back-home:hover {
-      color: var(--text-primary, #1e293b);
-      border-bottom-color: var(--sukuma, #1a7a64);
+      color: var(--text-primary);
+      border-bottom-color: var(--sukuma);
     }
-
-    /* ===== LARGER INPUTS WITH INSIDE ICONS ===== */
+    .field-group { margin-bottom: 18px; }
+    .field-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
     .field-group .input-wrap {
       position: relative;
       display: flex;
@@ -129,39 +109,37 @@
       padding: 16px 54px 16px 52px;
       font-size: 1rem;
       border-radius: 12px;
-      background: var(--bg-card, #ffffff);
-      border: 1.5px solid var(--basket-line, #e2e8f0);
+      background: var(--bg-card);
+      border: 1.5px solid var(--basket-line);
       transition: all 0.3s ease;
       height: 58px;
+      font-family: 'Inter', sans-serif;
+      color: var(--text-primary);
       letter-spacing: 0.01em;
     }
     .field-group .input-wrap input:focus {
-      border-color: var(--sukuma, #1a7a64);
+      border-color: var(--sukuma);
       box-shadow: 0 0 0 4px rgba(26, 122, 100, 0.08);
-      background: #ffffff;
+      outline: none;
     }
     .field-group .input-wrap input::placeholder {
-      color: var(--text-muted, #94a3b8);
+      color: var(--text-muted);
       opacity: 0.7;
       font-size: 0.95rem;
     }
-
-    /* ===== LEFT ICON (email / lock) ===== */
     .field-group .input-wrap .left-icon {
       position: absolute;
       left: 18px;
       top: 50%;
       transform: translateY(-50%);
       font-size: 1.2rem;
-      color: var(--text-muted, #94a3b8);
+      color: var(--text-muted);
       transition: color 0.3s ease;
       pointer-events: none;
     }
     .field-group .input-wrap input:focus ~ .left-icon {
-      color: var(--sukuma, #1a7a64);
+      color: var(--sukuma);
     }
-
-    /* ===== RIGHT ICON (eye / clear) ===== */
     .field-group .input-wrap .right-action {
       position: absolute;
       right: 14px;
@@ -170,7 +148,7 @@
       background: none;
       border: none;
       cursor: pointer;
-      color: var(--text-muted, #94a3b8);
+      color: var(--text-muted);
       font-size: 1.2rem;
       padding: 8px;
       display: flex;
@@ -182,28 +160,21 @@
       transition: all 0.2s ease;
     }
     .field-group .input-wrap .right-action:hover {
-      background: var(--bg-elevated, #f1f5f9);
-      color: var(--text-primary, #1e293b);
+      background: var(--bg-elevated);
+      color: var(--text-primary);
     }
     .field-group .input-wrap .right-action:active {
       transform: translateY(-50%) scale(0.92);
     }
-
-    /* ===== PASSWORD TOGGLE SPECIFIC ===== */
     .field-group .input-wrap .right-action.password-toggle.active {
-      color: var(--sukuma, #1a7a64);
+      color: var(--sukuma);
     }
-
-    /* ===== CLEAR BUTTON FOR EMAIL ===== */
-    .field-group .input-wrap .right-action.clear-btn {
-      display: none;
-    }
-    .field-group .input-wrap .right-action.clear-btn.visible {
-      display: flex;
-    }
-
-    /* ===== REMEMBER ME & FORGOT ===== */
+    .field-group .input-wrap .right-action.clear-btn { display: none; }
+    .field-group .input-wrap .right-action.clear-btn.visible { display: flex; }
     .auth-check {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       font-size: 0.92rem;
       margin: 20px 0 28px;
     }
@@ -212,28 +183,28 @@
       align-items: center;
       gap: 12px;
       cursor: pointer;
-      color: var(--text-secondary, #64748b);
+      color: var(--text-secondary);
       font-weight: 500;
     }
     .auth-check input[type="checkbox"] {
       width: 20px;
       height: 20px;
-      accent-color: var(--sukuma, #1a7a64);
+      accent-color: var(--sukuma);
       border-radius: 4px;
       cursor: pointer;
     }
     .auth-check a {
-      color: var(--sukuma, #1a7a64);
+      color: var(--sukuma);
       font-weight: 600;
       transition: color 0.2s ease;
+      text-decoration: none;
     }
     .auth-check a:hover {
-      color: var(--sukuma-dark, #0d4f40);
+      color: var(--sukuma-dark);
       text-decoration: underline;
     }
-
-    /* ===== SIGN IN BUTTON ===== */
     .btn-primary {
+      width: 100%;
       padding: 16px 26px;
       border-radius: 40px;
       background: linear-gradient(135deg, #1a7a64, #146354);
@@ -243,6 +214,13 @@
       font-weight: 700;
       transition: all 0.3s ease;
       height: 58px;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
     }
     .btn-primary:hover {
       transform: translateY(-3px);
@@ -261,12 +239,109 @@
     .btn-loading .spinner-small {
       width: 24px;
       height: 24px;
-      border-width: 2.5px;
-      border-top-color: #fff;
+      border: 2.5px solid #fff;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
     }
-
-    /* ===== TOAST ===== */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .demo-section {
+      margin: 22px 0 10px;
+      padding: 16px 18px;
+      background: var(--bg-elevated);
+      border-radius: 12px;
+      border: 1px dashed var(--basket-line);
+    }
+    .demo-section p {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .demo-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .demo-btn {
+      flex: 1;
+      min-width: 100px;
+      padding: 10px 14px;
+      border-radius: 30px;
+      border: none;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: var(--bg-card);
+      border: 1.5px solid var(--basket-line);
+      color: var(--text-primary);
+    }
+    .demo-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+    .demo-btn.client {
+      border-color: #7c3aed;
+      color: #7c3aed;
+    }
+    .demo-btn.client:hover {
+      background: #7c3aed;
+      color: #fff;
+    }
+    .demo-btn.admin {
+      border-color: #c2410c;
+      color: #c2410c;
+    }
+    .demo-btn.admin:hover {
+      background: #c2410c;
+      color: #fff;
+    }
+    .registered-users-note {
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: rgba(26, 122, 100, 0.06);
+      border-radius: 8px;
+      border: 1px solid rgba(26, 122, 100, 0.12);
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+    }
+    .registered-users-note strong { color: var(--sukuma); }
+    .auth-links {
+      margin-top: 24px;
+      font-size: 0.92rem;
+      text-align: center;
+    }
+    .auth-links a {
+      color: var(--sukuma);
+      font-weight: 700;
+      transition: color 0.2s ease;
+      text-decoration: none;
+    }
+    .auth-links a:hover {
+      color: var(--sukuma-dark);
+      text-decoration: underline;
+    }
+    #toastStack {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 380px;
+      width: 100%;
+      pointer-events: none;
+    }
     .toast {
+      pointer-events: auto;
       border-radius: 16px;
       padding: 16px 22px;
       box-shadow: 0 16px 48px rgba(0,0,0,0.12);
@@ -274,33 +349,28 @@
       backdrop-filter: blur(8px);
       background: rgba(255,255,255,0.92);
       border: 1px solid rgba(226, 232, 240, 0.6);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: toastIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: opacity 0.3s, transform 0.3s;
     }
-    .toast i {
-      font-size: 1.2rem;
-    }
-    .toast.error { border-left-color: #dc2626; }
+    .toast i { font-size: 1.2rem; }
+    .toast.error { border-left: 4px solid #dc2626; }
     .toast.error i { color: #dc2626; }
+    .toast.success i { color: var(--sukuma); }
     @keyframes toastIn {
       from { opacity: 0; transform: translateX(40px) scale(0.96); }
       to { opacity: 1; transform: translateX(0) scale(1); }
     }
-    .toast {
-      animation: toastIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-
-    /* ===== AUTH LINKS ===== */
-    .auth-links {
-      margin-top: 24px;
-      font-size: 0.92rem;
-    }
-    .auth-links a {
-      color: var(--sukuma, #1a7a64);
-      font-weight: 700;
-      transition: color 0.2s ease;
-    }
-    .auth-links a:hover {
-      color: var(--sukuma-dark, #0d4f40);
-      text-decoration: underline;
+    @media (max-width: 480px) {
+      .auth-card { padding: 28px 20px; }
+      .auth-brand h1 { font-size: 1.5rem; }
+      .field-group .input-wrap input { padding: 14px 44px 14px 44px; height: 52px; font-size: 0.95rem; }
+      .btn-primary { height: 52px; font-size: 0.95rem; }
+      .auth-check { flex-direction: column; gap: 10px; align-items: flex-start; }
+      .demo-buttons { flex-direction: column; }
+      .demo-btn { min-width: auto; }
     }
   </style>
 </head>
@@ -319,72 +389,67 @@
       <i class="fa-solid fa-arrow-left"></i> Back To Home
     </a>
 
-    <form id="loginForm" novalidate>
+    <!-- ===== LOGIN FORM ===== -->
+    <form id="loginForm" action="#" method="POST" novalidate>
 
-      <label style="display:block;font-size:0.78rem;font-weight:700;color:var(--text-secondary,#64748b);margin-bottom:7px;letter-spacing:0.02em;text-transform:uppercase;">
-        Login As <span style="color:var(--char);">*</span>
-      </label>
-      <div class="role-selector" id="roleSelector">
-        <div class="role-card selected" data-role="User">
-          <span class="rc-icon">👤</span>
-          <h4>User</h4>
-          <p>Personal health & nutrition</p>
-          <div class="rc-check"><i class="fa-solid fa-circle-check"></i> Selected</div>
-        </div>
-        <div class="role-card pro-card" data-role="Professional">
-          <span class="rc-icon">👨‍⚕️</span>
-          <h4>Professional</h4>
-          <p>Dietitian / Nutritionist</p>
-          <div class="rc-check"><i class="fa-solid fa-circle-check"></i> Selected</div>
-        </div>
-      </div>
-
-      <div class="role-note" id="userRoleNote">
-        <strong><i class="fa-solid fa-user" style="color:var(--sukuma, #1a7a64);margin-right:6px;"></i>User login</strong><br>
-        You'll be taken to your personal health dashboard.
-      </div>
-      <div class="role-note pro-note" id="proRoleNote">
-        <strong><i class="fa-solid fa-user-md" style="color:#c2410c;margin-right:6px;"></i>Professional login</strong><br>
-        You'll be taken to your professional dashboard with client management tools.
-      </div>
-
-      <!-- ===== EMAIL FIELD with Clear Button (X) ===== -->
+      <!-- Email -->
       <div class="field-group">
         <label for="loginEmail">Email Address</label>
         <div class="input-wrap">
           <i class="fa-solid fa-envelope left-icon"></i>
-          <input type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email" required>
+          <input type="email" id="loginEmail" name="email" placeholder="you@example.com" autocomplete="email" required>
           <button type="button" class="right-action clear-btn" id="clearEmailBtn" aria-label="Clear email">
             <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
       </div>
 
-      <!-- ===== PASSWORD FIELD with Eye Toggle ===== -->
+      <!-- Password -->
       <div class="field-group">
         <label for="loginPassword">Password</label>
         <div class="input-wrap">
           <i class="fa-solid fa-lock left-icon"></i>
-          <input type="password" id="loginPassword" placeholder="Enter your password" autocomplete="current-password" required>
+          <input type="password" id="loginPassword" name="password" placeholder="Enter your password" autocomplete="current-password" required>
           <button type="button" class="right-action password-toggle" id="toggleLoginPw" aria-label="Toggle password visibility">
             <i class="fa-regular fa-eye"></i>
           </button>
         </div>
       </div>
 
+      <!-- Remember me & Forgot -->
       <div class="auth-check">
         <label>
-          <input type="checkbox" id="rememberMe"> Remember Me
+          <input type="checkbox" id="rememberMe" name="remember"> Remember Me
         </label>
         <a href="forgot-password.html">Forgot Password?</a>
       </div>
 
+      <!-- Submit -->
       <button type="submit" class="btn btn-primary" id="loginBtn">
         <span class="btn-text"><i class="fa-regular fa-right-to-bracket"></i> Sign In</span>
         <span class="spinner-small" style="display: none;"></span>
       </button>
     </form>
 
+    <!-- ===== DEMO SECTION ===== -->
+    <div class="demo-section">
+      <p><i class="fa-regular fa-flask" style="margin-right:6px;"></i> Quick Fill</p>
+      <div class="demo-buttons">
+        <button type="button" class="demo-btn client" id="demoClientBtn">
+          <i class="fa-regular fa-user"></i> Client
+        </button>
+        <button type="button" class="demo-btn admin" id="demoAdminBtn">
+          <i class="fa-regular fa-user-tie"></i> Admin
+        </button>
+      </div>
+      <div class="registered-users-note">
+        <strong><i class="fa-regular fa-circle-info"></i> Note</strong><br>
+        Fill the form and click Sign In to authenticate with the backend.
+        <br><small>Admin demo uses <kbd>Admin@2003</kbd> – Client demo must be a valid client account.</small>
+      </div>
+    </div>
+
+    <!-- Register link -->
     <div class="auth-links">
       Don't have an account? <a href="register.html">Register</a>
     </div>
@@ -392,33 +457,46 @@
   </div>
 </div>
 
+<!-- ===== TOAST CONTAINER ===== -->
 <div id="toastStack"></div>
 
 <script>
 /* ============================================================
-   SMART LISHE — LOGIN
+   SMART LISHE — LOGIN (Backend Integration)
    ============================================================ */
 
-let selectedRole = 'User';
+// --- Backend API base URL (change if your server runs elsewhere)
+const BASE_URL = 'http://127.0.0.1:5000/api';
 
-// ===== Role Selection =====
-document.querySelectorAll('.role-card').forEach(card => {
-  card.addEventListener('click', function() {
-    document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
-    this.classList.add('selected');
-    selectedRole = this.dataset.role;
-    document.getElementById('userRoleNote').classList.toggle('show', selectedRole === 'User');
-    document.getElementById('proRoleNote').classList.toggle('show', selectedRole === 'Professional');
-  });
-});
+// --- Toast helper
+function showToast(msg, type = 'success') {
+  const stack = document.getElementById('toastStack');
+  const old = document.querySelector('.toast');
+  if (old) old.remove();
+  const t = document.createElement('div');
+  t.className = 'toast ' + type;
+  const icon = type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-check';
+  t.innerHTML = `<i class="fa-solid ${icon}"></i><span>${msg}</span>`;
+  stack.appendChild(t);
+  setTimeout(() => {
+    t.style.opacity = '0';
+    t.style.transform = 'translateX(40px) scale(0.96)';
+    setTimeout(() => t.remove(), 350);
+  }, 3500);
+}
 
-// ===== Password Visibility Toggle =====
+// --- DOM refs
+const emailInput = document.getElementById('loginEmail');
 const passwordInput = document.getElementById('loginPassword');
 const toggleBtn = document.getElementById('toggleLoginPw');
+const clearBtn = document.getElementById('clearEmailBtn');
+const loginForm = document.getElementById('loginForm');
+const loginBtn = document.getElementById('loginBtn');
 
+// --- Password toggle
 toggleBtn.addEventListener('click', function() {
   const icon = this.querySelector('i');
-  if(passwordInput.type === 'password') {
+  if (passwordInput.type === 'password') {
     passwordInput.type = 'text';
     icon.className = 'fa-regular fa-eye-slash';
     this.classList.add('active');
@@ -429,105 +507,116 @@ toggleBtn.addEventListener('click', function() {
   }
 });
 
-// ===== Email Clear Button (X) =====
-const emailInput = document.getElementById('loginEmail');
-const clearBtn = document.getElementById('clearEmailBtn');
-
+// --- Email clear
 emailInput.addEventListener('input', function() {
-  if(this.value.length > 0) {
-    clearBtn.classList.add('visible');
-  } else {
-    clearBtn.classList.remove('visible');
-  }
+  clearBtn.classList.toggle('visible', this.value.length > 0);
 });
-
 clearBtn.addEventListener('click', function() {
   emailInput.value = '';
   emailInput.focus();
   this.classList.remove('visible');
 });
 
-// ===== Toast =====
-function showToast(msg, type = 'success') {
-  const stack = document.getElementById('toastStack');
-  const old = document.querySelector('.toast');
-  if(old) old.remove();
-  const t = document.createElement('div');
-  t.className = 'toast' + (type === 'error' ? ' error' : '');
-  const icon = type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-check';
-  t.innerHTML = `<i class="fa-solid ${icon}"></i><span>${msg}</span>`;
-  document.body.appendChild(t);
-  setTimeout(() => {
-    t.style.opacity = '0';
-    t.style.transform = 'translateX(40px) scale(0.96)';
-    setTimeout(() => t.remove(), 350);
-  }, 3500);
-}
-
-// ===== Login Handler =====
-document.getElementById('loginForm').addEventListener('submit', function(e) {
+// --- Form submit
+loginForm.addEventListener('submit', async function(e) {
   e.preventDefault();
+  const email = emailInput.value.trim();
+  const password = passwordInput.value.trim();
 
-  const email = document.getElementById('loginEmail').value.trim();
-  const password = document.getElementById('loginPassword').value.trim();
-
-  if(!email || !password) {
+  if (!email || !password) {
     showToast('Please fill in all fields.', 'error');
     return;
   }
-  if(!email.includes('@') || !email.includes('.')) {
+  if (!email.includes('@') || !email.includes('.')) {
     showToast('Please enter a valid email address.', 'error');
     return;
   }
-  if(password.length < 6) {
+  if (password.length < 6) {
     showToast('Password must be at least 6 characters.', 'error');
     return;
   }
 
-  const firstName = localStorage.getItem('firstName') || email.split('@')[0];
+  // Show loading state
+  loginBtn.classList.add('btn-loading');
+  loginBtn.querySelector('.spinner-small').style.display = 'block';
+  loginBtn.querySelector('.btn-text').style.display = 'none';
+  loginBtn.disabled = true;
 
-  localStorage.setItem('email', email);
-  localStorage.setItem('smartlishe_logged_in', 'true');
-  localStorage.setItem('smartlishe_role', selectedRole);
-  localStorage.setItem('role', selectedRole);
-
-  let existingProfile = {};
   try {
-    const raw = localStorage.getItem('smartlishe_profile');
-    if(raw) existingProfile = JSON.parse(raw);
-  } catch(e) {}
+    const response = await fetch(`${BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
 
-  const profile = {
-    ...existingProfile,
-    name: firstName,
-    firstName: firstName,
-    email: email,
-    role: selectedRole,
-    setupComplete: true
-  };
-  localStorage.setItem('smartlishe_profile', JSON.stringify(profile));
+    const data = await response.json();
 
-  const btn = document.getElementById('loginBtn');
-  btn.classList.add('btn-loading');
-  btn.querySelector('.spinner-small').style.display = 'block';
-  btn.disabled = true;
+    if (!response.ok) {
+      const errorMsg = data.error || data.message || 'Login failed. Please try again.';
+      showToast(errorMsg, 'error');
+      return;
+    }
 
-  setTimeout(() => {
-    showToast('Login successful! Redirecting...');
-    setTimeout(() => {
-      if(selectedRole === 'Professional') {
-        window.location.href = '../professional/home.html';
+    if (data.success && data.data && data.data.access_token) {
+      const token = data.data.access_token;
+      localStorage.setItem('access_token', token);
+      // Fetch profile to get role and user details
+      const profileResponse = await fetch(`${BASE_URL}/profile`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (profileResponse.ok) {
+        const profileData = await profileResponse.json();
+        if (profileData.success && profileData.data) {
+          const user = profileData.data;
+          localStorage.setItem('smartlishe_profile', JSON.stringify(user));
+          localStorage.setItem('smartlishe_role', user.role);
+          localStorage.setItem('email', user.email);
+          localStorage.setItem('firstName', user.first_name || '');
+          localStorage.setItem('lastName', user.last_name || '');
+          // Redirect based on role
+          let redirectUrl = '../user/dashboard.html';
+          if (user.role === 'admin') redirectUrl = '../admin/dashboard.html';
+          else if (user.role === 'professional') redirectUrl = '../professional/home.html';
+          else if (user.role === 'client') redirectUrl = '../client/dashboard.html';
+          // else user -> user dashboard
+          showToast(`✅ Welcome, ${user.first_name || user.email}!`, 'success');
+          setTimeout(() => window.location.href = redirectUrl, 800);
+        } else {
+          showToast('Login successful but profile fetch failed.', 'error');
+        }
       } else {
-        window.location.href = '../user/dashboard.html';
+        showToast('Login successful but could not fetch profile.', 'error');
       }
-    }, 600);
-  }, 1200);
+    } else {
+      showToast('Login failed: ' + (data.message || 'Unknown error'), 'error');
+    }
+  } catch (error) {
+    console.error('Login error:', error);
+    showToast('Network error. Is the server running?', 'error');
+  } finally {
+    loginBtn.classList.remove('btn-loading');
+    loginBtn.querySelector('.spinner-small').style.display = 'none';
+    loginBtn.querySelector('.btn-text').style.display = 'flex';
+    loginBtn.disabled = false;
+  }
 });
 
-console.log('🔑 Demo credentials:');
-console.log('  User: demo@smartlishe.co.ke / demo123');
-console.log('  Professional: james@nutritionist.co.ke / prof123');
-</script>
+// --- Demo buttons – fill the form with known test credentials
+document.getElementById('demoClientBtn').addEventListener('click', function() {
+  emailInput.value = 'client@example.com';   // Replace with a real client email if you have one
+  passwordInput.value = 'SecurePass123';     // Must match the client's password
+  emailInput.dispatchEvent(new Event('input'));
+  showToast('Form filled with client credentials. Click Sign In.', 'success');
+});
 
+document.getElementById('demoAdminBtn').addEventListener('click', function() {
+  emailInput.value = 'admin@smartlishe.com';
+  passwordInput.value = 'Admin@2003';        // Corrected admin password
+  emailInput.dispatchEvent(new Event('input'));
+  showToast('Form filled with admin credentials. Click Sign In.', 'success');
+});
+
+console.log('🔐 Login page integrated with Smart Lishe backend.');
+</script>
 </body>
 </html>

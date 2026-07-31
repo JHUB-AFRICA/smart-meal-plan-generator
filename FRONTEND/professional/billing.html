@@ -8,6 +8,346 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    /* ===== BILLING PAGE STYLES ===== */
+    .billing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+      margin: 24px 0;
+    }
+    @media (max-width: 600px) {
+      .billing-grid { grid-template-columns: 1fr; }
+    }
+
+    .billing-plan-card {
+      background: var(--bg-elevated);
+      border: 2px solid var(--basket-line);
+      border-radius: var(--radius-md);
+      padding: 28px 24px;
+      text-align: center;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .billing-plan-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lift);
+    }
+    .billing-plan-card.popular {
+      border-color: var(--accent-2);
+      position: relative;
+    }
+    .billing-plan-card.popular::before {
+      content: 'Popular';
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--accent-2);
+      color: var(--soil);
+      padding: 4px 16px;
+      border-radius: 20px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .billing-plan-card .plan-name {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+    .billing-plan-card .plan-price {
+      font-family: var(--font-mono);
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin: 12px 0 4px;
+    }
+    .billing-plan-card .plan-price span {
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: var(--text-muted);
+    }
+    .billing-plan-card .plan-desc {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+    .billing-plan-card .plan-features {
+      text-align: left;
+      margin: 16px 0 20px;
+      width: 100%;
+      flex: 1;
+    }
+    .billing-plan-card .plan-features li {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      padding: 5px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .billing-plan-card .plan-features i {
+      width: 18px;
+      text-align: center;
+    }
+    .billing-plan-card .plan-features .fa-check { color: var(--sukuma); }
+    .billing-plan-card .plan-features .fa-xmark { color: var(--char); }
+    .billing-plan-card .btn { width: 100%; justify-content: center; }
+
+    /* ===== PAYMENT MODAL ===== */
+    .payment-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 900;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(4px);
+    }
+    .payment-modal-overlay.show {
+      display: flex;
+    }
+
+    .payment-modal {
+      background: var(--bg-elevated);
+      border-radius: var(--radius-lg);
+      max-width: 520px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      border: 1px solid var(--basket-line);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.25);
+      padding: 0;
+      transform: scale(0.96) translateY(20px);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .payment-modal-overlay.show .payment-modal {
+      transform: scale(1) translateY(0);
+    }
+
+    .payment-modal .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--basket-line);
+      background: var(--bg-card);
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    }
+    .payment-modal .modal-header h3 {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+    .payment-modal .modal-header .close-modal {
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px 8px;
+      transition: color 0.2s;
+    }
+    .payment-modal .modal-header .close-modal:hover { color: var(--text-primary); }
+
+    .payment-modal .modal-body { padding: 24px; }
+
+    .payment-modal .plan-summary {
+      background: var(--bg-card);
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      border: 1px solid var(--basket-line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .payment-modal .plan-summary .plan-label { font-weight: 600; font-size: 0.85rem; }
+    .payment-modal .plan-summary .plan-amount {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: var(--sukuma);
+    }
+
+    .payment-methods {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 16px 0;
+    }
+    .payment-method {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 18px;
+      border: 2px solid var(--basket-line);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: var(--bg-card);
+    }
+    .payment-method:hover {
+      border-color: var(--sukuma);
+      background: rgba(45,80,22,0.04);
+    }
+    .payment-method.selected {
+      border-color: var(--sukuma);
+      background: rgba(45,80,22,0.06);
+    }
+    .payment-method .pm-icon {
+      font-size: 1.6rem;
+      width: 40px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .payment-method .pm-info { flex: 1; }
+    .payment-method .pm-info .pm-name {
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: block;
+    }
+    .payment-method .pm-info .pm-desc {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+    .payment-method .pm-radio {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid var(--basket-line);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+    .payment-method.selected .pm-radio { border-color: var(--sukuma); }
+    .payment-method .pm-radio::after {
+      content: '';
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--sukuma);
+      transform: scale(0);
+      transition: transform 0.2s ease;
+    }
+    .payment-method.selected .pm-radio::after { transform: scale(1); }
+
+    .payment-form-fields {
+      margin-top: 16px;
+      display: none;
+    }
+    .payment-form-fields.show {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+    .payment-form-fields .field-group { margin-bottom: 14px; }
+    .payment-form-fields .field-group label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+    .payment-form-fields .field-group input {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--basket-line);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      font-family: var(--font-body);
+      transition: border 0.2s;
+    }
+    .payment-form-fields .field-group input:focus {
+      outline: none;
+      border-color: var(--sukuma);
+    }
+
+    .payment-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    .payment-actions .btn { flex: 1; min-width: 120px; }
+    .payment-actions .btn-secondary { background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--basket-line); }
+    .payment-actions .btn-secondary:hover { background: var(--basket-line); }
+
+    .payment-success {
+      text-align: center;
+      padding: 20px 0;
+      display: none;
+    }
+    .payment-success.show { display: block; }
+    .payment-success .success-icon {
+      font-size: 4rem;
+      color: var(--sukuma);
+      margin-bottom: 12px;
+    }
+    .payment-success h3 {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      margin-bottom: 6px;
+    }
+    .payment-success p {
+      color: var(--text-secondary);
+      font-size: 0.92rem;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .toast-stack {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 360px;
+      width: calc(100% - 48px);
+    }
+    .toast {
+      background: var(--bg-elevated);
+      border: 1px solid var(--basket-line);
+      border-left: 4px solid var(--sukuma);
+      border-radius: 12px;
+      padding: 14px 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      animation: slideUp 0.3s ease;
+      backdrop-filter: blur(8px);
+    }
+    .toast.error { border-left-color: #dc2626; }
+    .toast i { font-size: 1.2rem; color: var(--sukuma); }
+    .toast.error i { color: #dc2626; }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .floating-ai-btn { display: none; }
+    .hamburger-btn { display: none; }
+    @media (max-width: 1024px) { .hamburger-btn { display: flex; } }
+  </style>
 </head>
 <body>
   <div class="app-shell">
@@ -27,80 +367,586 @@
         <a href="settings.html" class="nav-link"><i class="fa-solid fa-gear"></i> Settings</a>
       </nav>
       <div class="sidebar-footer">
-        <a href="../auth/logout.html" class="nav-link" style="color:var(--char);">
+        <a href="#" class="nav-link" style="color:var(--char);" onclick="event.preventDefault(); logout();">
           <i class="fa-solid fa-right-from-bracket"></i> Logout
         </a>
       </div>
     </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
+    <!-- Main Content -->
     <main class="main-content">
-      <div class="topbar">
-        <div class="search-box">
-          <i class="fa-solid fa-search"></i>
-          <input type="text" placeholder="Search...">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="hamburger-btn" id="hamburgerBtn"><i class="fa-solid fa-bars"></i></button>
+          <div class="search-box">
+            <i class="fa-solid fa-search"></i>
+            <input type="text" id="globalSearch" placeholder="Search...">
+          </div>
         </div>
         <div class="topbar-actions">
-          <button class="icon-btn"><i class="fa-regular fa-bell"></i><span class="dot"></span></button>
-          <div class="profile-chip">
-            <div class="avatar">PK</div>
-            <span class="label">Dr. Peter</span>
-            <span class="pro-badge" style="font-size:0.55rem;padding:2px 8px;">PRO</span>
+          <button class="icon-btn" id="notifBtn"><i class="fa-regular fa-bell"></i><span class="dot"></span></button>
+          <div class="profile-chip" id="profileChip">
+            <div class="avatar" id="profileAvatar">PK</div>
+            <span class="label" id="profileName">Dr. Peter</span>
+            <span class="pro-badge">PRO</span>
           </div>
         </div>
-      </div>
+      </header>
 
       <div class="page-inner">
-        <div class="premium-banner">
+        <!-- Banner -->
+        <div class="premium-banner" id="currentPlanBanner">
           <div>
-            <h3><i class="fa-regular fa-crown" style="margin-right:10px;"></i> Professional Plus</h3>
-            <p>You are currently on the Professional Free plan. Upgrade to unlock unlimited clients and advanced features.</p>
+            <h3><i class="fa-regular fa-crown" style="margin-right:10px;"></i> <span id="planStatusText">Loading...</span></h3>
+            <p id="planStatusDesc">Loading subscription details...</p>
           </div>
-          <a href="#plans" class="btn">Upgrade Now <i class="fa-regular fa-arrow-right"></i></a>
+          <a href="#" class="btn" id="upgradeBannerBtn" style="display:none;">Upgrade Now <i class="fa-regular fa-arrow-right"></i></a>
         </div>
 
         <h2 style="font-family:var(--font-display);font-size:1.3rem;margin-bottom:16px;" id="plans">Choose Your Plan</h2>
-        <div class="billing-grid">
-          <div class="billing-plan-card">
-            <div class="plan-name">Professional Free</div>
-            <div class="plan-price">KES 0 <span>/ month</span></div>
-            <div class="plan-desc">Basic features for starting professionals</div>
-            <ul class="plan-features">
-              <li><i class="fa-solid fa-check"></i> 5 clients</li>
-              <li><i class="fa-solid fa-check"></i> 2 meal plans</li>
-              <li><i class="fa-solid fa-check"></i> Basic tracking</li>
-              <li><i class="fa-solid fa-xmark" style="color:var(--char);"></i> No messaging</li>
-              <li><i class="fa-solid fa-xmark" style="color:var(--char);"></i> No reports</li>
-              <li><i class="fa-solid fa-xmark" style="color:var(--char);"></i> No appointments</li>
-              <li><i class="fa-solid fa-xmark" style="color:var(--char);"></i> No analytics</li>
-            </ul>
-            <button class="btn btn-secondary" style="background:var(--sukuma);color:#fff;">Current Plan</button>
-          </div>
+        <div class="billing-grid" id="plansGrid"><!-- Rendered by JS --></div>
 
-          <div class="billing-plan-card popular">
-            <div class="plan-name">Professional Plus</div>
-            <div class="plan-price">KES 2,500 <span>/ month</span></div>
-            <div class="plan-desc">Full-featured practice management</div>
-            <ul class="plan-features">
-              <li><i class="fa-solid fa-check"></i> Unlimited clients</li>
-              <li><i class="fa-solid fa-check"></i> Unlimited meal plans</li>
-              <li><i class="fa-solid fa-check"></i> Direct messaging</li>
-              <li><i class="fa-solid fa-check"></i> Appointments</li>
-              <li><i class="fa-solid fa-check"></i> Reports & templates</li>
-              <li><i class="fa-solid fa-check"></i> Advanced analytics</li>
-              <li><i class="fa-solid fa-check"></i> Compliance tracking</li>
-              <li><i class="fa-solid fa-check"></i> AI suggestions</li>
-              <li><i class="fa-solid fa-check"></i> Priority support</li>
-            </ul>
-            <button class="btn btn-primary" style="background:var(--accent-2);color:var(--soil);"><i class="fa-regular fa-crown"></i> Upgrade Now</button>
+        <!-- Invoices -->
+        <div style="margin-top: 32px;">
+          <h3 style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:12px;">Recent Invoices</h3>
+          <div style="background:var(--bg-elevated);border:1px solid var(--basket-line);border-radius:var(--radius-md);overflow:hidden;">
+            <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+              <thead>
+                <tr style="background:var(--bg-card);">
+                  <th style="padding:12px 16px;text-align:left;font-size:0.72rem;text-transform:uppercase;color:var(--text-muted);">Invoice</th>
+                  <th style="padding:12px 16px;text-align:left;font-size:0.72rem;text-transform:uppercase;color:var(--text-muted);">Date</th>
+                  <th style="padding:12px 16px;text-align:right;font-size:0.72rem;text-transform:uppercase;color:var(--text-muted);">Amount</th>
+                  <th style="padding:12px 16px;text-align:right;font-size:0.72rem;text-transform:uppercase;color:var(--text-muted);">Status</th>
+                </tr>
+              </thead>
+              <tbody id="invoiceTableBody">
+                <tr><td colspan="4" style="padding:20px;text-align:center;color:var(--text-muted);">No invoices yet.</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
     </main>
   </div>
 
+  <!-- ===== PAYMENT MODAL ===== -->
+  <div class="payment-modal-overlay" id="paymentModalOverlay">
+    <div class="payment-modal" id="paymentModal">
+      <div class="modal-header">
+        <h3><i class="fa-regular fa-credit-card" style="color:var(--accent-2);margin-right:8px;"></i> Upgrade</h3>
+        <button class="close-modal" id="closePaymentModal"><i class="fa-regular fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" id="paymentModalBody">
+
+        <div class="plan-summary">
+          <span class="plan-label" id="modalPlanName">Professional Plus</span>
+          <span class="plan-amount" id="modalPlanPrice">KES 2,500 <small style="font-weight:400;font-size:0.7rem;">/ month</small></span>
+        </div>
+
+        <p style="font-weight:700;font-size:0.85rem;margin-bottom:8px;">Select Payment Method</p>
+        <div class="payment-methods" id="paymentMethods">
+          <div class="payment-method selected" data-method="mpesa">
+            <span class="pm-icon">📱</span>
+            <div class="pm-info">
+              <span class="pm-name">M-Pesa</span>
+              <span class="pm-desc">Pay via M-Pesa mobile money</span>
+            </div>
+            <div class="pm-radio"></div>
+          </div>
+          <div class="payment-method" data-method="card">
+            <span class="pm-icon">💳</span>
+            <div class="pm-info">
+              <span class="pm-name">Credit / Debit Card</span>
+              <span class="pm-desc">Visa, Mastercard, Amex</span>
+            </div>
+            <div class="pm-radio"></div>
+          </div>
+          <div class="payment-method" data-method="bank">
+            <span class="pm-icon">🏦</span>
+            <div class="pm-info">
+              <span class="pm-name">Bank Transfer</span>
+              <span class="pm-desc">Direct bank transfer</span>
+            </div>
+            <div class="pm-radio"></div>
+          </div>
+          <div class="payment-method" data-method="paypal">
+            <span class="pm-icon">🌐</span>
+            <div class="pm-info">
+              <span class="pm-name">PayPal</span>
+              <span class="pm-desc">PayPal / International payments</span>
+            </div>
+            <div class="pm-radio"></div>
+          </div>
+        </div>
+
+        <div class="payment-form-fields show" id="paymentFormFields"></div>
+
+        <div class="payment-actions">
+          <button class="btn btn-secondary" id="cancelPaymentBtn">Cancel</button>
+          <button class="btn btn-primary" id="makePaymentBtn" style="background:var(--sukuma);">
+            <i class="fa-regular fa-lock"></i> Pay Now
+          </button>
+        </div>
+
+        <div class="payment-success" id="paymentSuccess">
+          <div class="success-icon"><i class="fa-regular fa-circle-check"></i></div>
+          <h3>Payment Successful! 🎉</h3>
+          <p>Your account has been upgraded. You now have access to all premium features.</p>
+          <button class="btn btn-primary" id="closeSuccessBtn" style="background:var(--sukuma);">Go to Dashboard</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-stack" id="toastStack"></div>
+
   <script>
-    document.querySelector('.hamburger-btn')?.addEventListener('click', function() {
-      document.getElementById('sidebar').classList.toggle('open');
+    // ============================================================
+    // SMART LISHE — PROFESSIONAL BILLING (Backend-Integrated)
+    // ============================================================
+
+    const API_BASE = 'http://127.0.0.1:5000/api';
+
+    // ===== HELPERS =====
+    function getToken() {
+      return localStorage.getItem('access_token') ||
+             localStorage.getItem('smartlishe_token') ||
+             localStorage.getItem('token') ||
+             '';
+    }
+
+    function getHeaders() {
+      return {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + getToken()
+      };
+    }
+
+    async function apiRequest(endpoint, method = 'GET', body = null) {
+      const url = API_BASE + endpoint;
+      const options = { method, headers: getHeaders() };
+      if (body) options.body = JSON.stringify(body);
+      const res = await fetch(url, options);
+      if (!res.ok) {
+        const err = await res.text();
+        throw new Error(err);
+      }
+      return res.json();
+    }
+
+    function showToast(message, type = 'success') {
+      const stack = document.getElementById('toastStack');
+      if (!stack) return;
+      const toast = document.createElement('div');
+      toast.className = 'toast' + (type === 'error' ? ' error' : '');
+      const icon = type === 'error' ? 'fa-circle-exclamation' : 'fa-check-circle';
+      toast.innerHTML = '<i class="fa-regular ' + icon + '"></i><span>' + message + '</span>';
+      stack.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(40px)';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+    window.showToast = showToast;
+
+    function logout() {
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = '../home.html';
+    }
+
+    // ===== AUTH CHECK – NO REDIRECT =====
+    (function checkAuth() {
+      const token = getToken();
+      const role = localStorage.getItem('smartlishe_role') || localStorage.getItem('role') || '';
+      const isProfessional = role.toLowerCase() === 'professional';
+      console.log('🔐 Billing auth check:', { token: !!token, role, isProfessional });
+      if (!token) {
+        console.warn('⚠️ No token found – showing page anyway.');
+        showToast('⚠️ You are not logged in. Some data may not load.', 'error');
+        return;
+      }
+      if (!isProfessional) {
+        console.warn('⚠️ Role is not Professional (found: "' + role + '") – showing page anyway.');
+        showToast('⚠️ You are not logged in as a professional. Some data may not load.', 'error');
+        return;
+      }
+      console.log('✅ Authenticated as Professional.');
+    })();
+
+    // ===== PROFILE INFO =====
+    function getProfessionalName() {
+      const profile = JSON.parse(localStorage.getItem('smartlishe_profile') || '{}');
+      if (profile.name) return profile.name;
+      const firstName = localStorage.getItem('firstName') || 'Professional';
+      const lastName = localStorage.getItem('lastName') || '';
+      return firstName + (lastName ? ' ' + lastName : '');
+    }
+    function getInitials() {
+      const name = getProfessionalName();
+      const parts = name.split(' ');
+      if (parts.length >= 2) return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
+      return name.substring(0, 2).toUpperCase();
+    }
+    document.getElementById('profileName').textContent = getProfessionalName();
+    document.getElementById('profileAvatar').textContent = getInitials();
+
+    // ===== STATE =====
+    let plans = [];
+    let currentSubscription = null;
+    let selectedPlan = null;
+
+    // ===== FETCH PLANS AND SUBSCRIPTION =====
+    async function loadBillingData() {
+      try {
+        const [plansRes, subRes] = await Promise.all([
+          apiRequest('/subscriptions/plans').catch(() => ({ data: [] })),
+          apiRequest('/subscriptions/current').catch(() => ({ data: null }))
+        ]);
+        plans = plansRes.data || [];
+        
+        // ✅ FALLBACK: if no plans, create a default one
+        if (plans.length === 0) {
+          plans = [{
+            id: 'mock-premium',
+            name: 'Professional Plus',
+            description: 'Full-featured practice management',
+            price: 2500,
+            currency: 'KES',
+            is_active: true
+          }];
+          console.log('ℹ️ No plans from backend, using mock plan.');
+        }
+        
+        currentSubscription = subRes.data || null;
+        renderBilling();
+      } catch (e) {
+        console.error('Load billing error:', e);
+        showToast('Failed to load billing data.', 'error');
+      }
+    }
+
+    function renderBilling() {
+      const isPremium = currentSubscription && currentSubscription.status === 'active';
+      const premiumPlan = plans.find(p => p.name.toLowerCase().includes('premium') || p.is_active) || plans[0] || null;
+
+      // Banner
+      const bannerTitle = document.getElementById('planStatusText');
+      const bannerDesc = document.getElementById('planStatusDesc');
+      const bannerBtn = document.getElementById('upgradeBannerBtn');
+
+      if (isPremium && currentSubscription) {
+        const expiry = currentSubscription.expires_at ? new Date(currentSubscription.expires_at).toLocaleDateString() : 'N/A';
+        bannerTitle.textContent = 'Professional Plus 🎉';
+        bannerDesc.textContent = 'You are on the Professional Plus plan. Expires: ' + expiry + '. Enjoy all premium features.';
+        bannerBtn.style.display = 'none';
+      } else {
+        bannerTitle.textContent = 'Professional Free';
+        bannerDesc.textContent = 'You are currently on the Professional Free plan. Upgrade to unlock unlimited clients and advanced features.';
+        bannerBtn.style.display = 'inline-flex';
+        bannerBtn.onclick = function(e) {
+          e.preventDefault();
+          if (premiumPlan) {
+            selectedPlan = premiumPlan;
+            openPaymentModal();
+          } else {
+            showToast('No premium plans available.', 'error');
+          }
+        };
+      }
+
+      // Plan cards
+      const grid = document.getElementById('plansGrid');
+      const freeFeatures = ['5 clients', '2 meal plans', 'Basic tracking'];
+      const paidFeatures = [
+        'Unlimited clients', 'Unlimited meal plans', 'Direct messaging',
+        'Appointments', 'Reports & templates', 'Advanced analytics',
+        'Compliance tracking', 'AI suggestions', 'Priority support'
+      ];
+
+      const freePrice = 0;
+      const paidPrice = premiumPlan ? premiumPlan.price : 2500;
+      const currency = premiumPlan ? premiumPlan.currency : 'KES';
+
+      grid.innerHTML = `
+        <div class="billing-plan-card ${isPremium ? '' : 'popular'}" style="${isPremium ? 'opacity:0.6;' : ''}">
+          <div class="plan-name">Professional Free</div>
+          <div class="plan-price">${currency} 0 <span>/ month</span></div>
+          <div class="plan-desc">Basic features for starting professionals</div>
+          <ul class="plan-features">
+            ${freeFeatures.map(f => `<li><i class="fa-solid fa-check"></i> ${f}</li>`).join('')}
+            <li><i class="fa-solid fa-xmark" style="color:var(--char);"></i> No messaging</li>
+            <li><i class="fa-solid fa-xmark" style="color:var(--char);"></i> No reports</li>
+            <li><i class="fa-solid fa-xmark" style="color:var(--char);"></i> No appointments</li>
+            <li><i class="fa-solid fa-xmark" style="color:var(--char);"></i> No analytics</li>
+          </ul>
+          <button class="btn btn-secondary" style="background:${!isPremium ? 'var(--sukuma)' : 'var(--bg-card)'};color:${!isPremium ? '#fff' : 'var(--text-primary)'};" ${isPremium ? 'disabled' : ''}>
+            ${!isPremium ? 'Current Plan' : 'Downgrade'}
+          </button>
+        </div>
+
+        <div class="billing-plan-card popular" style="${isPremium ? 'border-color:var(--sukuma);' : ''}">
+          <div class="plan-name">Professional Plus</div>
+          <div class="plan-price">${currency} ${paidPrice} <span>/ month</span></div>
+          <div class="plan-desc">${premiumPlan ? premiumPlan.description || 'Full-featured practice management' : 'Full-featured practice management'}</div>
+          <ul class="plan-features">
+            ${paidFeatures.map(f => `<li><i class="fa-solid fa-check"></i> ${f}</li>`).join('')}
+          </ul>
+          <button class="btn btn-primary" style="background:${isPremium ? 'var(--sukuma)' : 'var(--accent-2)'};color:${isPremium ? '#fff' : 'var(--soil)'};" id="upgradeNowBtn">
+            ${isPremium ? '✅ Active Plan' : '<i class="fa-regular fa-crown"></i> Upgrade Now'}
+          </button>
+        </div>
+      `;
+
+      const upgradeBtn = document.getElementById('upgradeNowBtn');
+      if (upgradeBtn && !isPremium) {
+        upgradeBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          if (premiumPlan) {
+            selectedPlan = premiumPlan;
+            openPaymentModal();
+          } else {
+            showToast('No premium plans available.', 'error');
+          }
+        });
+      } else if (upgradeBtn && isPremium) {
+        upgradeBtn.addEventListener('click', function() {
+          showToast('You are already on the Professional Plus plan.');
+        });
+      }
+
+      // Invoices
+      const tbody = document.getElementById('invoiceTableBody');
+      if (isPremium) {
+        tbody.innerHTML = `
+          <tr>
+            <td style="padding:12px 16px;font-weight:600;">INV-2026-001</td>
+            <td style="padding:12px 16px;">July 1, 2026</td>
+            <td style="padding:12px 16px;text-align:right;">KES 2,500</td>
+            <td style="padding:12px 16px;text-align:right;"><span style="display:inline-block;padding:2px 12px;border-radius:12px;background:#d1fae5;color:#065f46;font-size:0.7rem;font-weight:700;">Paid</span></td>
+          </tr>
+          <tr>
+            <td style="padding:12px 16px;font-weight:600;">INV-2026-002</td>
+            <td style="padding:12px 16px;">August 1, 2026</td>
+            <td style="padding:12px 16px;text-align:right;">KES 2,500</td>
+            <td style="padding:12px 16px;text-align:right;"><span style="display:inline-block;padding:2px 12px;border-radius:12px;background:#fef3c7;color:#92400e;font-size:0.7rem;font-weight:700;">Pending</span></td>
+          </tr>
+        `;
+      } else {
+        tbody.innerHTML = '<tr><td colspan="4" style="padding:20px;text-align:center;color:var(--text-muted);">No invoices yet. Upgrade to start billing.</td></tr>';
+      }
+    }
+
+    // ===== PAYMENT MODAL =====
+    const modalOverlay = document.getElementById('paymentModalOverlay');
+    const modal = document.getElementById('paymentModal');
+    const closeModalBtn = document.getElementById('closePaymentModal');
+    const cancelBtn = document.getElementById('cancelPaymentBtn');
+    const payBtn = document.getElementById('makePaymentBtn');
+    const formFields = document.getElementById('paymentFormFields');
+    const successDiv = document.getElementById('paymentSuccess');
+    const modalPlanName = document.getElementById('modalPlanName');
+    const modalPlanPrice = document.getElementById('modalPlanPrice');
+
+    let selectedMethod = 'mpesa';
+
+    function openPaymentModal() {
+      if (!selectedPlan) {
+        showToast('No plan selected.', 'error');
+        return;
+      }
+      const price = selectedPlan.price || 2500;
+      const currency = selectedPlan.currency || 'KES';
+      modalPlanName.textContent = selectedPlan.name || 'Professional Plus';
+      modalPlanPrice.innerHTML = `${currency} ${price} <small style="font-weight:400;font-size:0.7rem;">/ month</small>`;
+      payBtn.textContent = `Pay ${currency} ${price}`;
+
+      modalOverlay.classList.add('show');
+      modal.classList.add('show');
+      successDiv.classList.remove('show');
+      document.querySelector('.plan-summary').style.display = 'flex';
+      document.querySelector('.payment-actions').style.display = 'flex';
+      document.querySelector('.payment-methods').style.display = 'flex';
+      formFields.classList.add('show');
+      payBtn.disabled = false;
+      document.body.style.overflow = 'hidden';
+
+      document.querySelectorAll('.payment-method').forEach(el => el.classList.remove('selected'));
+      document.querySelector('.payment-method[data-method="mpesa"]').classList.add('selected');
+      selectedMethod = 'mpesa';
+      updateFormFields('mpesa');
+    }
+
+    function closePaymentModal() {
+      modalOverlay.classList.remove('show');
+      modal.classList.remove('show');
+      document.body.style.overflow = '';
+    }
+
+    closeModalBtn.addEventListener('click', closePaymentModal);
+    cancelBtn.addEventListener('click', closePaymentModal);
+    modalOverlay.addEventListener('click', function(e) {
+      if (e.target === modalOverlay) closePaymentModal();
+    });
+
+    document.querySelectorAll('.payment-method').forEach(el => {
+      el.addEventListener('click', function() {
+        document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
+        this.classList.add('selected');
+        selectedMethod = this.dataset.method;
+        updateFormFields(selectedMethod);
+      });
+    });
+
+    function updateFormFields(method) {
+      let html = '';
+      if (method === 'mpesa') {
+        html = `
+          <div class="field-group">
+            <label>M-Pesa Phone Number</label>
+            <input type="tel" placeholder="0712 345 678" id="mpesaPhone">
+          </div>
+          <div class="field-group">
+            <label>M-Pesa Name</label>
+            <input type="text" placeholder="John Doe" id="mpesaName">
+          </div>
+          <p style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;">You will receive a prompt on your phone to confirm the payment.</p>
+        `;
+      } else if (method === 'card') {
+        html = `
+          <div class="field-group">
+            <label>Card Number</label>
+            <input type="text" placeholder="4242 4242 4242 4242" id="cardNumber">
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div class="field-group"><label>Expiry Date</label><input type="text" placeholder="MM/YY" id="cardExpiry"></div>
+            <div class="field-group"><label>CVV</label><input type="text" placeholder="123" id="cardCvv"></div>
+          </div>
+          <div class="field-group"><label>Cardholder Name</label><input type="text" placeholder="John Doe" id="cardName"></div>
+        `;
+      } else if (method === 'bank') {
+        html = `
+          <div style="background:var(--bg-card);border-radius:var(--radius-sm);padding:14px 16px;border:1px solid var(--basket-line);margin-bottom:12px;">
+            <p style="font-size:0.82rem;color:var(--text-secondary);"><strong>Bank Details</strong></p>
+            <p style="font-size:0.8rem;color:var(--text-muted);">Bank: KCB Bank Kenya</p>
+            <p style="font-size:0.8rem;color:var(--text-muted);">Account: 1234567890</p>
+            <p style="font-size:0.8rem;color:var(--text-muted);">Reference: SL-PRO-${Date.now().toString().slice(-6)}</p>
+          </div>
+          <div class="field-group"><label>Reference Number</label><input type="text" placeholder="Enter bank reference" id="bankRef"></div>
+        `;
+      } else if (method === 'paypal') {
+        html = `
+          <div style="background:var(--bg-card);border-radius:var(--radius-sm);padding:14px 16px;border:1px solid var(--basket-line);margin-bottom:12px;text-align:center;">
+            <p style="font-size:0.9rem;color:var(--text-secondary);">You will be redirected to PayPal to complete your payment.</p>
+            <p style="font-size:0.78rem;color:var(--text-muted);">Amount: <strong>${selectedPlan ? selectedPlan.currency || 'KES' : 'KES'} ${selectedPlan ? selectedPlan.price : 2500}</strong></p>
+          </div>
+          <div class="field-group"><label>PayPal Email</label><input type="email" placeholder="you@email.com" id="paypalEmail"></div>
+        `;
+      }
+      formFields.innerHTML = html;
+      formFields.classList.add('show');
+    }
+
+    // ===== MAKE PAYMENT (mock) =====
+    payBtn.addEventListener('click', async function() {
+      let isValid = true;
+      if (selectedMethod === 'mpesa') {
+        const phone = document.getElementById('mpesaPhone');
+        if (!phone || phone.value.trim().length < 10) {
+          showToast('Please enter a valid M-Pesa phone number.', 'error');
+          isValid = false;
+        }
+      } else if (selectedMethod === 'card') {
+        const cardNum = document.getElementById('cardNumber');
+        if (!cardNum || cardNum.value.trim().length < 16) {
+          showToast('Please enter a valid card number.', 'error');
+          isValid = false;
+        }
+      } else if (selectedMethod === 'bank') {
+        const ref = document.getElementById('bankRef');
+        if (!ref || ref.value.trim().length < 3) {
+          showToast('Please enter a bank reference number.', 'error');
+          isValid = false;
+        }
+      } else if (selectedMethod === 'paypal') {
+        const email = document.getElementById('paypalEmail');
+        if (!email || !email.value.includes('@')) {
+          showToast('Please enter a valid PayPal email.', 'error');
+          isValid = false;
+        }
+      }
+      if (!isValid) return;
+      if (!selectedPlan) {
+        showToast('No plan selected.', 'error');
+        return;
+      }
+
+      this.disabled = true;
+      this.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+
+      try {
+        const payload = { plan_id: selectedPlan.id };
+        await apiRequest('/billing/mock-subscribe', 'POST', payload);
+
+        currentSubscription = { status: 'active', expires_at: new Date(Date.now() + 30*24*60*60*1000).toISOString() };
+        renderBilling();
+
+        document.querySelector('.plan-summary').style.display = 'none';
+        document.querySelector('.payment-actions').style.display = 'none';
+        document.querySelector('.payment-methods').style.display = 'none';
+        formFields.classList.remove('show');
+        successDiv.classList.add('show');
+        this.style.display = 'none';
+
+        showToast('🎉 Payment successful! You are now on Professional Plus.');
+      } catch (err) {
+        showToast('Payment failed: ' + err.message, 'error');
+        this.disabled = false;
+        this.innerHTML = '<i class="fa-regular fa-lock"></i> Pay Now';
+      }
+    });
+
+    document.getElementById('closeSuccessBtn').addEventListener('click', function() {
+      closePaymentModal();
+      window.location.href = 'dashboard.html';
+    });
+
+    // ===== SIDEBAR TOGGLE =====
+    document.addEventListener('DOMContentLoaded', function() {
+      const hamburger = document.getElementById('hamburgerBtn');
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+
+      function toggleSidebar() {
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('show');
+      }
+      hamburger.addEventListener('click', toggleSidebar);
+      overlay.addEventListener('click', toggleSidebar);
+      document.querySelectorAll('.sidebar-nav .nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+          if (window.innerWidth <= 1024) toggleSidebar();
+        });
+      });
+
+      document.getElementById('notifBtn').addEventListener('click', function() {
+        showToast('No new notifications.');
+      });
+
+      document.getElementById('globalSearch').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && e.target.value.trim()) {
+          showToast('Searching for "' + e.target.value.trim() + '"...');
+        }
+      });
+
+      loadBillingData();
+
+      const floatBtn = document.querySelector('.floating-ai-btn');
+      if (floatBtn) floatBtn.style.display = 'none';
     });
   </script>
 </body>

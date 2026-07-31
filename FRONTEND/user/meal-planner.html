@@ -2,14 +2,140 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
 <title>Meal Planner — Smart Lishe</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link rel="stylesheet" href="style.css">
+
+<style>
+  /* Upgrade banner */
+  .upgrade-banner {
+    background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+    border: 1px solid #10b981;
+    border-radius: var(--radius-md, 16px);
+    padding: 16px 24px;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .upgrade-banner.show { display: flex; }
+  .upgrade-banner .ub-icon { font-size: 1.8rem; color: #047857; }
+  .upgrade-banner .ub-text { flex: 1; font-weight: 600; color: #065f46; font-size: 0.95rem; }
+  .upgrade-banner .ub-text strong { display: block; font-size: 1.05rem; margin-bottom: 2px; }
+  .upgrade-banner .btn-upgrade {
+    background: #047857;
+    color: #fff;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+  }
+  .upgrade-banner .btn-upgrade:hover { background: #065f46; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(4, 120, 87, 0.3); }
+
+  .floating-ai-btn {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 999;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--sukuma, #2b7a4b);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    box-shadow: 0 6px 20px rgba(43, 122, 75, 0.4);
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: none;
+    cursor: pointer;
+  }
+  .floating-ai-btn:hover { transform: scale(1.05); box-shadow: 0 8px 28px rgba(43, 122, 75, 0.5); }
+
+  .planner-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  @media (max-width: 600px) {
+    .upgrade-banner {
+      flex-direction: column;
+      text-align: center;
+      padding: 16px;
+    }
+    .upgrade-banner .ub-icon { font-size: 1.4rem; }
+    .floating-ai-btn {
+      width: 52px;
+      height: 52px;
+      font-size: 1.4rem;
+      bottom: 20px;
+      right: 20px;
+    }
+    .planner-toolbar {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+    }
+    .planner-actions {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .planner-table th,
+    .planner-table td {
+      padding: 8px 6px;
+      font-size: 0.8rem;
+      min-width: 80px;
+    }
+    .planner-table .planner-cell-input {
+      font-size: 0.75rem;
+      min-height: 50px;
+    }
+    .planner-table .slot-label {
+      font-size: 0.7rem;
+      white-space: nowrap;
+    }
+  }
+</style>
 </head>
 <body>
+
+<!-- ===== AUTH CHECK ===== -->
+<script>
+(function() {
+  const email = localStorage.getItem('email');
+  const role = localStorage.getItem('smartlishe_role') || localStorage.getItem('role');
+  const profile = localStorage.getItem('smartlishe_profile');
+  const loggedIn = localStorage.getItem('smartlishe_logged_in') === 'true';
+  
+  if (!email && !profile && !loggedIn) {
+    window.location.href = 'home.html';
+    return;
+  }
+  if (role === 'Professional') {
+    window.location.href = '../professional/home.html';
+    return;
+  }
+  if (role === 'Client') {
+    window.location.href = '../client/dashboard.html';
+    return;
+  }
+})();
+</script>
 
 <!-- ===== MOBILE TOPBAR ===== -->
 <div class="mobile-topbar">
@@ -32,6 +158,7 @@
     <nav class="sidebar-nav" id="sidebarNav">
       <a href="home.html" class="nav-link"><i class="fa-solid fa-house"></i> Home</a>
       <a href="dashboard.html" class="nav-link"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+      
       <div class="nav-section-divider"><span>Plan &amp; Discover</span><i class="fa-solid fa-layer-group"></i></div>
       <div class="service-group open" data-group="plan">
         <button type="button" class="service-group-header" data-group-toggle="plan">
@@ -48,6 +175,7 @@
           <a href="recipes.html" class="nav-link"><i class="fa-solid fa-book-open"></i> Recipes</a>
         </div>
       </div>
+      
       <div class="nav-section-divider"><span>Track &amp; Achieve</span><i class="fa-solid fa-chart-simple"></i></div>
       <div class="service-group" data-group="track">
         <button type="button" class="service-group-header" data-group-toggle="track">
@@ -63,46 +191,25 @@
           <a href="shopping-list.html" class="nav-link"><i class="fa-solid fa-basket-shopping"></i> Shopping List</a>
         </div>
       </div>
+      
       <div class="nav-section-divider"><span>Profile</span><i class="fa-solid fa-user-gear"></i></div>
       <div class="service-group" data-group="profile">
         <button type="button" class="service-group-header" data-group-toggle="profile">
           <div class="sg-icon-wrap" style="background:#3D6FA8;"><i class="fa-solid fa-user"></i></div>
           <span class="sg-title">Profile</span>
-          <span class="sg-count">4</span>
+          <span class="sg-count">2</span>
           <span class="sg-dropdown-hint"><i class="fa-solid fa-chevron-down sg-chevron"></i></span>
         </button>
         <div class="service-group-body">
           <a href="profile.html" class="nav-link"><i class="fa-solid fa-id-card"></i> User Profile</a>
           <a href="settings.html" class="nav-link"><i class="fa-solid fa-gear"></i> Settings</a>
-          <a href="about.html" class="nav-link"><i class="fa-solid fa-circle-info"></i> About</a>
-          <a href="contact.html" class="nav-link"><i class="fa-solid fa-envelope"></i> Contact</a>
-        </div>
-      </div>
-
-      <!-- ===== MEMBERSHIP ===== -->
-      <div class="nav-section-divider"><span>Membership</span><i class="fa-solid fa-crown"></i></div>
-      <div class="service-group" data-group="membership">
-        <button type="button" class="service-group-header" data-group-toggle="membership">
-          <div class="sg-icon-wrap" style="background:var(--accent-2);"><i class="fa-solid fa-crown"></i></div>
-          <span class="sg-title">Membership</span>
-          <span class="sg-count">9</span>
-          <span class="sg-dropdown-hint"><i class="fa-solid fa-chevron-down sg-chevron"></i></span>
-        </button>
-        <div class="service-group-body">
-          <a href="membership/membership.html" class="nav-link"><i class="fa-solid fa-id-card"></i> Current Membership</a>
-          <a href="membership/pricing.html" class="nav-link"><i class="fa-solid fa-tags"></i> Pricing Plans</a>
-          <a href="membership/benefits.html" class="nav-link"><i class="fa-solid fa-gift"></i> Benefits</a>
-          <a href="membership/billing.html" class="nav-link"><i class="fa-solid fa-credit-card"></i> Billing</a>
-          <a href="membership/invoices.html" class="nav-link"><i class="fa-solid fa-file-invoice"></i> Invoices</a>
-          <a href="membership/upgrade.html" class="nav-link"><i class="fa-solid fa-arrow-trend-up"></i> Upgrade Plan</a>
-          <a href="membership/history.html" class="nav-link"><i class="fa-solid fa-clock-rotate-left"></i> Subscription History</a>
-          <a href="membership/professional-access.html" class="nav-link"><i class="fa-solid fa-briefcase"></i> Professional Access</a>
-          <a href="membership/clinic-access.html" class="nav-link"><i class="fa-solid fa-hospital"></i> Clinic Access</a>
         </div>
       </div>
 
       <div style="margin-top:12px;">
-        <a href="#" class="nav-link" onclick="event.preventDefault(); showToast('Logging out...');" style="color:var(--char);"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        <a href="#" class="nav-link" onclick="event.preventDefault(); localStorage.clear(); sessionStorage.clear(); window.location.href='home.html';" style="color:var(--char);">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </a>
       </div>
     </nav>
     <div class="sidebar-footer">
@@ -124,8 +231,8 @@
       <div class="topbar-actions">
         <button class="icon-btn" id="notifBtn"><i class="fa-regular fa-bell"></i><span class="dot"></span></button>
         <a href="profile.html" class="profile-chip" style="cursor:pointer;">
-          <div class="avatar" id="topbarAvatar">W</div>
-          <span class="label" id="topbarName">Wanjiru</span>
+          <div class="avatar" id="topbarAvatar">U</div>
+          <span class="label" id="topbarName">User</span>
         </a>
       </div>
     </header>
@@ -135,7 +242,18 @@
         <div class="page-header">
           <div class="section-eyebrow">Meal Planner</div>
           <h2>Plan your week, once</h2>
-          <p>Fill in breakfast, lunch, dinner and snacks for each day. Everything saves automatically to this device, and you can print the plan for your fridge or your kitchen wall.</p>
+          <p>Fill in breakfast, lunch, dinner and snacks for each day. Everything saves to the server, and you can print the plan.</p>
+        </div>
+
+        <div class="upgrade-banner" id="upgradeBanner">
+          <div class="ub-icon"><i class="fa-regular fa-crown"></i></div>
+          <div class="ub-text">
+            <strong>Unlock Premium Features</strong>
+            <span>Get unlimited AI requests, advanced analytics, priority support, and more – only KES 2,500/month.</span>
+          </div>
+          <a href="billing.html" class="btn-upgrade">
+            <i class="fa-solid fa-arrow-right"></i> Upgrade Now
+          </a>
         </div>
 
         <div class="planner-toolbar">
@@ -160,6 +278,11 @@
 
   </div>
 </div>
+
+<!-- ===== FLOATING AI BUTTON ===== -->
+<a href="ai-assistant.html" class="floating-ai-btn" aria-label="AI Assistant">
+  <i class="fa-regular fa-robot"></i>
+</a>
 
 <!-- ===== CHATBOT ===== -->
 <button class="chatbot-fab" id="chatbotFab"><i class="fa-solid fa-robot"></i><span class="ping"></span></button>
@@ -186,29 +309,60 @@
 
 <script>
 // ============================================================
-// MEAL PLANNER — Complete JavaScript (Error-Free)
+// SMART LISHE — MEAL PLANNER (FULLY BACKEND-INTEGRATED)
 // ============================================================
 
-// ---------- STORE HELPER ----------
-const Store = {
-  get(key, fallback){
-    try{
-      const raw = localStorage.getItem('smartlishe_' + key);
-      return raw ? JSON.parse(raw) : fallback;
-    }catch(e){ return fallback; }
-  },
-  set(key, value){
-    try{
-      localStorage.setItem('smartlishe_' + key, JSON.stringify(value));
-      return true;
-    }catch(e){ return false; }
-  }
-};
+// -------- CONFIGURATION --------
+// Change this to match your backend URL:
+const API_BASE = 'http://127.0.0.1:5000/api';
 
-// ---------- TOAST ----------
-function showToast(message, type = 'success'){
+// -------- HELPERS --------
+function getAuthToken() {
+  // Try all possible token keys
+  const keys = ['smartlishe_token', 'token', 'access_token', 'auth_token', 'jwt'];
+  for (const key of keys) {
+    const token = localStorage.getItem(key);
+    if (token) {
+      console.log(`✅ Token found under key: "${key}"`);
+      return token;
+    }
+  }
+  console.warn('⚠️ No token found in localStorage');
+  return '';
+}
+
+function getHeaders() {
+  const token = getAuthToken();
+  if (!token) {
+    // Redirect to login if no token
+    showToast('You are not logged in. Redirecting...', 'error');
+    setTimeout(() => {
+      window.location.href = 'home.html';  // or your login page
+    }, 1500);
+    return {};
+  }
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  };
+}
+
+async function apiRequest(endpoint, method = 'GET', body = null) {
+  const url = `${API_BASE}${endpoint}`;
+  const options = { method, headers: getHeaders() };
+  if (body) options.body = JSON.stringify(body);
+  console.log(`→ ${method} ${url}`);
+  const res = await fetch(url, options);
+  if (!res.ok) {
+    const errText = await res.text().catch(() => 'Unknown error');
+    throw new Error(`HTTP ${res.status}: ${errText}`);
+  }
+  return res.json();
+}
+
+function showToast(message, type = 'success') {
   const stack = document.getElementById('toastStack');
-  if(!stack) return;
+  if (!stack) return;
   const toast = document.createElement('div');
   toast.className = 'toast' + (type === 'error' ? ' error' : '');
   const icon = type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-check';
@@ -221,149 +375,159 @@ function showToast(message, type = 'success'){
   }, 3500);
 }
 
-// ---------- THEME ----------
-function initTheme(){
-  const saved = Store.get('theme', 'light');
-  document.body.setAttribute('data-theme', saved);
-  const themeIcon = document.getElementById('themeIcon');
-  if(themeIcon) themeIcon.className = saved === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-  const themeToggle = document.getElementById('themeToggle');
-  if(themeToggle){
-    themeToggle.addEventListener('click', () => {
-      const current = document.body.getAttribute('data-theme');
-      const next = current === 'dark' ? 'light' : 'dark';
-      document.body.setAttribute('data-theme', next);
-      if(themeIcon) themeIcon.className = next === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-      Store.set('theme', next);
-    });
-  }
+// -------- USER INFO --------
+function loadUserInfo() {
+  const userProfile = JSON.parse(localStorage.getItem('smartlishe_profile') || '{}');
+  const firstName = localStorage.getItem('firstName') || 'User';
+  const email = localStorage.getItem('email') || '';
+  let userName = 'User';
+  if (userProfile.fullName) userName = userProfile.fullName.split(' ')[0];
+  else if (userProfile.name) userName = userProfile.name;
+  else if (firstName && firstName !== 'User') userName = firstName;
+  else if (email) userName = email.split('@')[0];
+  document.getElementById('topbarName').textContent = userName;
+  document.getElementById('topbarAvatar').textContent = userName.charAt(0).toUpperCase();
 }
 
-// ---------- SIDEBAR ----------
-function initSidebar(){
+// -------- THEME --------
+function initTheme() {
+  const saved = localStorage.getItem('smartlishe_theme') || 'light';
+  document.body.setAttribute('data-theme', saved);
+  const themeIcon = document.getElementById('themeIcon');
+  if (themeIcon) themeIcon.className = saved === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+  document.getElementById('themeToggle')?.addEventListener('click', () => {
+    const current = document.body.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.body.setAttribute('data-theme', next);
+    if (themeIcon) themeIcon.className = next === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+    localStorage.setItem('smartlishe_theme', next);
+  });
+}
+
+// -------- SIDEBAR --------
+function initSidebar() {
   const sidebar = document.getElementById('sidebar');
   const overlay = document.getElementById('sidebarOverlay');
   const hamburger = document.getElementById('hamburgerBtn');
-
-  function openSidebar(){ if(sidebar) sidebar.classList.add('open'); if(overlay) overlay.classList.add('show'); }
-  function closeSidebar(){ if(sidebar) sidebar.classList.remove('open'); if(overlay) overlay.classList.remove('show'); }
-
-  if(hamburger) hamburger.addEventListener('click', openSidebar);
-  if(overlay) overlay.addEventListener('click', closeSidebar);
-
+  function openSidebar() { sidebar?.classList.add('open'); overlay?.classList.add('show'); }
+  function closeSidebar() { sidebar?.classList.remove('open'); overlay?.classList.remove('show'); }
+  hamburger?.addEventListener('click', openSidebar);
+  overlay?.addEventListener('click', closeSidebar);
   document.querySelectorAll('.service-group-header').forEach(header => {
     header.addEventListener('click', (e) => {
       e.stopPropagation();
       const group = header.closest('.service-group');
-      if(!group) return;
+      if (!group) return;
       const wasOpen = group.classList.contains('open');
       document.querySelectorAll('.service-group').forEach(g => g.classList.remove('open'));
-      if(!wasOpen) group.classList.add('open');
+      if (!wasOpen) group.classList.add('open');
     });
   });
-
   document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', closeSidebar);
   });
 }
 
-// ---------- SCROLL TOP ----------
-function initScrollTop(){
+// -------- SCROLL TOP --------
+function initScrollTop() {
   const btn = document.getElementById('scrollTopBtn');
-  if(!btn) return;
-  window.addEventListener('scroll', () => {
-    btn.classList.toggle('show', window.scrollY > 400);
-  });
-  btn.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+  if (!btn) return;
+  window.addEventListener('scroll', () => btn.classList.toggle('show', window.scrollY > 400));
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 }
 
-// ---------- MEAL PLANNER ----------
+// -------- MEAL PLANNER --------
 const plannerDays = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 const plannerSlots = ['Breakfast','Lunch','Dinner','Snacks'];
 
-function buildPlannerTable(){
+function buildPlannerTable(data = {}) {
   const headRow = document.getElementById('plannerHeadRow');
   const body = document.getElementById('plannerBody');
-  if(!headRow || !body) return;
-
+  if (!headRow || !body) return;
   headRow.innerHTML = '<th>Meal</th>' + plannerDays.map(d => `<th>${d}</th>`).join('');
-
-  const savedPlan = Store.get('mealPlannerData', {});
-
   body.innerHTML = plannerSlots.map(slot => {
     const cells = plannerDays.map(day => {
-      const cellKey = `${day}_${slot}`;
-      const value = savedPlan[cellKey] || '';
-      return `<td><textarea class="planner-cell-input" data-key="${cellKey}" placeholder="Add ${slot.toLowerCase()}...">${value}</textarea></td>`;
+      const key = `${day}_${slot}`;
+      const value = data[key] || '';
+      return `<td><textarea class="planner-cell-input" data-key="${key}" placeholder="Add ${slot.toLowerCase()}...">${value}</textarea></td>`;
     }).join('');
     return `<tr><td class="slot-label">${slot}</td>${cells}</tr>`;
   }).join('');
 }
 
-function initMealPlanner(){
-  const table = document.getElementById('plannerTable');
-  if(!table) return;
-
-  buildPlannerTable();
-
-  const saveBtn = document.getElementById('plannerSaveBtn');
-  const clearBtn = document.getElementById('plannerClearBtn');
-  const printBtn = document.getElementById('plannerPrintBtn');
-
-  if(saveBtn){
-    saveBtn.addEventListener('click', () => {
-      const data = {};
-      table.querySelectorAll('.planner-cell-input').forEach(input => {
-        if(input.value.trim()) data[input.dataset.key] = input.value.trim();
-      });
-      Store.set('mealPlannerData', data);
-      showToast('Meal plan saved to this device.');
-    });
-  }
-
-  if(clearBtn){
-    clearBtn.addEventListener('click', () => {
-      if(!confirm('Clear the entire week\'s plan? This cannot be undone.')) return;
-      Store.set('mealPlannerData', {});
-      table.querySelectorAll('.planner-cell-input').forEach(input => input.value = '');
-      showToast('Weekly plan cleared.');
-    });
-  }
-
-  if(printBtn){
-    printBtn.addEventListener('click', () => {
-      const data = {};
-      table.querySelectorAll('.planner-cell-input').forEach(input => {
-        if(input.value.trim()) data[input.dataset.key] = input.value.trim();
-      });
-      Store.set('mealPlannerData', data);
-      window.print();
-    });
+async function loadCurrentPlan() {
+  try {
+    const result = await apiRequest('/meal-plans/current');
+    const planData = result.data || {};
+    buildPlannerTable(planData);
+    showToast('Plan loaded from server');
+  } catch (error) {
+    console.error('Load error:', error);
+    showToast('Failed to load plan: ' + error.message, 'error');
+    buildPlannerTable({});
   }
 }
 
-// ---------- CHATBOT ----------
+async function saveCurrentPlan() {
+  const table = document.getElementById('plannerTable');
+  const data = {};
+  table.querySelectorAll('.planner-cell-input').forEach(input => {
+    if (input.value.trim()) data[input.dataset.key] = input.value.trim();
+  });
+  try {
+    await apiRequest('/meal-plans/current', 'POST', { data });
+    showToast('Plan saved successfully!');
+  } catch (error) {
+    console.error('Save error:', error);
+    showToast('Failed to save: ' + error.message, 'error');
+  }
+}
+
+async function clearCurrentPlan() {
+  if (!confirm('Clear the entire week\'s plan?')) return;
+  try {
+    await apiRequest('/meal-plans/current', 'POST', { data: {} });
+    buildPlannerTable({});
+    showToast('Plan cleared.');
+  } catch (error) {
+    console.error('Clear error:', error);
+    showToast('Failed to clear: ' + error.message, 'error');
+  }
+}
+
+function printPlan() { window.print(); }
+
+function initMealPlanner() {
+  const table = document.getElementById('plannerTable');
+  if (!table) return;
+  loadCurrentPlan();
+  document.getElementById('plannerSaveBtn').addEventListener('click', saveCurrentPlan);
+  document.getElementById('plannerClearBtn').addEventListener('click', clearCurrentPlan);
+  document.getElementById('plannerPrintBtn').addEventListener('click', printPlan);
+}
+
+// -------- CHATBOT (simplified) --------
 const chatKnowledge = [
-  { keys:['weight loss','lose weight','slim','cut weight'], reply:"For healthy weight loss, aim for a moderate calorie deficit — about 300–500 kcal below your maintenance level. Favour ugali in smaller portions, more sukuma wiki and other vegetables, lean proteins like omena, tilapia or chicken." },
-  { keys:['diabetes','diabetic','blood sugar','sugar level'], reply:"For diabetes-friendly eating, choose high-fibre carbs in moderate portions — mukimo, githeri, and brown rice are better than white rice or refined ugali alone. Pair carbs with protein and vegetables to slow sugar absorption." },
-  { keys:['water','hydration','how much water','drink water'], reply:"Most adults should aim for about 2 to 2.5 litres of water a day — roughly 8 glasses, more if you're active, pregnant, or it's hot." },
+  { keys:['weight loss','lose weight','slim'], reply:"For healthy weight loss, aim for a moderate calorie deficit — about 300–500 kcal below your maintenance level. Favour ugali in smaller portions, more sukuma wiki and other vegetables, lean proteins like omena, tilapia or chicken." },
+  { keys:['diabetes','diabetic','blood sugar'], reply:"For diabetes-friendly eating, choose high-fibre carbs in moderate portions — mukimo, githeri, and brown rice are better than white rice or refined ugali alone. Pair carbs with protein and vegetables to slow sugar absorption." },
+  { keys:['water','hydration','how much water'], reply:"Most adults should aim for about 2 to 2.5 litres of water a day — roughly 8 glasses, more if you're active, pregnant, or it's hot." },
   { keys:['hypertension','blood pressure','high bp'], reply:"For hypertension, reduce salt — go easy on the maggi cubes and added salt when cooking. Favour potassium-rich foods like bananas, avocado, sweet potatoes, and managu." },
   { keys:['recipe','meal idea','what should i eat'], reply:"Try ugali with sukuma wiki and omena, or githeri with avocado. Head to the Recipes page for over 50 Kenyan dishes with full nutrition breakdowns." },
 ];
 
-function findBotReply(text){
+function findBotReply(text) {
   const lower = text.toLowerCase();
-  for(const entry of chatKnowledge){
-    if(entry.keys.some(k => lower.includes(k))) return entry.reply;
+  for (const entry of chatKnowledge) {
+    if (entry.keys.some(k => lower.includes(k))) return entry.reply;
   }
   return "I'm still learning that one. Try asking me about weight loss, diabetes-friendly meals, hypertension, hydration, or Kenyan recipes.";
 }
 
-function formatTime(date){ return date.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' }); }
+function formatTime(d){ return d.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' }); }
 
-function addChatMessage(text, sender){
+function addChatMessage(text, sender) {
   const body = document.getElementById('chatbotBody');
-  if(!body) return;
+  if (!body) return;
   const msg = document.createElement('div');
   msg.className = 'chat-msg ' + sender;
   msg.innerHTML = `<div class="bubble">${text}</div><span class="timestamp">${formatTime(new Date())}</span>`;
@@ -371,9 +535,9 @@ function addChatMessage(text, sender){
   body.scrollTop = body.scrollHeight;
 }
 
-function showTypingIndicator(){
+function showTypingIndicator() {
   const body = document.getElementById('chatbotBody');
-  if(!body) return;
+  if (!body) return;
   const typing = document.createElement('div');
   typing.className = 'chat-msg bot';
   typing.id = 'typingIndicator';
@@ -381,14 +545,15 @@ function showTypingIndicator(){
   body.appendChild(typing);
   body.scrollTop = body.scrollHeight;
 }
+function removeTypingIndicator() {
+  document.getElementById('typingIndicator')?.remove();
+}
 
-function removeTypingIndicator(){ const el = document.getElementById('typingIndicator'); if(el) el.remove(); }
-
-function sendChatMessage(text){
-  if(!text.trim()) return;
+function sendChatMessage(text) {
+  if (!text.trim()) return;
   addChatMessage(text, 'user');
   const input = document.getElementById('chatbotInput');
-  if(input) input.value = '';
+  if (input) input.value = '';
   showTypingIndicator();
   setTimeout(() => {
     removeTypingIndicator();
@@ -396,66 +561,58 @@ function sendChatMessage(text){
   }, 700 + Math.random() * 500);
 }
 
-function initChatbot(){
+function initChatbot() {
   const fab = document.getElementById('chatbotFab');
   const panel = document.getElementById('chatbotPanel');
   const closeBtn = document.getElementById('chatbotClose');
   const input = document.getElementById('chatbotInput');
   const sendBtn = document.getElementById('chatbotSend');
-  if(!fab || !panel) return;
-
+  if (!fab || !panel) return;
   let hasGreeted = false;
   fab.addEventListener('click', () => {
     panel.classList.toggle('open');
-    if(panel.classList.contains('open') && !hasGreeted){
+    if (panel.classList.contains('open') && !hasGreeted) {
       hasGreeted = true;
       addChatMessage("Habari! I'm your Smart Lishe assistant. Ask me about meals, weight goals, health conditions, or hydration — I know the Kenyan kitchen.", 'bot');
     }
   });
-
-  if(closeBtn) closeBtn.addEventListener('click', () => panel.classList.remove('open'));
-  if(sendBtn) sendBtn.addEventListener('click', () => sendChatMessage(input ? input.value : ''));
-  if(input){
-    input.addEventListener('keypress', (e) => {
-      if(e.key === 'Enter') sendChatMessage(input.value);
-    });
-  }
-
+  closeBtn?.addEventListener('click', () => panel.classList.remove('open'));
+  sendBtn?.addEventListener('click', () => sendChatMessage(input ? input.value : ''));
+  input?.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendChatMessage(input.value); });
   document.querySelectorAll('.chip-suggestion').forEach(chip => {
     chip.addEventListener('click', () => sendChatMessage(chip.dataset.q));
   });
 }
 
-// ---------- NOTIFICATIONS ----------
-function initNotifications(){
-  const btn = document.getElementById('notifBtn');
-  if(btn){
-    btn.addEventListener('click', () => showToast("You're all caught up — no new notifications."));
-  }
+// -------- OTHER --------
+function initNotifications() {
+  document.getElementById('notifBtn')?.addEventListener('click', () => showToast("No new notifications."));
+}
+function initGlobalSearch() {
+  document.getElementById('globalSearch')?.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter' && e.target.value.trim()) {
+      showToast(`Searching for "${e.target.value.trim()}"...`);
+    }
+  });
 }
 
-// ---------- GLOBAL SEARCH ----------
-function initGlobalSearch(){
-  const input = document.getElementById('globalSearch');
-  if(input){
-    input.addEventListener('keypress', (e) => {
-      if(e.key === 'Enter' && e.target.value.trim()){
-        showToast(`Searching for "${e.target.value.trim()}"...`);
-      }
-    });
-  }
-}
-
-// ---------- BOOT ----------
+// -------- BOOT --------
 document.addEventListener('DOMContentLoaded', function() {
   initTheme();
   initSidebar();
   initScrollTop();
+  loadUserInfo();
   initMealPlanner();
   initChatbot();
   initNotifications();
   initGlobalSearch();
+
+  // Upgrade banner
+  const membership = localStorage.getItem('user_membership') || 'free';
+  const banner = document.getElementById('upgradeBanner');
+  if (banner) banner.classList.toggle('show', membership === 'free');
 });
 </script>
+
 </body>
 </html>

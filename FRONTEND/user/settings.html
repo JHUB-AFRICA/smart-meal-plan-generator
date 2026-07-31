@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
 <title>Settings — Smart Lishe</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -10,6 +10,17 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+<!-- ===== AUTH CHECK ===== -->
+<script>
+(function() {
+  const token = localStorage.getItem('access_token') || localStorage.getItem('smartlishe_token');
+  if (!token) {
+    window.location.href = 'home.html';
+    return;
+  }
+})();
+</script>
 
 <!-- ===== MOBILE TOPBAR ===== -->
 <div class="mobile-topbar">
@@ -68,41 +79,18 @@
         <button type="button" class="service-group-header" data-group-toggle="profile">
           <div class="sg-icon-wrap" style="background:#3D6FA8;"><i class="fa-solid fa-user"></i></div>
           <span class="sg-title">Profile</span>
-          <span class="sg-count">4</span>
+          <span class="sg-count">2</span>
           <span class="sg-dropdown-hint"><i class="fa-solid fa-chevron-down sg-chevron"></i></span>
         </button>
         <div class="service-group-body">
           <a href="profile.html" class="nav-link"><i class="fa-solid fa-id-card"></i> User Profile</a>
           <a href="settings.html" class="nav-link active"><i class="fa-solid fa-gear"></i> Settings</a>
-          <a href="about.html" class="nav-link"><i class="fa-solid fa-circle-info"></i> About</a>
-          <a href="contact.html" class="nav-link"><i class="fa-solid fa-envelope"></i> Contact</a>
         </div>
       </div>
-
-      <!-- ===== MEMBERSHIP ===== -->
-      <div class="nav-section-divider"><span>Membership</span><i class="fa-solid fa-crown"></i></div>
-      <div class="service-group" data-group="membership">
-        <button type="button" class="service-group-header" data-group-toggle="membership">
-          <div class="sg-icon-wrap" style="background:var(--accent-2);"><i class="fa-solid fa-crown"></i></div>
-          <span class="sg-title">Membership</span>
-          <span class="sg-count">9</span>
-          <span class="sg-dropdown-hint"><i class="fa-solid fa-chevron-down sg-chevron"></i></span>
-        </button>
-        <div class="service-group-body">
-          <a href="membership/membership.html" class="nav-link"><i class="fa-solid fa-id-card"></i> Current Membership</a>
-          <a href="membership/pricing.html" class="nav-link"><i class="fa-solid fa-tags"></i> Pricing Plans</a>
-          <a href="membership/benefits.html" class="nav-link"><i class="fa-solid fa-gift"></i> Benefits</a>
-          <a href="membership/billing.html" class="nav-link"><i class="fa-solid fa-credit-card"></i> Billing</a>
-          <a href="membership/invoices.html" class="nav-link"><i class="fa-solid fa-file-invoice"></i> Invoices</a>
-          <a href="membership/upgrade.html" class="nav-link"><i class="fa-solid fa-arrow-trend-up"></i> Upgrade Plan</a>
-          <a href="membership/history.html" class="nav-link"><i class="fa-solid fa-clock-rotate-left"></i> Subscription History</a>
-          <a href="membership/professional-access.html" class="nav-link"><i class="fa-solid fa-briefcase"></i> Professional Access</a>
-          <a href="membership/clinic-access.html" class="nav-link"><i class="fa-solid fa-hospital"></i> Clinic Access</a>
-        </div>
-      </div>
-
       <div style="margin-top:12px;">
-        <a href="#" class="nav-link" onclick="event.preventDefault(); showToast('Logging out...');" style="color:var(--char);"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        <a href="#" class="nav-link" onclick="event.preventDefault(); localStorage.clear(); sessionStorage.clear(); window.location.href='home.html';" style="color:var(--char);">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </a>
       </div>
     </nav>
     <div class="sidebar-footer">
@@ -124,8 +112,8 @@
       <div class="topbar-actions">
         <button class="icon-btn" id="notifBtn"><i class="fa-regular fa-bell"></i><span class="dot"></span></button>
         <a href="profile.html" class="profile-chip" style="cursor:pointer;">
-          <div class="avatar" id="topbarAvatar">W</div>
-          <span class="label" id="topbarName">Wanjiru</span>
+          <div class="avatar" id="topbarAvatar">U</div>
+          <span class="label" id="topbarName">User</span>
         </a>
       </div>
     </header>
@@ -152,16 +140,23 @@
           <div class="settings-row">
             <div class="sr-info">
               <div class="sr-icon" style="background:var(--char);"><i class="fa-solid fa-bell"></i></div>
-              <div class="sr-text"><strong>Meal reminders</strong><span>Get notified when it's time to log a meal</span></div>
+              <div class="sr-text"><strong>Email notifications</strong><span>Receive updates and reminders via email</span></div>
             </div>
-            <div class="settings-toggle-switch on" id="settingsMealRemindersToggle"></div>
+            <div class="settings-toggle-switch" id="settingsEmailToggle"></div>
           </div>
           <div class="settings-row">
             <div class="sr-info">
-              <div class="sr-icon" style="background:#3D6FA8;"><i class="fa-solid fa-droplet"></i></div>
-              <div class="sr-text"><strong>Water reminders</strong><span>Hourly nudges to drink water during the day</span></div>
+              <div class="sr-icon" style="background:#3D6FA8;"><i class="fa-solid fa-bell"></i></div>
+              <div class="sr-text"><strong>Push notifications</strong><span>Get in-app notifications</span></div>
             </div>
-            <div class="settings-toggle-switch on" id="settingsWaterRemindersToggle"></div>
+            <div class="settings-toggle-switch" id="settingsPushToggle"></div>
+          </div>
+          <div class="settings-row">
+            <div class="sr-info">
+              <div class="sr-icon" style="background:var(--maize-deep);"><i class="fa-solid fa-sms"></i></div>
+              <div class="sr-text"><strong>SMS notifications</strong><span>Receive text message alerts</span></div>
+            </div>
+            <div class="settings-toggle-switch" id="settingsSmsToggle"></div>
           </div>
 
           <div class="settings-section-label">Units &amp; Language</div>
@@ -205,9 +200,9 @@
           <div class="settings-row settings-danger-row">
             <div class="sr-info">
               <div class="sr-icon" style="background:var(--char);"><i class="fa-solid fa-trash"></i></div>
-              <div class="sr-text"><strong>Clear all data</strong><span>Permanently erase everything saved on this device</span></div>
+              <div class="sr-text"><strong>Clear local data</strong><span>Permanently erase everything saved on this device</span></div>
             </div>
-            <button class="btn btn-accent btn-sm" id="settingsClearAllBtn"><i class="fa-solid fa-triangle-exclamation"></i> Clear all</button>
+            <button class="btn btn-accent btn-sm" id="settingsClearAllBtn"><i class="fa-solid fa-triangle-exclamation"></i> Clear local</button>
           </div>
         </div>
       </div>
@@ -216,49 +211,54 @@
   </div>
 </div>
 
-<!-- ===== CHATBOT ===== -->
-<button class="chatbot-fab" id="chatbotFab"><i class="fa-solid fa-robot"></i><span class="ping"></span></button>
-<div class="chatbot-panel" id="chatbotPanel">
-  <div class="chatbot-head">
-    <div class="ai-avatar"><i class="fa-solid fa-robot"></i></div>
-    <div class="info"><strong>Smart Lishe Assistant</strong><span>Online</span></div>
-    <button class="chatbot-close" id="chatbotClose"><i class="fa-solid fa-xmark"></i></button>
-  </div>
-  <div class="chatbot-body" id="chatbotBody"></div>
-  <div class="chatbot-suggestions" id="chatbotSuggestions">
-    <button class="chip-suggestion" data-q="weight loss">Weight loss tips</button>
-    <button class="chip-suggestion" data-q="diabetes meal">Diabetes-friendly meal</button>
-    <button class="chip-suggestion" data-q="water intake">How much water?</button>
-  </div>
-  <div class="chatbot-input-row">
-    <input type="text" id="chatbotInput" placeholder="Ask about meals, health, recipes...">
-    <button class="chatbot-send" id="chatbotSend"><i class="fa-solid fa-paper-plane"></i></button>
-  </div>
-</div>
+<!-- ══ NO AI CHATBOT ══ -->
 
 <button class="scroll-top-btn" id="scrollTopBtn"><i class="fa-solid fa-arrow-up"></i></button>
 <div class="toast-stack" id="toastStack"></div>
 
 <script>
-// ===== STORE =====
-const Store = {
-  get(key, fallback){
-    try{
-      const raw = localStorage.getItem('smartlishe_' + key);
-      return raw ? JSON.parse(raw) : fallback;
-    }catch(e){ return fallback; }
-  },
-  set(key, value){
-    try{
-      localStorage.setItem('smartlishe_' + key, JSON.stringify(value));
-      return true;
-    }catch(e){ return false; }
-  }
-};
+// ============================================================
+// SMART LISHE — SETTINGS (Backend-Integrated)
+// ============================================================
 
-// ===== TOAST =====
-function showToast(message, type = 'success'){
+const API_BASE = 'http://127.0.0.1:5000/api';
+
+// ---- Helpers ----
+function getToken() {
+  return localStorage.getItem('access_token') || localStorage.getItem('smartlishe_token') || '';
+}
+
+function isLoggedIn() {
+  return !!getToken();
+}
+
+function logout() {
+  localStorage.clear();
+  sessionStorage.clear();
+  window.location.href = 'home.html';
+}
+
+// ---- API Calls ----
+async function apiRequest(endpoint, method = 'GET', body = null) {
+  const url = API_BASE + endpoint;
+  const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer ' + getToken()
+  };
+  const options = { method, headers };
+  if (body) options.body = JSON.stringify(body);
+  const res = await fetch(url, options);
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || err.message || 'API request failed');
+  }
+  return res.json();
+}
+
+// ---- Toast ----
+function showToast(message, type = 'success') {
   const stack = document.getElementById('toastStack');
+  if (!stack) return;
   const toast = document.createElement('div');
   toast.className = 'toast' + (type === 'error' ? ' error' : '');
   const icon = type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-check';
@@ -271,105 +271,173 @@ function showToast(message, type = 'success'){
   }, 3500);
 }
 
-// ===== THEME =====
-function initTheme(){
-  const saved = Store.get('theme', 'light');
-  document.body.setAttribute('data-theme', saved);
-  document.getElementById('themeIcon').className = saved === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-  document.getElementById('themeToggle').addEventListener('click', () => {
-    const current = document.body.getAttribute('data-theme');
-    const next = current === 'dark' ? 'light' : 'dark';
-    document.body.setAttribute('data-theme', next);
-    document.getElementById('themeIcon').className = next === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-    Store.set('theme', next);
-  });
+// ---- Load User Info ----
+function loadUserInfo() {
+  const profile = JSON.parse(localStorage.getItem('smartlishe_profile') || '{}');
+  const firstName = localStorage.getItem('firstName') || 'User';
+  const email = localStorage.getItem('email') || '';
+
+  let userName = 'User';
+  if (profile && profile.name) userName = profile.name;
+  else if (firstName && firstName !== 'User') userName = firstName;
+  else if (email) userName = email.split('@')[0];
+
+  const nameEl = document.getElementById('topbarName');
+  const avatarEl = document.getElementById('topbarAvatar');
+  if (nameEl) nameEl.textContent = userName;
+  if (avatarEl) avatarEl.textContent = userName.charAt(0).toUpperCase();
 }
 
-// ===== SIDEBAR =====
-function initSidebar(){
-  const sidebar = document.getElementById('sidebar');
-  const overlay = document.getElementById('sidebarOverlay');
-  const hamburger = document.getElementById('hamburgerBtn');
-  function openSidebar(){ sidebar.classList.add('open'); overlay.classList.add('show'); }
-  function closeSidebar(){ sidebar.classList.remove('open'); overlay.classList.remove('show'); }
-  hamburger.addEventListener('click', openSidebar);
-  overlay.addEventListener('click', closeSidebar);
-  document.querySelectorAll('.service-group-header').forEach(header => {
-    header.addEventListener('click', () => {
-      const group = header.closest('.service-group');
-      const wasOpen = group.classList.contains('open');
-      document.querySelectorAll('.service-group').forEach(g => g.classList.remove('open'));
-      if(!wasOpen) group.classList.add('open');
-    });
-  });
-  document.querySelectorAll('.nav-link').forEach(link => link.addEventListener('click', closeSidebar));
-}
+// ---- Load Settings from Backend ----
+let currentSettings = {};
 
-// ===== SCROLL TOP =====
-function initScrollTop(){
-  const btn = document.getElementById('scrollTopBtn');
-  window.addEventListener('scroll', () => btn.classList.toggle('show', window.scrollY > 400));
-  btn.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
-}
-
-// ===== SETTINGS =====
-function getSettingsData(){
-  return Store.get('settingsData', {
-    mealReminders: true, waterReminders: true, units: 'metric', language: 'en'
-  });
-}
-
-function initSettings(){
-  if(!document.getElementById('page-settings')) return;
-  const settings = getSettingsData();
-
-  const darkToggle = document.getElementById('settingsDarkModeToggle');
-  darkToggle.classList.toggle('on', document.body.getAttribute('data-theme') === 'dark');
-  darkToggle.addEventListener('click', () => {
-    document.getElementById('themeToggle').click();
-    darkToggle.classList.toggle('on', document.body.getAttribute('data-theme') === 'dark');
-  });
-
-  function wireToggle(id, key){
-    const el = document.getElementById(id);
-    el.classList.toggle('on', !!settings[key]);
-    el.addEventListener('click', () => {
-      const next = !el.classList.contains('on');
-      el.classList.toggle('on', next);
-      const data = getSettingsData();
-      data[key] = next;
-      Store.set('settingsData', data);
-      showToast(next ? 'Notifications enabled.' : 'Notifications disabled.');
-    });
+async function loadSettings() {
+  try {
+    const response = await apiRequest('/settings');
+    currentSettings = response.data;
+    populateUI(currentSettings);
+    applyTheme(currentSettings.theme);
+    // Also update theme toggle in sidebar
+    const themeIcon = document.getElementById('themeIcon');
+    if (themeIcon) {
+      themeIcon.className = currentSettings.theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+    }
+  } catch (err) {
+    showToast('Could not load settings: ' + err.message, 'error');
+    // Fallback to defaults
+    currentSettings = {
+      language: 'en',
+      theme: 'light',
+      timezone: 'UTC',
+      currency: 'USD',
+      country: 'KE',
+      email_notifications: true,
+      push_notifications: true,
+      sms_notifications: false,
+      preferences: {}
+    };
+    populateUI(currentSettings);
   }
-  wireToggle('settingsMealRemindersToggle', 'mealReminders');
-  wireToggle('settingsWaterRemindersToggle', 'waterReminders');
+}
 
+// ---- Populate UI ----
+function populateUI(settings) {
+  // Theme toggle
+  const darkToggle = document.getElementById('settingsDarkModeToggle');
+  darkToggle.classList.toggle('on', settings.theme === 'dark');
+
+  // Notifications
+  document.getElementById('settingsEmailToggle').classList.toggle('on', settings.email_notifications !== false);
+  document.getElementById('settingsPushToggle').classList.toggle('on', settings.push_notifications !== false);
+  document.getElementById('settingsSmsToggle').classList.toggle('on', settings.sms_notifications === true);
+
+  // Units (stored in preferences)
+  const units = settings.preferences?.units || 'metric';
+  document.getElementById('settingsUnitsSelect').value = units;
+
+  // Language
+  document.getElementById('settingsLanguageSelect').value = settings.language || 'en';
+
+  // Theme in sidebar icon
+  const themeIcon = document.getElementById('themeIcon');
+  if (themeIcon) {
+    themeIcon.className = settings.theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+  }
+  applyTheme(settings.theme);
+}
+
+// ---- Apply Theme ----
+function applyTheme(theme) {
+  document.body.setAttribute('data-theme', theme);
+  const darkToggle = document.getElementById('settingsDarkModeToggle');
+  if (darkToggle) darkToggle.classList.toggle('on', theme === 'dark');
+}
+
+// ---- Save Settings ----
+async function saveSettings(updates) {
+  try {
+    // Merge with current
+    const payload = { ...currentSettings, ...updates };
+    // Ensure nested preferences are preserved
+    if (!payload.preferences) payload.preferences = {};
+    // Also handle theme separately (it's not in the backend yet? Actually it is)
+    // We'll send the whole payload
+    await apiRequest('/settings', 'PUT', payload);
+    // Update local copy
+    Object.assign(currentSettings, updates);
+    showToast('Settings saved successfully.');
+  } catch (err) {
+    showToast('Failed to save settings: ' + err.message, 'error');
+  }
+}
+
+// ---- Event Wiring ----
+function initSettingsUI() {
+  // Dark mode toggle
+  const darkToggle = document.getElementById('settingsDarkModeToggle');
+  darkToggle.addEventListener('click', async () => {
+    const newTheme = currentSettings.theme === 'dark' ? 'light' : 'dark';
+    applyTheme(newTheme);
+    await saveSettings({ theme: newTheme });
+    // Also update sidebar icon if exists
+    const themeIcon = document.getElementById('themeIcon');
+    if (themeIcon) {
+      themeIcon.className = newTheme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+    }
+  });
+
+  // Theme toggle in sidebar (sync with dark toggle)
+  document.getElementById('themeToggle').addEventListener('click', async () => {
+    const newTheme = currentSettings.theme === 'dark' ? 'light' : 'dark';
+    applyTheme(newTheme);
+    await saveSettings({ theme: newTheme });
+    darkToggle.classList.toggle('on', newTheme === 'dark');
+    const themeIcon = document.getElementById('themeIcon');
+    if (themeIcon) {
+      themeIcon.className = newTheme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+    }
+  });
+
+  // Notification toggles
+  const notifToggles = [
+    { id: 'settingsEmailToggle', key: 'email_notifications' },
+    { id: 'settingsPushToggle', key: 'push_notifications' },
+    { id: 'settingsSmsToggle', key: 'sms_notifications' }
+  ];
+  notifToggles.forEach(({ id, key }) => {
+    const el = document.getElementById(id);
+    el.addEventListener('click', async () => {
+      const currentVal = currentSettings[key];
+      const nextVal = !currentVal;
+      await saveSettings({ [key]: nextVal });
+      el.classList.toggle('on', nextVal);
+    });
+  });
+
+  // Units
   const unitsSelect = document.getElementById('settingsUnitsSelect');
-  unitsSelect.value = settings.units;
-  unitsSelect.addEventListener('change', () => {
-    const data = getSettingsData();
-    data.units = unitsSelect.value;
-    Store.set('settingsData', data);
-    showToast(`Units set to ${unitsSelect.value === 'metric' ? 'Metric' : 'Imperial'}.`);
+  unitsSelect.addEventListener('change', async () => {
+    const prefs = { ...currentSettings.preferences, units: unitsSelect.value };
+    await saveSettings({ preferences: prefs });
   });
 
+  // Language
   const langSelect = document.getElementById('settingsLanguageSelect');
-  langSelect.value = settings.language;
-  langSelect.addEventListener('change', () => {
-    const data = getSettingsData();
-    data.language = langSelect.value;
-    Store.set('settingsData', data);
-    showToast(langSelect.value === 'sw' ? 'Lugha imewekwa Kiswahili.' : 'Language set to English.');
+  langSelect.addEventListener('change', async () => {
+    await saveSettings({ language: langSelect.value });
   });
 
+  // Export
   document.getElementById('settingsExportBtn').addEventListener('click', () => {
     const exportData = {};
-    for(let i = 0; i < localStorage.length; i++){
+    for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
-      if(key && key.startsWith('smartlishe_')){
-        try{ exportData[key] = JSON.parse(localStorage.getItem(key)); }
-        catch(e){ exportData[key] = localStorage.getItem(key); }
+      if (key && key.startsWith('smartlishe_')) {
+        try {
+          exportData[key] = JSON.parse(localStorage.getItem(key));
+        } catch (e) {
+          exportData[key] = localStorage.getItem(key);
+        }
       }
     }
     const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
@@ -384,134 +452,101 @@ function initSettings(){
     showToast('Data exported successfully.');
   });
 
+  // Import
   document.getElementById('settingsImportBtn').addEventListener('click', () => {
     document.getElementById('settingsImportInput').click();
   });
-
   document.getElementById('settingsImportInput').addEventListener('change', (e) => {
     const file = e.target.files[0];
-    if(!file) return;
+    if (!file) return;
     const reader = new FileReader();
     reader.onload = (ev) => {
-      try{
+      try {
         const imported = JSON.parse(ev.target.result);
         Object.keys(imported).forEach(key => {
           localStorage.setItem(key, typeof imported[key] === 'string' ? imported[key] : JSON.stringify(imported[key]));
         });
         showToast('Data imported. Reloading...');
         setTimeout(() => location.reload(), 1200);
-      }catch(err){
+      } catch (err) {
         showToast('That file could not be read. Please choose a valid export file.', 'error');
       }
     };
     reader.readAsText(file);
   });
 
+  // Clear local data
   document.getElementById('settingsClearAllBtn').addEventListener('click', () => {
-    if(!confirm('This will permanently erase all your saved data on this device — profile, meal plans, goals, shopping lists, everything. Continue?')) return;
+    if (!confirm('This will permanently erase all local data on this device — profile, meal plans, goals, shopping lists, everything. Continue?')) return;
     const keysToRemove = [];
-    for(let i = 0; i < localStorage.length; i++){
+    for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
-      if(key && key.startsWith('smartlishe_')) keysToRemove.push(key);
+      if (key && key.startsWith('smartlishe_')) keysToRemove.push(key);
     }
     keysToRemove.forEach(k => localStorage.removeItem(k));
-    showToast('All data cleared. Reloading...');
+    showToast('All local data cleared. Reloading...');
     setTimeout(() => location.reload(), 1200);
   });
 }
 
-// ===== CHATBOT =====
-const chatKnowledge = [
-  { keys:['weight loss','lose weight','slim'], reply:"For healthy weight loss, aim for a moderate calorie deficit — about 300–500 kcal below your maintenance level." },
-  { keys:['diabetes','diabetic','blood sugar'], reply:"For diabetes-friendly eating, choose high-fibre carbs in moderate portions — mukimo, githeri, and brown rice are better than white rice alone." },
-  { keys:['water','hydration','how much water'], reply:"Most adults should aim for about 2 to 2.5 litres of water a day — roughly 8 glasses." },
-];
+// ---- Sidebar, Theme, etc. (same as before) ----
+function initSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  const hamburger = document.getElementById('hamburgerBtn');
+  function openSidebar() { if (sidebar) sidebar.classList.add('open'); if (overlay) overlay.classList.add('show'); }
+  function closeSidebar() { if (sidebar) sidebar.classList.remove('open'); if (overlay) overlay.classList.remove('show'); }
+  if (hamburger) hamburger.addEventListener('click', openSidebar);
+  if (overlay) overlay.addEventListener('click', closeSidebar);
+  document.querySelectorAll('.service-group-header').forEach(header => {
+    header.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const group = header.closest('.service-group');
+      if (!group) return;
+      const wasOpen = group.classList.contains('open');
+      document.querySelectorAll('.service-group').forEach(g => g.classList.remove('open'));
+      if (!wasOpen) group.classList.add('open');
+    });
+  });
+  document.querySelectorAll('.nav-link').forEach(link => link.addEventListener('click', closeSidebar));
+}
 
-function findBotReply(text){
-  const lower = text.toLowerCase();
-  for(const entry of chatKnowledge){
-    if(entry.keys.some(k => lower.includes(k))) return entry.reply;
+function initScrollTop() {
+  const btn = document.getElementById('scrollTopBtn');
+  if (!btn) return;
+  window.addEventListener('scroll', () => btn.classList.toggle('show', window.scrollY > 400));
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+}
+
+function initNotifications() {
+  document.getElementById('notifBtn')?.addEventListener('click', () => showToast("You're all caught up — no new notifications."));
+}
+
+function initGlobalSearch() {
+  const input = document.getElementById('globalSearch');
+  if (input) {
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && e.target.value.trim()) {
+        showToast(`Searching for "${e.target.value.trim()}"...`);
+      }
+    });
   }
-  return "I'm still learning that one. Try asking me about weight loss, diabetes, or hydration.";
 }
 
-function formatTime(date){ return date.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' }); }
-
-function addChatMessage(text, sender){
-  const body = document.getElementById('chatbotBody');
-  const msg = document.createElement('div');
-  msg.className = 'chat-msg ' + sender;
-  msg.innerHTML = `<div class="bubble">${text}</div><span class="timestamp">${formatTime(new Date())}</span>`;
-  body.appendChild(msg);
-  body.scrollTop = body.scrollHeight;
-}
-
-function showTypingIndicator(){
-  const body = document.getElementById('chatbotBody');
-  const typing = document.createElement('div');
-  typing.className = 'chat-msg bot';
-  typing.id = 'typingIndicator';
-  typing.innerHTML = `<div class="bubble typing-dots"><span></span><span></span><span></span></div>`;
-  body.appendChild(typing);
-  body.scrollTop = body.scrollHeight;
-}
-
-function removeTypingIndicator(){ const el = document.getElementById('typingIndicator'); if(el) el.remove(); }
-
-function sendChatMessage(text){
-  if(!text.trim()) return;
-  addChatMessage(text, 'user');
-  document.getElementById('chatbotInput').value = '';
-  showTypingIndicator();
-  setTimeout(() => {
-    removeTypingIndicator();
-    addChatMessage(findBotReply(text), 'bot');
-  }, 700 + Math.random() * 500);
-}
-
-function initChatbot(){
-  const fab = document.getElementById('chatbotFab');
-  const panel = document.getElementById('chatbotPanel');
-  const closeBtn = document.getElementById('chatbotClose');
-  const input = document.getElementById('chatbotInput');
-  const sendBtn = document.getElementById('chatbotSend');
-  let hasGreeted = false;
-  fab.addEventListener('click', () => {
-    panel.classList.toggle('open');
-    if(panel.classList.contains('open') && !hasGreeted){
-      hasGreeted = true;
-      addChatMessage("Habari! I'm your Smart Lishe assistant. Ask me about meals, weight goals, health conditions, or hydration.", 'bot');
-    }
-  });
-  closeBtn.addEventListener('click', () => panel.classList.remove('open'));
-  sendBtn.addEventListener('click', () => sendChatMessage(input.value));
-  input.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendChatMessage(input.value); });
-  document.querySelectorAll('.chip-suggestion').forEach(chip => {
-    chip.addEventListener('click', () => sendChatMessage(chip.dataset.q));
-  });
-}
-
-// ===== NOTIFICATIONS =====
-function initNotifications(){
-  document.getElementById('notifBtn').addEventListener('click', () => showToast("You're all caught up — no new notifications."));
-}
-
-// ===== GLOBAL SEARCH =====
-function initGlobalSearch(){
-  document.getElementById('globalSearch').addEventListener('keypress', (e) => {
-    if(e.key === 'Enter' && e.target.value.trim()) showToast(`Searching for "${e.target.value.trim()}"...`);
-  });
-}
-
-// ===== BOOT =====
-document.addEventListener('DOMContentLoaded', () => {
-  initTheme();
+// ---- Boot ----
+document.addEventListener('DOMContentLoaded', async () => {
+  // Check auth
+  if (!isLoggedIn()) {
+    window.location.href = 'home.html';
+    return;
+  }
   initSidebar();
   initScrollTop();
-  initSettings();
-  initChatbot();
+  loadUserInfo();
   initNotifications();
   initGlobalSearch();
+  await loadSettings();
+  initSettingsUI();
 });
 </script>
 </body>

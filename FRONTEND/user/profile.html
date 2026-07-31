@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
 <title>User Profile — Smart Lishe</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -68,41 +68,16 @@
         <button type="button" class="service-group-header" data-group-toggle="profile">
           <div class="sg-icon-wrap" style="background:#3D6FA8;"><i class="fa-solid fa-user"></i></div>
           <span class="sg-title">Profile</span>
-          <span class="sg-count">4</span>
+          <span class="sg-count">2</span>
           <span class="sg-dropdown-hint"><i class="fa-solid fa-chevron-down sg-chevron"></i></span>
         </button>
         <div class="service-group-body">
           <a href="profile.html" class="nav-link active"><i class="fa-solid fa-id-card"></i> User Profile</a>
           <a href="settings.html" class="nav-link"><i class="fa-solid fa-gear"></i> Settings</a>
-          <a href="about.html" class="nav-link"><i class="fa-solid fa-circle-info"></i> About</a>
-          <a href="contact.html" class="nav-link"><i class="fa-solid fa-envelope"></i> Contact</a>
         </div>
       </div>
-
-      <!-- ===== MEMBERSHIP ===== -->
-      <div class="nav-section-divider"><span>Membership</span><i class="fa-solid fa-crown"></i></div>
-      <div class="service-group" data-group="membership">
-        <button type="button" class="service-group-header" data-group-toggle="membership">
-          <div class="sg-icon-wrap" style="background:var(--accent-2);"><i class="fa-solid fa-crown"></i></div>
-          <span class="sg-title">Membership</span>
-          <span class="sg-count">9</span>
-          <span class="sg-dropdown-hint"><i class="fa-solid fa-chevron-down sg-chevron"></i></span>
-        </button>
-        <div class="service-group-body">
-          <a href="membership/membership.html" class="nav-link"><i class="fa-solid fa-id-card"></i> Current Membership</a>
-          <a href="membership/pricing.html" class="nav-link"><i class="fa-solid fa-tags"></i> Pricing Plans</a>
-          <a href="membership/benefits.html" class="nav-link"><i class="fa-solid fa-gift"></i> Benefits</a>
-          <a href="membership/billing.html" class="nav-link"><i class="fa-solid fa-credit-card"></i> Billing</a>
-          <a href="membership/invoices.html" class="nav-link"><i class="fa-solid fa-file-invoice"></i> Invoices</a>
-          <a href="membership/upgrade.html" class="nav-link"><i class="fa-solid fa-arrow-trend-up"></i> Upgrade Plan</a>
-          <a href="membership/history.html" class="nav-link"><i class="fa-solid fa-clock-rotate-left"></i> Subscription History</a>
-          <a href="membership/professional-access.html" class="nav-link"><i class="fa-solid fa-briefcase"></i> Professional Access</a>
-          <a href="membership/clinic-access.html" class="nav-link"><i class="fa-solid fa-hospital"></i> Clinic Access</a>
-        </div>
-      </div>
-
       <div style="margin-top:12px;">
-        <a href="#" class="nav-link" onclick="event.preventDefault(); showToast('Logging out...');" style="color:var(--char);"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        <a href="#" class="nav-link" onclick="event.preventDefault(); logout();" style="color:var(--char);"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
       </div>
     </nav>
     <div class="sidebar-footer">
@@ -125,7 +100,7 @@
         <button class="icon-btn" id="notifBtn"><i class="fa-regular fa-bell"></i><span class="dot"></span></button>
         <a href="profile.html" class="profile-chip" style="cursor:pointer;">
           <div class="avatar" id="topbarAvatar">W</div>
-          <span class="label" id="topbarName">Wanjiru</span>
+          <span class="label" id="topbarName">Loading...</span>
         </a>
       </div>
     </header>
@@ -135,7 +110,7 @@
         <div class="page-header">
           <div class="section-eyebrow">Profile Setup</div>
           <h2>Let's build your nutrition profile</h2>
-          <p>A few quick steps — your details, body metrics, health background, and goals. Everything saves only on this device, and you can come back and edit any step later.</p>
+          <p>A few quick steps — your details, body metrics, health background, and goals. Everything saves on your account, and you can come back and edit any step later.</p>
         </div>
 
         <div class="profile-hero-card">
@@ -145,12 +120,9 @@
             <button class="avatar-edit-btn" id="profilePhotoEditBtn"><i class="fa-solid fa-camera"></i></button>
           </div>
           <div class="profile-hero-info">
-            <h2 id="profileHeroName">Wanjiru Kamau</h2>
-            <p>Member since June 2026 · Nairobi, Kenya</p>
-            <div class="profile-hero-tags" id="profileHeroTags">
-              <span><i class="fa-solid fa-bullseye"></i> Lose weight</span>
-              <span><i class="fa-solid fa-heart-pulse"></i> Diabetes-aware</span>
-            </div>
+            <h2 id="profileHeroName">Loading...</h2>
+            <p id="profileHeroMeta">Loading...</p>
+            <div class="profile-hero-tags" id="profileHeroTags"></div>
           </div>
         </div>
 
@@ -179,18 +151,18 @@
             <h3><i class="fa-solid fa-id-card" style="color:var(--accent-3);margin-right:8px;"></i>Tell us about you</h3>
             <p class="step-desc">The basics — we'll use this to personalise your greeting and recommendations.</p>
             <div class="field-row">
-              <div class="field-group"><label for="profName">Full name</label><input type="text" id="profName" value="Wanjiru Kamau" placeholder="e.g. Wanjiru Kamau"></div>
-              <div class="field-group"><label for="profAge">Age</label><input type="number" id="profAge" value="29" min="10" max="100"></div>
+              <div class="field-group"><label for="profName">Full name</label><input type="text" id="profName" placeholder="e.g. Wanjiru Kamau"></div>
+              <div class="field-group"><label for="profAge">Age</label><input type="number" id="profAge" min="10" max="100"></div>
             </div>
             <div class="field-row">
               <div class="field-group">
                 <label>Gender</label>
                 <div class="chip-multiselect" id="profGenderChips" data-mode="single">
-                  <button type="button" data-val="female" class="selected">Female</button>
+                  <button type="button" data-val="female">Female</button>
                   <button type="button" data-val="male">Male</button>
                 </div>
               </div>
-              <div class="field-group"><label for="profLocation">Location</label><input type="text" id="profLocation" value="Nairobi, Kenya" placeholder="e.g. Nairobi, Kenya"></div>
+              <div class="field-group"><label for="profLocation">Location</label><input type="text" id="profLocation" placeholder="e.g. Nairobi, Kenya"></div>
             </div>
           </div>
 
@@ -200,12 +172,12 @@
             <h3><i class="fa-solid fa-ruler-vertical" style="color:var(--accent-3);margin-right:8px;"></i>Body metrics</h3>
             <p class="step-desc">We'll calculate your BMI instantly as you type — this helps tailor your calorie targets.</p>
             <div class="field-row">
-              <div class="field-group"><label for="profWeight">Weight (kg)</label><input type="number" id="profWeight" value="71.2" step="0.1" min="25" max="300"></div>
-              <div class="field-group"><label for="profHeight">Height (cm)</label><input type="number" id="profHeight" value="162" min="100" max="230"></div>
+              <div class="field-group"><label for="profWeight">Weight (kg)</label><input type="number" id="profWeight" step="0.1" min="25" max="300"></div>
+              <div class="field-group"><label for="profHeight">Height (cm)</label><input type="number" id="profHeight" min="100" max="230"></div>
             </div>
             <div class="bmi-result-card" id="bmiResultCard">
               <div class="bmi-value-display">
-                <strong id="bmiValueText">27.1</strong>
+                <strong id="bmiValueText">--</strong>
                 <span>BMI</span>
               </div>
               <div class="bmi-gauge-wrap">
@@ -215,10 +187,10 @@
                   <div class="bmi-gauge-seg" style="width:25%;background:var(--maize-deep);"></div>
                   <div class="bmi-gauge-seg" style="width:25%;background:var(--char);"></div>
                 </div>
-                <div class="bmi-gauge-marker"><div class="marker-arrow" id="bmiMarkerArrow" style="left:55%;"></div></div>
+                <div class="bmi-gauge-marker"><div class="marker-arrow" id="bmiMarkerArrow" style="left:50%;"></div></div>
                 <div class="bmi-gauge-labels"><span>Underweight</span><span>Healthy</span><span>Overweight</span><span>Obese</span></div>
-                <div class="bmi-category-tag" id="bmiCategoryTag" style="background:rgba(232,163,61,0.15);color:var(--maize-deep);">
-                  <i class="fa-solid fa-circle-info"></i> <span id="bmiCategoryLabel">Overweight</span>
+                <div class="bmi-category-tag" id="bmiCategoryTag" style="background:#e0e0e0;color:#666;">
+                  <i class="fa-solid fa-circle-info"></i> <span id="bmiCategoryLabel">--</span>
                 </div>
               </div>
             </div>
@@ -233,7 +205,7 @@
               <div class="chip-multiselect" id="profActivityChips" data-mode="single">
                 <button type="button" data-val="sedentary">Sedentary — desk job, little exercise</button>
                 <button type="button" data-val="light">Light — occasional walks or light activity</button>
-                <button type="button" data-val="moderate" class="selected">Moderate — exercise 3-4 times a week</button>
+                <button type="button" data-val="moderate">Moderate — exercise 3-4 times a week</button>
                 <button type="button" data-val="active">Active — exercise most days</button>
                 <button type="button" data-val="very_active">Very active — physical job or daily intense training</button>
               </div>
@@ -247,7 +219,7 @@
             <p class="step-desc">This shapes the foods we favour and avoid in your recommendations. Select all that apply.</p>
             <div class="chip-multiselect" id="profConditionChips" data-mode="multi">
               <button type="button" data-val="none">None</button>
-              <button type="button" data-val="diabetes" class="selected">Diabetes</button>
+              <button type="button" data-val="diabetes">Diabetes</button>
               <button type="button" data-val="hypertension">Hypertension</button>
               <button type="button" data-val="obesity">Obesity</button>
               <button type="button" data-val="heart">Heart disease</button>
@@ -265,7 +237,7 @@
             <h3><i class="fa-solid fa-triangle-exclamation" style="color:var(--accent-3);margin-right:8px;"></i>Do you have any food allergies?</h3>
             <p class="step-desc">We'll make sure none of these show up in your meal suggestions.</p>
             <div class="chip-multiselect" id="profAllergyChips" data-mode="multi">
-              <button type="button" data-val="none" class="selected">None</button>
+              <button type="button" data-val="none">None</button>
               <button type="button" data-val="peanuts">Peanuts / Groundnuts</button>
               <button type="button" data-val="dairy">Dairy</button>
               <button type="button" data-val="gluten">Gluten</button>
@@ -295,7 +267,7 @@
             <h3><i class="fa-solid fa-leaf" style="color:var(--accent-3);margin-right:8px;"></i>Any dietary preference we should follow?</h3>
             <p class="step-desc">This filters which meals and recipes we'll suggest to you.</p>
             <div class="chip-multiselect" id="profDietChips" data-mode="single">
-              <button type="button" data-val="any" class="selected">No restriction</button>
+              <button type="button" data-val="any">No restriction</button>
               <button type="button" data-val="vegetarian">Vegetarian</button>
               <button type="button" data-val="pescatarian">Pescatarian</button>
               <button type="button" data-val="low_carb">Low carb</button>
@@ -310,7 +282,7 @@
             <p class="step-desc">We'll tune your calorie targets and meal suggestions around this.</p>
             <div class="field-group">
               <div class="chip-multiselect" id="profGoalChips" data-mode="single">
-                <button type="button" data-val="lose" class="selected">Lose weight</button>
+                <button type="button" data-val="lose">Lose weight</button>
                 <button type="button" data-val="maintain">Maintain</button>
                 <button type="button" data-val="gain">Gain weight</button>
                 <button type="button" data-val="muscle">Build muscle</button>
@@ -318,7 +290,7 @@
             </div>
             <div class="field-group" style="max-width:280px;">
               <label for="profTargetWeight">Target weight (kg)</label>
-              <input type="number" id="profTargetWeight" value="66" step="0.1">
+              <input type="number" id="profTargetWeight" step="0.1">
             </div>
           </div>
 
@@ -343,49 +315,54 @@
   </div>
 </div>
 
-<!-- ===== CHATBOT ===== -->
-<button class="chatbot-fab" id="chatbotFab"><i class="fa-solid fa-robot"></i><span class="ping"></span></button>
-<div class="chatbot-panel" id="chatbotPanel">
-  <div class="chatbot-head">
-    <div class="ai-avatar"><i class="fa-solid fa-robot"></i></div>
-    <div class="info"><strong>Smart Lishe Assistant</strong><span>Online</span></div>
-    <button class="chatbot-close" id="chatbotClose"><i class="fa-solid fa-xmark"></i></button>
-  </div>
-  <div class="chatbot-body" id="chatbotBody"></div>
-  <div class="chatbot-suggestions" id="chatbotSuggestions">
-    <button class="chip-suggestion" data-q="weight loss">Weight loss tips</button>
-    <button class="chip-suggestion" data-q="diabetes meal">Diabetes-friendly meal</button>
-    <button class="chip-suggestion" data-q="water intake">How much water?</button>
-  </div>
-  <div class="chatbot-input-row">
-    <input type="text" id="chatbotInput" placeholder="Ask about meals, health, recipes...">
-    <button class="chatbot-send" id="chatbotSend"><i class="fa-solid fa-paper-plane"></i></button>
-  </div>
-</div>
+<!-- ══ NO AI CHATBOT ON PROFILE PAGE ══ -->
 
 <button class="scroll-top-btn" id="scrollTopBtn"><i class="fa-solid fa-arrow-up"></i></button>
 <div class="toast-stack" id="toastStack"></div>
 
 <script>
-// ===== STORE =====
-const Store = {
-  get(key, fallback){
-    try{
-      const raw = localStorage.getItem('smartlishe_' + key);
-      return raw ? JSON.parse(raw) : fallback;
-    }catch(e){ return fallback; }
-  },
-  set(key, value){
-    try{
-      localStorage.setItem('smartlishe_' + key, JSON.stringify(value));
-      return true;
-    }catch(e){ return false; }
-  }
-};
+// ============================================================
+// SMART LISHE — USER PROFILE (Backend-Integrated)
+// ============================================================
 
-// ===== TOAST =====
-function showToast(message, type = 'success'){
+const API_BASE = 'http://127.0.0.1:5000/api';
+
+// ---- Helpers ----
+function getToken() {
+  return localStorage.getItem('access_token') || localStorage.getItem('smartlishe_token') || '';
+}
+
+function isLoggedIn() {
+  return !!getToken();
+}
+
+function logout() {
+  localStorage.clear();
+  sessionStorage.clear();
+  window.location.href = 'home.html';
+}
+
+// ---- API Calls ----
+async function apiRequest(endpoint, method = 'GET', body = null) {
+  const url = API_BASE + endpoint;
+  const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer ' + getToken()
+  };
+  const options = { method, headers };
+  if (body) options.body = JSON.stringify(body);
+  const res = await fetch(url, options);
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || err.message || 'API request failed');
+  }
+  return res.json();
+}
+
+// ---- Toast ----
+function showToast(message, type = 'success') {
   const stack = document.getElementById('toastStack');
+  if (!stack) return;
   const toast = document.createElement('div');
   toast.className = 'toast' + (type === 'error' ? ' error' : '');
   const icon = type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-check';
@@ -398,162 +375,206 @@ function showToast(message, type = 'success'){
   }, 3500);
 }
 
-// ===== THEME =====
-function initTheme(){
-  const saved = Store.get('theme', 'light');
-  document.body.setAttribute('data-theme', saved);
-  document.getElementById('themeIcon').className = saved === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-  document.getElementById('themeToggle').addEventListener('click', () => {
-    const current = document.body.getAttribute('data-theme');
-    const next = current === 'dark' ? 'light' : 'dark';
-    document.body.setAttribute('data-theme', next);
-    document.getElementById('themeIcon').className = next === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-    Store.set('theme', next);
-  });
+// ---- Load Profile Data ----
+async function loadProfile() {
+  try {
+    const response = await apiRequest('/profile');
+    const data = response.data;
+    console.log('Profile data:', data);
+    return data;
+  } catch (err) {
+    console.error('Failed to load profile:', err);
+    showToast('Could not load profile: ' + err.message, 'error');
+    return null;
+  }
 }
 
-// ===== SIDEBAR =====
-function initSidebar(){
-  const sidebar = document.getElementById('sidebar');
-  const overlay = document.getElementById('sidebarOverlay');
-  const hamburger = document.getElementById('hamburgerBtn');
-  function openSidebar(){ sidebar.classList.add('open'); overlay.classList.add('show'); }
-  function closeSidebar(){ sidebar.classList.remove('open'); overlay.classList.remove('show'); }
-  hamburger.addEventListener('click', openSidebar);
-  overlay.addEventListener('click', closeSidebar);
-  document.querySelectorAll('.service-group-header').forEach(header => {
-    header.addEventListener('click', () => {
-      const group = header.closest('.service-group');
-      const wasOpen = group.classList.contains('open');
-      document.querySelectorAll('.service-group').forEach(g => g.classList.remove('open'));
-      if(!wasOpen) group.classList.add('open');
-    });
-  });
-  document.querySelectorAll('.nav-link').forEach(link => link.addEventListener('click', closeSidebar));
-}
-
-// ===== SCROLL TOP =====
-function initScrollTop(){
-  const btn = document.getElementById('scrollTopBtn');
-  window.addEventListener('scroll', () => btn.classList.toggle('show', window.scrollY > 400));
-  btn.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
-}
-
-// ===== PROFILE WIZARD =====
-function initChipGroup(groupEl){
-  const mode = groupEl.dataset.mode || 'single';
-  groupEl.querySelectorAll('button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      if(mode === 'single'){
-        groupEl.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-      } else {
-        if(btn.dataset.val === 'none'){
-          groupEl.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
-          btn.classList.add('selected');
-        } else {
-          const noneBtn = groupEl.querySelector('[data-val="none"]');
-          if(noneBtn) noneBtn.classList.remove('selected');
-          btn.classList.toggle('selected');
-          const anySelected = [...groupEl.querySelectorAll('button')].some(b => b.classList.contains('selected'));
-          if(!anySelected && noneBtn) noneBtn.classList.add('selected');
-        }
+// ---- Save Profile ----
+async function saveProfile(profileData) {
+  try {
+    const payload = {
+      first_name: profileData.first_name,
+      last_name: profileData.last_name,
+      gender: profileData.gender,
+      date_of_birth: profileData.date_of_birth,
+      phone: profileData.phone,
+      height_cm: profileData.height_cm,
+      weight_kg: profileData.weight_kg,
+      lifestyle: profileData.lifestyle,
+      diet_preference: profileData.diet_preference,
+      activity_level: profileData.activity_level,
+      allergies: profileData.allergies,
+      medical_conditions: profileData.medical_conditions,
+      settings: {
+        location: profileData.location,
+        medications: profileData.medications,
+        target_weight: profileData.target_weight,
+        goal: profileData.goal,
+        health_conditions: profileData.health_conditions
       }
+    };
+    await apiRequest('/profile', 'PUT', payload);
+    showToast('Profile saved successfully!');
+    // Update local display
+    updateUI(profileData);
+    return true;
+  } catch (err) {
+    showToast('Save failed: ' + err.message, 'error');
+    return false;
+  }
+}
+
+// ---- Populate Form from Profile Data ----
+function populateForm(data) {
+  // Personal
+  document.getElementById('profName').value = data.first_name + ' ' + data.last_name || '';
+  if (data.date_of_birth) {
+    const age = new Date().getFullYear() - new Date(data.date_of_birth).getFullYear();
+    document.getElementById('profAge').value = age;
+  }
+  document.getElementById('profLocation').value = data.settings?.location || '';
+
+  // Gender
+  const genderChips = document.getElementById('profGenderChips');
+  genderChips.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+  const genderBtn = genderChips.querySelector(`[data-val="${data.gender}"]`);
+  if (genderBtn) genderBtn.classList.add('selected');
+
+  // Body
+  document.getElementById('profWeight').value = data.weight_kg || '';
+  document.getElementById('profHeight').value = data.height_cm || '';
+  updateBMIDisplay();
+
+  // Activity
+  const activityChips = document.getElementById('profActivityChips');
+  activityChips.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+  const actBtn = activityChips.querySelector(`[data-val="${data.lifestyle}"]`);
+  if (actBtn) actBtn.classList.add('selected');
+
+  // Conditions (use medical_conditions from profile, or settings.health_conditions)
+  const conditions = data.medical_conditions || data.settings?.health_conditions || [];
+  const condChips = document.getElementById('profConditionChips');
+  condChips.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+  if (conditions.length === 0 || conditions.includes('none')) {
+    const noneBtn = condChips.querySelector('[data-val="none"]');
+    if (noneBtn) noneBtn.classList.add('selected');
+  } else {
+    conditions.forEach(val => {
+      const btn = condChips.querySelector(`[data-val="${val}"]`);
+      if (btn) btn.classList.add('selected');
     });
-  });
+  }
+
+  // Allergies
+  const allergies = data.allergies || [];
+  const allergyChips = document.getElementById('profAllergyChips');
+  allergyChips.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+  if (allergies.length === 0 || allergies.includes('none')) {
+    const noneBtn = allergyChips.querySelector('[data-val="none"]');
+    if (noneBtn) noneBtn.classList.add('selected');
+  } else {
+    allergies.forEach(val => {
+      const btn = allergyChips.querySelector(`[data-val="${val}"]`);
+      if (btn) btn.classList.add('selected');
+    });
+  }
+
+  // Medications
+  const medications = data.settings?.medications || [];
+  const medsNoneCheckbox = document.getElementById('profMedsNoneCheckbox');
+  medsNoneCheckbox.checked = medications.length === 0;
+  document.getElementById('medicationListContainer').style.display = medications.length > 0 ? 'block' : 'none';
+  document.getElementById('medicationRows').innerHTML = '';
+  medicationRowCount = 0;
+  if (medications.length > 0) {
+    medications.forEach(med => addMedicationRow(med));
+  }
+
+  // Diet
+  const dietChips = document.getElementById('profDietChips');
+  dietChips.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+  const dietVal = data.diet_preference || 'any';
+  const dietBtn = dietChips.querySelector(`[data-val="${dietVal}"]`);
+  if (dietBtn) dietBtn.classList.add('selected');
+
+  // Goal
+  const goalChips = document.getElementById('profGoalChips');
+  goalChips.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+  const goal = data.settings?.goal || 'maintain';
+  const goalBtn = goalChips.querySelector(`[data-val="${goal}"]`);
+  if (goalBtn) goalBtn.classList.add('selected');
+
+  document.getElementById('profTargetWeight').value = data.settings?.target_weight || '';
+
+  // Update hero
+  updateHero(data);
 }
 
-function getChipGroupValues(groupEl){
-  return [...groupEl.querySelectorAll('button.selected')].map(b => b.dataset.val);
+// ---- Update Hero ----
+function updateHero(data) {
+  const name = data.first_name + ' ' + data.last_name || 'User';
+  document.getElementById('profileHeroName').textContent = name;
+  document.getElementById('profileAvatarBig').textContent = name.charAt(0).toUpperCase();
+  document.getElementById('topbarName').textContent = name;
+  document.getElementById('topbarAvatar').textContent = name.charAt(0).toUpperCase();
+
+  const location = data.settings?.location || 'Nairobi, Kenya';
+  const memberSince = data.created_at ? new Date(data.created_at).toLocaleDateString() : '2026';
+  document.getElementById('profileHeroMeta').textContent = `Member since ${memberSince} · ${location}`;
+
+  const goalLabels = { lose: 'Lose weight', maintain: 'Maintain', gain: 'Gain weight', muscle: 'Build muscle' };
+  const goal = data.settings?.goal || 'maintain';
+  const tags = [`<span><i class="fa-solid fa-bullseye"></i> ${goalLabels[goal] || 'Maintain'}</span>`];
+  const conditions = data.medical_conditions || data.settings?.health_conditions || [];
+  if (conditions.length > 0 && !conditions.includes('none')) {
+    tags.push(`<span><i class="fa-solid fa-heart-pulse"></i> ${conditions.length} condition${conditions.length > 1 ? 's' : ''} tracked</span>`);
+  }
+  const meds = data.settings?.medications || [];
+  if (meds.length > 0) {
+    tags.push(`<span><i class="fa-solid fa-pills"></i> ${meds.length} medication${meds.length > 1 ? 's' : ''}</span>`);
+  }
+  document.getElementById('profileHeroTags').innerHTML = tags.join('');
 }
 
-function setChipGroupValues(groupEl, values){
-  groupEl.querySelectorAll('button').forEach(b => {
-    b.classList.toggle('selected', values.includes(b.dataset.val));
-  });
+function updateUI(data) {
+  updateHero(data);
+  // also update localStorage for navbar avatar (optional)
 }
 
-function getDefaultProfileData(){
-  return {
-    name: 'Wanjiru Kamau', age: 29, gender: ['female'], location: 'Nairobi, Kenya',
-    weight: 71.2, height: 162, activity: ['moderate'],
-    conditions: ['diabetes'], allergies: ['none'], medications: [],
-    diet: ['any'], goal: ['lose'], targetWeight: 66, photo: null
-  };
-}
-
-function calculateBMI(weightKg, heightCm){
-  if(!weightKg || !heightCm) return null;
-  const heightM = heightCm / 100;
-  return weightKg / (heightM * heightM);
-}
-
-function getBMICategory(bmi){
-  if(bmi < 18.5) return { label:'Underweight', color:'#3D6FA8' };
-  if(bmi < 25) return { label:'Healthy', color:'var(--sukuma)' };
-  if(bmi < 30) return { label:'Overweight', color:'var(--maize-deep)' };
-  return { label:'Obese', color:'var(--char)' };
-}
-
-function updateBMIDisplay(){
+// ---- BMi Display ----
+function updateBMIDisplay() {
   const weight = parseFloat(document.getElementById('profWeight').value);
   const height = parseFloat(document.getElementById('profHeight').value);
-  const bmi = calculateBMI(weight, height);
-  if(!bmi || !isFinite(bmi)) return;
-
-  const category = getBMICategory(bmi);
+  if (!weight || !height) {
+    document.getElementById('bmiValueText').textContent = '--';
+    document.getElementById('bmiCategoryLabel').textContent = '--';
+    document.getElementById('bmiMarkerArrow').style.left = '50%';
+    return;
+  }
+  const bmi = weight / ((height / 100) ** 2);
   document.getElementById('bmiValueText').textContent = bmi.toFixed(1);
+  const category = getBMICategory(bmi);
   document.getElementById('bmiCategoryLabel').textContent = category.label;
   const tag = document.getElementById('bmiCategoryTag');
   tag.style.color = category.color;
   tag.style.background = 'color-mix(in srgb, ' + category.color + ' 15%, transparent)';
-
   const clamped = Math.max(15, Math.min(40, bmi));
   const pct = ((clamped - 15) / (40 - 15)) * 100;
   document.getElementById('bmiMarkerArrow').style.left = pct + '%';
 }
 
-let medicationRowCount = 0;
-function addMedicationRow(prefillValue){
-  medicationRowCount++;
-  const id = 'med_' + medicationRowCount;
-  const container = document.getElementById('medicationRows');
-  const row = document.createElement('div');
-  row.className = 'medication-row';
-  row.dataset.rowId = id;
-  row.innerHTML = `
-    <input type="text" placeholder="e.g. Metformin 500mg, twice daily" value="${prefillValue || ''}">
-    <button type="button" class="remove-med-btn"><i class="fa-solid fa-trash"></i></button>
-  `;
-  container.appendChild(row);
-  row.querySelector('.remove-med-btn').addEventListener('click', () => row.remove());
+function getBMICategory(bmi) {
+  if (bmi < 18.5) return { label: 'Underweight', color: '#3D6FA8' };
+  if (bmi < 25) return { label: 'Healthy', color: 'var(--sukuma)' };
+  if (bmi < 30) return { label: 'Overweight', color: 'var(--maize-deep)' };
+  return { label: 'Obese', color: 'var(--char)' };
 }
 
-function getMedicationValues(){
-  if(document.getElementById('profMedsNoneCheckbox').checked) return [];
-  return [...document.querySelectorAll('.medication-row input')]
-    .map(i => i.value.trim())
-    .filter(v => v.length > 0);
-}
-
-function initMedicationStep(){
-  const noneCheckbox = document.getElementById('profMedsNoneCheckbox');
-  const listContainer = document.getElementById('medicationListContainer');
-
-  noneCheckbox.addEventListener('change', () => {
-    listContainer.style.display = noneCheckbox.checked ? 'none' : 'block';
-    if(!noneCheckbox.checked && document.getElementById('medicationRows').children.length === 0){
-      addMedicationRow();
-    }
-  });
-
-  document.getElementById('addMedicationBtn').addEventListener('click', () => addMedicationRow());
-}
-
-const wizardTotalSteps = 9;
+// ---- Wizard Logic ----
 let wizardCurrentStep = 0;
+const wizardTotalSteps = 9;
 
-function goToWizardStep(stepIndex){
+function goToWizardStep(stepIndex) {
   stepIndex = Math.max(0, Math.min(wizardTotalSteps - 1, stepIndex));
   wizardCurrentStep = stepIndex;
 
@@ -575,29 +596,28 @@ function goToWizardStep(stepIndex){
   const nextBtn = document.getElementById('wizardNextBtn');
   backBtn.style.visibility = stepIndex === 0 ? 'hidden' : 'visible';
 
-  if(stepIndex === wizardTotalSteps - 1){
+  if (stepIndex === wizardTotalSteps - 1) {
     nextBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save profile';
     renderReviewSummary();
   } else {
     nextBtn.innerHTML = 'Next <i class="fa-solid fa-arrow-right"></i>';
   }
 
-  if(stepIndex === 1) updateBMIDisplay();
-
-  document.getElementById('page-profile').scrollIntoView({ block:'start', behavior:'smooth' });
+  if (stepIndex === 1) updateBMIDisplay();
+  document.querySelector('.page.active')?.scrollIntoView({ block: 'start', behavior: 'smooth' });
 }
 
-function validateCurrentStep(){
-  if(wizardCurrentStep === 0){
-    if(!document.getElementById('profName').value.trim()){
+function validateCurrentStep() {
+  if (wizardCurrentStep === 0) {
+    if (!document.getElementById('profName').value.trim()) {
       showToast('Please enter your name.', 'error');
       return false;
     }
   }
-  if(wizardCurrentStep === 1){
+  if (wizardCurrentStep === 1) {
     const weight = parseFloat(document.getElementById('profWeight').value);
     const height = parseFloat(document.getElementById('profHeight').value);
-    if(!weight || !height){
+    if (!weight || !height) {
       showToast('Please enter both weight and height.', 'error');
       return false;
     }
@@ -605,33 +625,33 @@ function validateCurrentStep(){
   return true;
 }
 
-function renderReviewSummary(){
-  const genderLabels = { female:'Female', male:'Male' };
-  const activityLabels = { sedentary:'Sedentary', light:'Light', moderate:'Moderate', active:'Active', very_active:'Very active' };
-  const goalLabels = { lose:'Lose weight', maintain:'Maintain', gain:'Gain weight', muscle:'Build muscle' };
-  const dietLabels = { any:'No restriction', vegetarian:'Vegetarian', pescatarian:'Pescatarian', low_carb:'Low carb', high_protein:'High protein' };
+function renderReviewSummary() {
+  const genderLabels = { female: 'Female', male: 'Male' };
+  const activityLabels = { sedentary: 'Sedentary', light: 'Light', moderate: 'Moderate', active: 'Active', very_active: 'Very active' };
+  const goalLabels = { lose: 'Lose weight', maintain: 'Maintain', gain: 'Gain weight', muscle: 'Build muscle' };
+  const dietLabels = { any: 'No restriction', vegetarian: 'Vegetarian', pescatarian: 'Pescatarian', low_carb: 'Low carb', high_protein: 'High protein' };
 
   const weight = parseFloat(document.getElementById('profWeight').value);
   const height = parseFloat(document.getElementById('profHeight').value);
-  const bmi = calculateBMI(weight, height);
+  const bmi = weight && height ? weight / ((height / 100) ** 2) : null;
   const conditions = getChipGroupValues(document.getElementById('profConditionChips'));
   const allergies = getChipGroupValues(document.getElementById('profAllergyChips'));
   const meds = getMedicationValues();
 
   const rows = [
-    { label:'Name', value: document.getElementById('profName').value.trim() || '—', step:0 },
-    { label:'Age', value: document.getElementById('profAge').value || '—', step:0 },
-    { label:'Gender', value: genderLabels[getChipGroupValues(document.getElementById('profGenderChips'))[0]] || '—', step:0 },
-    { label:'Location', value: document.getElementById('profLocation').value.trim() || '—', step:0 },
-    { label:'Weight / Height', value: `${weight || '—'} kg / ${height || '—'} cm`, step:1 },
-    { label:'BMI', value: bmi ? `${bmi.toFixed(1)} (${getBMICategory(bmi).label})` : '—', step:1 },
-    { label:'Activity level', value: activityLabels[getChipGroupValues(document.getElementById('profActivityChips'))[0]] || '—', step:2 },
-    { label:'Health conditions', value: conditions.includes('none') || conditions.length === 0 ? 'None' : conditions.join(', '), step:3 },
-    { label:'Allergies', value: allergies.includes('none') || allergies.length === 0 ? 'None' : allergies.join(', '), step:4 },
-    { label:'Medications', value: meds.length === 0 ? 'None' : meds.join('; '), step:5 },
-    { label:'Dietary preference', value: dietLabels[getChipGroupValues(document.getElementById('profDietChips'))[0]] || '—', step:6 },
-    { label:'Goal', value: goalLabels[getChipGroupValues(document.getElementById('profGoalChips'))[0]] || '—', step:7 },
-    { label:'Target weight', value: `${document.getElementById('profTargetWeight').value || '—'} kg`, step:7 },
+    { label: 'Name', value: document.getElementById('profName').value.trim() || '—', step: 0 },
+    { label: 'Age', value: document.getElementById('profAge').value || '—', step: 0 },
+    { label: 'Gender', value: genderLabels[getChipGroupValues(document.getElementById('profGenderChips'))[0]] || '—', step: 0 },
+    { label: 'Location', value: document.getElementById('profLocation').value.trim() || '—', step: 0 },
+    { label: 'Weight / Height', value: `${weight || '—'} kg / ${height || '—'} cm`, step: 1 },
+    { label: 'BMI', value: bmi ? `${bmi.toFixed(1)} (${getBMICategory(bmi).label})` : '—', step: 1 },
+    { label: 'Activity level', value: activityLabels[getChipGroupValues(document.getElementById('profActivityChips'))[0]] || '—', step: 2 },
+    { label: 'Health conditions', value: conditions.includes('none') || conditions.length === 0 ? 'None' : conditions.join(', '), step: 3 },
+    { label: 'Allergies', value: allergies.includes('none') || allergies.length === 0 ? 'None' : allergies.join(', '), step: 4 },
+    { label: 'Medications', value: meds.length === 0 ? 'None' : meds.join('; '), step: 5 },
+    { label: 'Dietary preference', value: dietLabels[getChipGroupValues(document.getElementById('profDietChips'))[0]] || '—', step: 6 },
+    { label: 'Goal', value: goalLabels[getChipGroupValues(document.getElementById('profGoalChips'))[0]] || '—', step: 7 },
+    { label: 'Target weight', value: `${document.getElementById('profTargetWeight').value || '—'} kg`, step: 7 },
   ];
 
   document.getElementById('reviewSummaryGrid').innerHTML = rows.map(r => `
@@ -646,90 +666,97 @@ function renderReviewSummary(){
   });
 }
 
-function saveWizardProfile(){
-  const name = document.getElementById('profName').value.trim();
-  const existing = Store.get('profileData', getDefaultProfileData());
-  const data = {
-    name,
-    age: parseInt(document.getElementById('profAge').value, 10) || existing.age,
-    gender: getChipGroupValues(document.getElementById('profGenderChips')),
-    location: document.getElementById('profLocation').value.trim() || existing.location,
-    weight: parseFloat(document.getElementById('profWeight').value) || existing.weight,
-    height: parseFloat(document.getElementById('profHeight').value) || existing.height,
-    activity: getChipGroupValues(document.getElementById('profActivityChips')),
-    conditions: getChipGroupValues(document.getElementById('profConditionChips')),
-    allergies: getChipGroupValues(document.getElementById('profAllergyChips')),
-    medications: getMedicationValues(),
-    diet: getChipGroupValues(document.getElementById('profDietChips')),
-    goal: getChipGroupValues(document.getElementById('profGoalChips')),
-    targetWeight: parseFloat(document.getElementById('profTargetWeight').value) || existing.targetWeight,
-    photo: existing.photo
-  };
-  Store.set('profileData', data);
-  Store.set('profile', { name: data.name });
-  document.getElementById('profileHeroName').textContent = data.name;
-  const dashGreeting = document.getElementById('dashGreeting');
-  if(dashGreeting) dashGreeting.textContent = `Habari, ${data.name} 👋`;
-  const topbarName = document.getElementById('topbarName');
-  if(topbarName) topbarName.textContent = data.name;
-  renderProfileHeroTags(data);
-  showToast('Profile saved successfully.');
+// ---- Chip Helpers ----
+function initChipGroup(groupEl) {
+  const mode = groupEl.dataset.mode || 'single';
+  groupEl.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (mode === 'single') {
+        groupEl.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+      } else {
+        if (btn.dataset.val === 'none') {
+          groupEl.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+        } else {
+          const noneBtn = groupEl.querySelector('[data-val="none"]');
+          if (noneBtn) noneBtn.classList.remove('selected');
+          btn.classList.toggle('selected');
+          const anySelected = [...groupEl.querySelectorAll('button')].some(b => b.classList.contains('selected'));
+          if (!anySelected && noneBtn) noneBtn.classList.add('selected');
+        }
+      }
+    });
+  });
 }
 
-function loadProfileIntoForm(){
-  const data = Store.get('profileData', getDefaultProfileData());
-  document.getElementById('profName').value = data.name;
-  document.getElementById('profAge').value = data.age;
-  document.getElementById('profLocation').value = data.location;
-  document.getElementById('profWeight').value = data.weight;
-  document.getElementById('profHeight').value = data.height;
-  document.getElementById('profTargetWeight').value = data.targetWeight;
-  setChipGroupValues(document.getElementById('profGenderChips'), data.gender || ['female']);
-  setChipGroupValues(document.getElementById('profActivityChips'), data.activity || ['moderate']);
-  setChipGroupValues(document.getElementById('profGoalChips'), data.goal);
-  setChipGroupValues(document.getElementById('profDietChips'), data.diet);
-  setChipGroupValues(document.getElementById('profAllergyChips'), data.allergies);
-  setChipGroupValues(document.getElementById('profConditionChips'), data.conditions);
-
-  document.getElementById('medicationRows').innerHTML = '';
-  medicationRowCount = 0;
-  const hasMeds = data.medications && data.medications.length > 0;
-  document.getElementById('profMedsNoneCheckbox').checked = !hasMeds;
-  document.getElementById('medicationListContainer').style.display = hasMeds ? 'block' : 'none';
-  if(hasMeds) data.medications.forEach(m => addMedicationRow(m));
-
-  document.getElementById('profileHeroName').textContent = data.name;
-  document.getElementById('profileAvatarBig').textContent = data.name.charAt(0).toUpperCase();
-  if(data.photo){
-    document.getElementById('profileAvatarBig').innerHTML = `<img src="${data.photo}" alt="${data.name}">`;
-  }
-  renderProfileHeroTags(data);
+function getChipGroupValues(groupEl) {
+  return [...groupEl.querySelectorAll('button.selected')].map(b => b.dataset.val);
 }
 
-function renderProfileHeroTags(data){
-  const goalLabels = { lose:'Lose weight', maintain:'Maintain', gain:'Gain weight', muscle:'Build muscle' };
-  const wrap = document.getElementById('profileHeroTags');
-  const tags = [`<span><i class="fa-solid fa-bullseye"></i> ${goalLabels[data.goal[0]] || 'Maintain'}</span>`];
-  if(!data.conditions.includes('none') && data.conditions.length > 0){
-    tags.push(`<span><i class="fa-solid fa-heart-pulse"></i> ${data.conditions.length} condition${data.conditions.length > 1 ? 's' : ''} tracked</span>`);
-  }
-  if(data.medications && data.medications.length > 0){
-    tags.push(`<span><i class="fa-solid fa-pills"></i> ${data.medications.length} medication${data.medications.length > 1 ? 's' : ''}</span>`);
-  }
-  wrap.innerHTML = tags.join('');
+function setChipGroupValues(groupEl, values) {
+  groupEl.querySelectorAll('button').forEach(b => {
+    b.classList.toggle('selected', values.includes(b.dataset.val));
+  });
 }
 
-function initProfile(){
-  if(!document.getElementById('page-profile')) return;
+// ---- Medication ----
+let medicationRowCount = 0;
+function addMedicationRow(prefillValue) {
+  medicationRowCount++;
+  const id = 'med_' + medicationRowCount;
+  const container = document.getElementById('medicationRows');
+  const row = document.createElement('div');
+  row.className = 'medication-row';
+  row.dataset.rowId = id;
+  row.innerHTML = `
+    <input type="text" placeholder="e.g. Metformin 500mg, twice daily" value="${prefillValue || ''}">
+    <button type="button" class="remove-med-btn"><i class="fa-solid fa-trash"></i></button>
+  `;
+  container.appendChild(row);
+  row.querySelector('.remove-med-btn').addEventListener('click', () => row.remove());
+}
 
-  [document.getElementById('profGenderChips'), document.getElementById('profActivityChips'),
-   document.getElementById('profGoalChips'), document.getElementById('profDietChips'),
-   document.getElementById('profAllergyChips'), document.getElementById('profConditionChips')].forEach(initChipGroup);
+function getMedicationValues() {
+  if (document.getElementById('profMedsNoneCheckbox').checked) return [];
+  return [...document.querySelectorAll('.medication-row input')]
+    .map(i => i.value.trim())
+    .filter(v => v.length > 0);
+}
 
-  initMedicationStep();
-  loadProfileIntoForm();
+function initMedicationStep() {
+  const noneCheckbox = document.getElementById('profMedsNoneCheckbox');
+  const listContainer = document.getElementById('medicationListContainer');
+
+  noneCheckbox.addEventListener('change', () => {
+    listContainer.style.display = noneCheckbox.checked ? 'none' : 'block';
+    if (!noneCheckbox.checked && document.getElementById('medicationRows').children.length === 0) {
+      addMedicationRow();
+    }
+  });
+
+  document.getElementById('addMedicationBtn').addEventListener('click', () => addMedicationRow());
+}
+
+// ---- Init and Load ----
+async function initProfile() {
+  // Check auth
+  if (!isLoggedIn()) {
+    window.location.href = '../auth/login.html';
+    return;
+  }
+
+  // Load profile
+  const profileData = await loadProfile();
+  if (!profileData) {
+    // Fallback to empty
+    return;
+  }
+
+  populateForm(profileData);
   goToWizardStep(0);
 
+  // Set up wizard listeners
   document.getElementById('profWeight').addEventListener('input', updateBMIDisplay);
   document.getElementById('profHeight').addEventListener('input', updateBMIDisplay);
 
@@ -739,14 +766,11 @@ function initProfile(){
 
   document.getElementById('profilePhotoInput').addEventListener('change', (e) => {
     const file = e.target.files[0];
-    if(!file || !file.type.startsWith('image/')) return;
+    if (!file || !file.type.startsWith('image/')) return;
     const reader = new FileReader();
     reader.onload = (ev) => {
       document.getElementById('profileAvatarBig').innerHTML = `<img src="${ev.target.result}" alt="Profile photo">`;
-      const data = Store.get('profileData', getDefaultProfileData());
-      data.photo = ev.target.result;
-      Store.set('profileData', data);
-      showToast('Profile photo updated.');
+      showToast('Profile photo updated (mock) – to save, use a dedicated endpoint later.');
     };
     reader.readAsDataURL(file);
   });
@@ -760,11 +784,13 @@ function initProfile(){
     goToWizardStep(wizardCurrentStep - 1);
   });
 
-  document.getElementById('wizardNextBtn').addEventListener('click', (e) => {
+  document.getElementById('wizardNextBtn').addEventListener('click', async (e) => {
     e.preventDefault();
-    if(!validateCurrentStep()) return;
-    if(wizardCurrentStep === wizardTotalSteps - 1){
-      saveWizardProfile();
+    if (!validateCurrentStep()) return;
+    if (wizardCurrentStep === wizardTotalSteps - 1) {
+      // Save
+      const data = collectFormData();
+      await saveProfile(data);
     } else {
       goToWizardStep(wizardCurrentStep + 1);
     }
@@ -773,98 +799,121 @@ function initProfile(){
   document.getElementById('profileWizardForm').addEventListener('submit', (e) => e.preventDefault());
 }
 
-// ===== CHATBOT =====
-const chatKnowledge = [
-  { keys:['weight loss','lose weight','slim'], reply:"For healthy weight loss, aim for a moderate calorie deficit — about 300–500 kcal below your maintenance level." },
-  { keys:['diabetes','diabetic','blood sugar'], reply:"For diabetes-friendly eating, choose high-fibre carbs in moderate portions — mukimo, githeri, and brown rice are better than white rice alone." },
-  { keys:['water','hydration','how much water'], reply:"Most adults should aim for about 2 to 2.5 litres of water a day — roughly 8 glasses." },
-];
+// ---- Collect form data into profile object ----
+function collectFormData() {
+  const nameParts = document.getElementById('profName').value.trim().split(' ');
+  const firstName = nameParts.shift() || '';
+  const lastName = nameParts.join(' ') || '';
 
-function findBotReply(text){
-  const lower = text.toLowerCase();
-  for(const entry of chatKnowledge){
-    if(entry.keys.some(k => lower.includes(k))) return entry.reply;
-  }
-  return "I'm still learning that one. Try asking me about weight loss, diabetes, or hydration.";
+  const gender = getChipGroupValues(document.getElementById('profGenderChips'))[0] || '';
+  const age = parseInt(document.getElementById('profAge').value, 10);
+  const dob = age ? new Date(new Date().getFullYear() - age, 0, 1).toISOString().split('T')[0] : null;
+
+  const data = {
+    first_name: firstName,
+    last_name: lastName,
+    gender: gender,
+    date_of_birth: dob,
+    phone: '', // not collected in this form
+    height_cm: parseFloat(document.getElementById('profHeight').value) || 0,
+    weight_kg: parseFloat(document.getElementById('profWeight').value) || 0,
+    lifestyle: getChipGroupValues(document.getElementById('profActivityChips'))[0] || 'moderate',
+    diet_preference: getChipGroupValues(document.getElementById('profDietChips'))[0] || 'any',
+    activity_level: null, // not used directly
+    allergies: getChipGroupValues(document.getElementById('profAllergyChips')),
+    medical_conditions: getChipGroupValues(document.getElementById('profConditionChips')),
+    location: document.getElementById('profLocation').value.trim() || '',
+    medications: getMedicationValues(),
+    target_weight: parseFloat(document.getElementById('profTargetWeight').value) || 0,
+    goal: getChipGroupValues(document.getElementById('profGoalChips'))[0] || 'maintain',
+    health_conditions: getChipGroupValues(document.getElementById('profConditionChips')),
+  };
+  return data;
 }
 
-function formatTime(date){ return date.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' }); }
-
-function addChatMessage(text, sender){
-  const body = document.getElementById('chatbotBody');
-  const msg = document.createElement('div');
-  msg.className = 'chat-msg ' + sender;
-  msg.innerHTML = `<div class="bubble">${text}</div><span class="timestamp">${formatTime(new Date())}</span>`;
-  body.appendChild(msg);
-  body.scrollTop = body.scrollHeight;
-}
-
-function showTypingIndicator(){
-  const body = document.getElementById('chatbotBody');
-  const typing = document.createElement('div');
-  typing.className = 'chat-msg bot';
-  typing.id = 'typingIndicator';
-  typing.innerHTML = `<div class="bubble typing-dots"><span></span><span></span><span></span></div>`;
-  body.appendChild(typing);
-  body.scrollTop = body.scrollHeight;
-}
-
-function removeTypingIndicator(){ const el = document.getElementById('typingIndicator'); if(el) el.remove(); }
-
-function sendChatMessage(text){
-  if(!text.trim()) return;
-  addChatMessage(text, 'user');
-  document.getElementById('chatbotInput').value = '';
-  showTypingIndicator();
-  setTimeout(() => {
-    removeTypingIndicator();
-    addChatMessage(findBotReply(text), 'bot');
-  }, 700 + Math.random() * 500);
-}
-
-function initChatbot(){
-  const fab = document.getElementById('chatbotFab');
-  const panel = document.getElementById('chatbotPanel');
-  const closeBtn = document.getElementById('chatbotClose');
-  const input = document.getElementById('chatbotInput');
-  const sendBtn = document.getElementById('chatbotSend');
-  let hasGreeted = false;
-  fab.addEventListener('click', () => {
-    panel.classList.toggle('open');
-    if(panel.classList.contains('open') && !hasGreeted){
-      hasGreeted = true;
-      addChatMessage("Habari! I'm your Smart Lishe assistant. Ask me about meals, weight goals, health conditions, or hydration.", 'bot');
+// ---- Sidebar, Theme, etc. ----
+function initTheme() {
+  const Store = {
+    get(key, fallback) {
+      try { return JSON.parse(localStorage.getItem('smartlishe_' + key)) || fallback; } catch (e) { return fallback; }
+    },
+    set(key, value) {
+      try { localStorage.setItem('smartlishe_' + key, JSON.stringify(value)); } catch (e) {}
     }
-  });
-  closeBtn.addEventListener('click', () => panel.classList.remove('open'));
-  sendBtn.addEventListener('click', () => sendChatMessage(input.value));
-  input.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendChatMessage(input.value); });
-  document.querySelectorAll('.chip-suggestion').forEach(chip => {
-    chip.addEventListener('click', () => sendChatMessage(chip.dataset.q));
-  });
+  };
+  const saved = Store.get('theme', 'light');
+  document.body.setAttribute('data-theme', saved);
+  const themeIcon = document.getElementById('themeIcon');
+  if (themeIcon) themeIcon.className = saved === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+  const themeToggle = document.getElementById('themeToggle');
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      const current = document.body.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.body.setAttribute('data-theme', next);
+      if (themeIcon) themeIcon.className = next === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+      Store.set('theme', next);
+    });
+  }
 }
 
-// ===== NOTIFICATIONS =====
-function initNotifications(){
-  document.getElementById('notifBtn').addEventListener('click', () => showToast("You're all caught up — no new notifications."));
-}
-
-// ===== GLOBAL SEARCH =====
-function initGlobalSearch(){
-  document.getElementById('globalSearch').addEventListener('keypress', (e) => {
-    if(e.key === 'Enter' && e.target.value.trim()) showToast(`Searching for "${e.target.value.trim()}"...`);
+function initSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  const hamburger = document.getElementById('hamburgerBtn');
+  function openSidebar() { if (sidebar) sidebar.classList.add('open'); if (overlay) overlay.classList.add('show'); }
+  function closeSidebar() { if (sidebar) sidebar.classList.remove('open'); if (overlay) overlay.classList.remove('show'); }
+  if (hamburger) hamburger.addEventListener('click', openSidebar);
+  if (overlay) overlay.addEventListener('click', closeSidebar);
+  document.querySelectorAll('.service-group-header').forEach(header => {
+    header.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const group = header.closest('.service-group');
+      if (!group) return;
+      const wasOpen = group.classList.contains('open');
+      document.querySelectorAll('.service-group').forEach(g => g.classList.remove('open'));
+      if (!wasOpen) group.classList.add('open');
+    });
   });
+  document.querySelectorAll('.nav-link').forEach(link => link.addEventListener('click', closeSidebar));
 }
 
-// ===== BOOT =====
+function initScrollTop() {
+  const btn = document.getElementById('scrollTopBtn');
+  if (!btn) return;
+  window.addEventListener('scroll', () => btn.classList.toggle('show', window.scrollY > 400));
+  btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+}
+
+function initNotifications() {
+  document.getElementById('notifBtn')?.addEventListener('click', () => showToast("You're all caught up — no new notifications."));
+}
+
+function initGlobalSearch() {
+  const input = document.getElementById('globalSearch');
+  if (input) {
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && e.target.value.trim()) {
+        showToast(`Searching for "${e.target.value.trim()}"...`);
+      }
+    });
+  }
+}
+
+// ---- Boot ----
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
   initSidebar();
   initScrollTop();
-  initProfile();
-  initChatbot();
   initNotifications();
   initGlobalSearch();
+
+  // Initialize chips
+  document.querySelectorAll('.chip-multiselect').forEach(initChipGroup);
+  initMedicationStep();
+
+  // Load profile
+  initProfile();
 });
 </script>
 </body>

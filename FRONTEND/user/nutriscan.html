@@ -2,14 +2,137 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
 <title>NutriScan — Smart Lishe</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<!-- ===== YOUR EXISTING STYLE.CSS ===== -->
 <link rel="stylesheet" href="style.css">
+
+<!-- ===== NUTRISCAN‑SPECIFIC OVERRIDES (minimal) ===== -->
+<style>
+  /* Upgrade banner */
+  .upgrade-banner {
+    background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+    border: 1px solid #10b981;
+    border-radius: var(--radius-md, 16px);
+    padding: 16px 24px;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .upgrade-banner.show { display: flex; }
+  .upgrade-banner .ub-icon { font-size: 1.8rem; color: #047857; }
+  .upgrade-banner .ub-text { flex: 1; font-weight: 600; color: #065f46; font-size: 0.95rem; }
+  .upgrade-banner .ub-text strong { display: block; font-size: 1.05rem; margin-bottom: 2px; }
+  .upgrade-banner .btn-upgrade {
+    background: #047857;
+    color: #fff;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+  }
+  .upgrade-banner .btn-upgrade:hover { background: #065f46; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(4, 120, 87, 0.3); }
+
+  /* Floating AI button */
+  .floating-ai-btn {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 999;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--sukuma, #2b7a4b);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    box-shadow: 0 6px 20px rgba(43, 122, 75, 0.4);
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: none;
+    cursor: pointer;
+  }
+  .floating-ai-btn:hover { transform: scale(1.05); box-shadow: 0 8px 28px rgba(43, 122, 75, 0.5); }
+  .floating-ai-btn i { line-height: 1; }
+
+  @media (max-width: 600px) {
+    .upgrade-banner {
+      flex-direction: column;
+      text-align: center;
+      padding: 16px;
+    }
+    .upgrade-banner .ub-icon { font-size: 1.4rem; }
+    .floating-ai-btn {
+      width: 52px;
+      height: 52px;
+      font-size: 1.4rem;
+      bottom: 20px;
+      right: 20px;
+    }
+    .scan-layout {
+      grid-template-columns: 1fr;
+    }
+    .scan-result-panel {
+      min-height: 200px;
+    }
+    .health-score-ring {
+      width: 60px;
+      height: 60px;
+      font-size: 1.2rem;
+    }
+    .scan-macro-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .scan-preview-actions {
+      flex-wrap: wrap;
+    }
+    .scan-preview-actions .btn {
+      flex: 1 0 auto;
+    }
+  }
+</style>
 </head>
 <body>
+
+<!-- ===== AUTH CHECK ===== -->
+<script>
+(function() {
+  const email = localStorage.getItem('email');
+  const role = localStorage.getItem('smartlishe_role') || localStorage.getItem('role');
+  const profile = localStorage.getItem('smartlishe_profile');
+  const loggedIn = localStorage.getItem('smartlishe_logged_in') === 'true';
+  
+  if (!email && !profile && !loggedIn) {
+    window.location.href = 'home.html';
+    return;
+  }
+  if (role === 'Professional') {
+    window.location.href = '../professional/home.html';
+    return;
+  }
+  if (role === 'Client') {
+    window.location.href = '../client/dashboard.html';
+    return;
+  }
+})();
+</script>
 
 <!-- ===== MOBILE TOPBAR ===== -->
 <div class="mobile-topbar">
@@ -23,7 +146,7 @@
 
 <div class="app-shell">
 
-  <!-- ===== SIDEBAR ===== -->
+  <!-- ===== SIDEBAR (no Membership, no About/Contact) ===== -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
       <div class="mark"><i class="fa-solid fa-seedling"></i></div>
@@ -66,46 +189,26 @@
         </div>
       </div>
       
+      <!-- ===== PROFILE – only User Profile & Settings (no About/Contact) ===== -->
       <div class="nav-section-divider"><span>Profile</span><i class="fa-solid fa-user-gear"></i></div>
       <div class="service-group" data-group="profile">
         <button type="button" class="service-group-header" data-group-toggle="profile">
           <div class="sg-icon-wrap" style="background:#3D6FA8;"><i class="fa-solid fa-user"></i></div>
           <span class="sg-title">Profile</span>
-          <span class="sg-count">4</span>
+          <span class="sg-count">2</span>
           <span class="sg-dropdown-hint"><i class="fa-solid fa-chevron-down sg-chevron"></i></span>
         </button>
         <div class="service-group-body">
           <a href="profile.html" class="nav-link"><i class="fa-solid fa-id-card"></i> User Profile</a>
           <a href="settings.html" class="nav-link"><i class="fa-solid fa-gear"></i> Settings</a>
-          <a href="about.html" class="nav-link"><i class="fa-solid fa-circle-info"></i> About</a>
-          <a href="contact.html" class="nav-link"><i class="fa-solid fa-envelope"></i> Contact</a>
         </div>
       </div>
 
-      <!-- ===== MEMBERSHIP ===== -->
-      <div class="nav-section-divider"><span>Membership</span><i class="fa-solid fa-crown"></i></div>
-      <div class="service-group" data-group="membership">
-        <button type="button" class="service-group-header" data-group-toggle="membership">
-          <div class="sg-icon-wrap" style="background:var(--accent-2);"><i class="fa-solid fa-crown"></i></div>
-          <span class="sg-title">Membership</span>
-          <span class="sg-count">9</span>
-          <span class="sg-dropdown-hint"><i class="fa-solid fa-chevron-down sg-chevron"></i></span>
-        </button>
-        <div class="service-group-body">
-          <a href="membership/membership.html" class="nav-link"><i class="fa-solid fa-id-card"></i> Current Membership</a>
-          <a href="membership/pricing.html" class="nav-link"><i class="fa-solid fa-tags"></i> Pricing Plans</a>
-          <a href="membership/benefits.html" class="nav-link"><i class="fa-solid fa-gift"></i> Benefits</a>
-          <a href="membership/billing.html" class="nav-link"><i class="fa-solid fa-credit-card"></i> Billing</a>
-          <a href="membership/invoices.html" class="nav-link"><i class="fa-solid fa-file-invoice"></i> Invoices</a>
-          <a href="membership/upgrade.html" class="nav-link"><i class="fa-solid fa-arrow-trend-up"></i> Upgrade Plan</a>
-          <a href="membership/history.html" class="nav-link"><i class="fa-solid fa-clock-rotate-left"></i> Subscription History</a>
-          <a href="membership/professional-access.html" class="nav-link"><i class="fa-solid fa-briefcase"></i> Professional Access</a>
-          <a href="membership/clinic-access.html" class="nav-link"><i class="fa-solid fa-hospital"></i> Clinic Access</a>
-        </div>
-      </div>
-
+      <!-- ===== Logout (clears storage) ===== -->
       <div style="margin-top:12px;">
-        <a href="#" class="nav-link" onclick="event.preventDefault(); showToast('Logging out...');" style="color:var(--char);"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        <a href="#" class="nav-link" onclick="event.preventDefault(); localStorage.clear(); sessionStorage.clear(); window.location.href='home.html';" style="color:var(--char);">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </a>
       </div>
     </nav>
     <div class="sidebar-footer">
@@ -127,8 +230,8 @@
       <div class="topbar-actions">
         <button class="icon-btn" id="notifBtn"><i class="fa-regular fa-bell"></i><span class="dot"></span></button>
         <a href="profile.html" class="profile-chip" style="cursor:pointer;">
-          <div class="avatar" id="topbarAvatar">W</div>
-          <span class="label" id="topbarName">Wanjiru</span>
+          <div class="avatar" id="topbarAvatar">U</div>
+          <span class="label" id="topbarName">User</span>
         </a>
       </div>
     </header>
@@ -139,6 +242,18 @@
           <div class="section-eyebrow">NutriScan</div>
           <h2>Snap your plate, know what's on it</h2>
           <p>Upload a photo of your meal and NutriScan will estimate what's on it — calories, macros, and a health score, based on common Kenyan dishes.</p>
+        </div>
+
+        <!-- ===== UPGRADE BANNER (free users) ===== -->
+        <div class="upgrade-banner" id="upgradeBanner">
+          <div class="ub-icon"><i class="fa-regular fa-crown"></i></div>
+          <div class="ub-text">
+            <strong>Unlock Premium Features</strong>
+            <span>Get unlimited AI requests, advanced analytics, priority support, and more – only KES 2,500/month.</span>
+          </div>
+          <a href="billing.html" class="btn-upgrade">
+            <i class="fa-solid fa-arrow-right"></i> Upgrade Now
+          </a>
         </div>
 
         <div class="scan-layout">
@@ -173,6 +288,11 @@
   </div>
 </div>
 
+<!-- ===== FLOATING AI BUTTON ===== -->
+<a href="ai-assistant.html" class="floating-ai-btn" aria-label="AI Assistant">
+  <i class="fa-regular fa-robot"></i>
+</a>
+
 <!-- ===== CHATBOT ===== -->
 <button class="chatbot-fab" id="chatbotFab"><i class="fa-solid fa-robot"></i><span class="ping"></span></button>
 <div class="chatbot-panel" id="chatbotPanel">
@@ -198,7 +318,7 @@
 
 <script>
 // ============================================================
-// NUTRISCAN — SAFE JAVASCRIPT (No transition errors)
+// SMART LISHE — NUTRISCAN (ALL DATA FROM localStorage)
 // ============================================================
 
 (function() {
@@ -238,6 +358,37 @@
     }, 3500);
   }
   window.showToast = showToast;
+
+  // ===== UPGRADE BANNER =====
+  (function checkUpgradeBanner() {
+    var banner = document.getElementById('upgradeBanner');
+    if (!banner) return;
+    var membership = localStorage.getItem('user_membership') || 'free';
+    if (membership === 'free') {
+      banner.classList.add('show');
+    } else {
+      banner.classList.remove('show');
+    }
+  })();
+
+  // ===== USER NAME / AVATAR =====
+  function loadUserInfo() {
+    var userProfile = Store.get('userProfile', {});
+    var profile = JSON.parse(localStorage.getItem('smartlishe_profile') || '{}');
+    var firstName = localStorage.getItem('firstName') || 'User';
+    var email = localStorage.getItem('email') || '';
+
+    var userName = 'User';
+    if (userProfile.fullName) userName = userProfile.fullName.split(' ')[0];
+    else if (profile.name) userName = profile.name;
+    else if (firstName && firstName !== 'User') userName = firstName;
+    else if (email) userName = email.split('@')[0];
+
+    var nameEl = document.getElementById('topbarName');
+    var avatarEl = document.getElementById('topbarAvatar');
+    if (nameEl) nameEl.textContent = userName;
+    if (avatarEl) avatarEl.textContent = userName.charAt(0).toUpperCase();
+  }
 
   // ---------- THEME ----------
   function initTheme() {
@@ -313,7 +464,6 @@
   // ---------- NUTRISCAN ----------
   function initNutriScan() {
     var zone = document.getElementById('uploadZone');
-    // SAFE: Only run if the upload zone exists on this page
     if (!zone) return;
 
     var fileInput = document.getElementById('scanFileInput');
@@ -549,6 +699,7 @@
     initTheme();
     initSidebar();
     initScrollTop();
+    loadUserInfo();
     initNutriScan();
     initChatbot();
     initNotifications();

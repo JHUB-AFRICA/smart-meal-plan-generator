@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="admin.css">
   <style>
+    /* (All CSS unchanged – same as your original) */
     .accounts-stats {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -105,7 +106,6 @@
       min-height: 32px;
     }
 
-    /* Modal styles */
     .modal-field {
       margin-bottom: 14px;
     }
@@ -187,9 +187,11 @@
 <!-- ===== AUTH CHECK ===== -->
 <script>
 (function() {
+  const token = localStorage.getItem('access_token');
   const role = localStorage.getItem('smartlishe_role') || localStorage.getItem('role');
-  const loggedIn = localStorage.getItem('smartlishe_logged_in') === 'true';
-  if (!loggedIn || role !== 'Admin') { window.location.href = '../auth/login.html'; }
+  if (!token || role !== 'admin') {
+    window.location.href = '../login.html';
+  }
 })();
 </script>
 
@@ -213,6 +215,8 @@
     </div>
     <nav class="sidebar-nav" id="sidebarNav">
       <a href="dashboard.html" class="nav-link"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+
+      <!-- Accounts dropdown -->
       <div class="nav-link" id="accountsToggle">
         <i class="fa-solid fa-users"></i> Accounts
         <span class="dropdown-chevron open"><i class="fa-solid fa-chevron-down"></i></span>
@@ -222,22 +226,26 @@
         <a href="accounts.html#professionals" class="nav-link"><i class="fa-solid fa-user-md"></i> Professionals</a>
         <a href="accounts.html#clients" class="nav-link"><i class="fa-solid fa-user-group"></i> Clients</a>
       </div>
+
+      <!-- Operations dropdown (no toasts) -->
       <div class="nav-link" id="operationsToggle">
         <i class="fa-solid fa-gears"></i> Operations
         <span class="dropdown-chevron"><i class="fa-solid fa-chevron-down"></i></span>
       </div>
       <div class="nav-dropdown" id="operationsDropdown">
-        <a href="operations.html#billing" class="nav-link"><i class="fa-solid fa-credit-card"></i> Billing</a>
-        <a href="operations.html#recipes" class="nav-link"><i class="fa-solid fa-book-open"></i> Recipes</a>
-        <a href="operations.html#datasets" class="nav-link"><i class="fa-solid fa-database"></i> Datasets</a>
-        <a href="operations.html#reports" class="nav-link"><i class="fa-solid fa-chart-bar"></i> Reports</a>
-        <a href="operations.html#ai-monitoring" class="nav-link"><i class="fa-solid fa-robot"></i> AI Monitoring</a>
+        <a href="#" class="nav-link" onclick="event.preventDefault();"><i class="fa-solid fa-credit-card"></i> Billing</a>
+        <a href="#" class="nav-link" onclick="event.preventDefault();"><i class="fa-solid fa-book-open"></i> Recipes</a>
+        <a href="#" class="nav-link" onclick="event.preventDefault();"><i class="fa-solid fa-database"></i> Datasets</a>
+        <a href="#" class="nav-link" onclick="event.preventDefault();"><i class="fa-solid fa-chart-bar"></i> Reports</a>
+        <a href="#" class="nav-link" onclick="event.preventDefault();"><i class="fa-solid fa-robot"></i> AI Monitoring</a>
       </div>
-      <a href="support.html" class="nav-link"><i class="fa-solid fa-headset"></i> Support</a>
-      <a href="settings.html" class="nav-link"><i class="fa-solid fa-gear"></i> Settings</a>
-      <a href="profile.html" class="nav-link"><i class="fa-solid fa-user-circle"></i> Profile</a>
+
+      <a href="#" class="nav-link" onclick="event.preventDefault();"><i class="fa-solid fa-headset"></i> Support</a>
+      <a href="#" class="nav-link" onclick="event.preventDefault();"><i class="fa-solid fa-gear"></i> Settings</a>
+      <a href="#" class="nav-link" onclick="event.preventDefault();"><i class="fa-solid fa-user-circle"></i> Profile</a>
+
       <div style="margin-top:12px;">
-        <a href="#" class="nav-link" onclick="event.preventDefault(); localStorage.clear(); sessionStorage.clear(); window.location.href='../auth/login.html';" style="color:var(--char);">
+        <a href="#" class="nav-link" onclick="event.preventDefault(); logout();" style="color:var(--char);">
           <i class="fa-solid fa-right-from-bracket"></i> Logout
         </a>
       </div>
@@ -263,7 +271,7 @@
       </div>
       <div class="topbar-actions">
         <button class="icon-btn" id="notifBtn"><i class="fa-regular fa-bell"></i><span class="dot"></span></button>
-        <a href="profile.html" class="profile-chip">
+        <a href="#" class="profile-chip" onclick="event.preventDefault();">
           <div class="avatar" id="adminAvatar">A</div>
           <span class="label" id="adminName">Admin</span>
         </a>
@@ -389,7 +397,7 @@
   MODALS
   ============================================================ -->
 
-<!-- ===== USER MODAL ===== -->
+<!-- USER MODAL -->
 <div class="modal-overlay" id="userModal">
   <div class="modal">
     <div class="modal-header">
@@ -429,7 +437,7 @@
   </div>
 </div>
 
-<!-- ===== PROFESSIONAL MODAL ===== -->
+<!-- PROFESSIONAL MODAL -->
 <div class="modal-overlay" id="proModal">
   <div class="modal">
     <div class="modal-header">
@@ -471,7 +479,7 @@
   </div>
 </div>
 
-<!-- ===== CLIENT MODAL ===== -->
+<!-- CLIENT MODAL -->
 <div class="modal-overlay" id="clientModal">
   <div class="modal">
     <div class="modal-header">
@@ -522,7 +530,7 @@
   </div>
 </div>
 
-<!-- ===== CONFIRMATION MODAL ===== -->
+<!-- CONFIRMATION MODAL -->
 <div class="modal-overlay" id="confirmModal">
   <div class="modal" style="max-width:420px;">
     <div class="modal-header">
@@ -542,219 +550,217 @@
 
 <script>
 // ============================================================
-// SMART LISHE — ACCOUNTS (Fully Functional)
+// SMART LISHE — ACCOUNTS (Backend-Integrated Full CRUD)
 // ============================================================
 
-const Store = {
-  get: function(k, fb) {
-    try { const raw = localStorage.getItem('smartlishe_' + k); return raw ? JSON.parse(raw) : fb; }
-    catch(e) { return fb; }
-  },
-  set: function(k, v) {
-    try { localStorage.setItem('smartlishe_' + k, JSON.stringify(v)); return true; }
-    catch(e) { return false; }
-  }
-};
+const BASE_URL = 'http://127.0.0.1:5000/api';
+const token = localStorage.getItem('access_token');
 
-function showToast(msg, type) {
-  type = type || 'success';
+// ----- API fetch helper -----
+async function apiFetch(endpoint, options = {}) {
+  const resp = await fetch(`${BASE_URL}${endpoint}`, {
+    ...options,
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      ...options.headers
+    }
+  });
+  if (resp.status === 401) {
+    localStorage.removeItem('access_token');
+    window.location.href = '../login.html';
+    throw new Error('Unauthorized');
+  }
+  const data = await resp.json();
+  if (!resp.ok) {
+    throw new Error(data.error || data.message || 'Request failed');
+  }
+  return data;
+}
+
+function showToast(msg, type = 'success') {
   const stack = document.getElementById('toastStack');
-  if (!stack) return;
+  const old = document.querySelector('.toast');
+  if (old) old.remove();
   const t = document.createElement('div');
   t.className = 'toast' + (type === 'error' ? ' error' : '');
-  const icon = type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-check';
-  t.innerHTML = '<i class="fa-solid ' + icon + '"></i><span>' + msg + '</span>';
+  t.innerHTML = `<i class="fa-solid ${type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-check'}"></i> ${msg}`;
   stack.appendChild(t);
-  setTimeout(function() {
-    t.style.opacity = '0';
-    t.style.transform = 'translateX(40px)';
-    setTimeout(function() { t.remove(); }, 300);
-  }, 3500);
+  setTimeout(() => t.remove(), 4000);
 }
 window.showToast = showToast;
 
-// ============================================================
-// DATA STORE
-// ============================================================
+// ----- Data state -----
+let allUsers = [];
+let allProfessionals = [];
+let allClients = [];
 
-function getUsers() {
-  return Store.get('admin_users', [
-    { id: 'u1', name: 'James Kamau', email: 'james@example.com', plan: 'Premium', status: 'Active', joined: 'Jan 2025' },
-    { id: 'u2', name: 'Mary Wanjiru', email: 'mary@example.com', plan: 'Free', status: 'Active', joined: 'Feb 2025' },
-    { id: 'u3', name: 'Peter Ochieng', email: 'peter@example.com', plan: 'Premium', status: 'Suspended', joined: 'Dec 2024' },
-    { id: 'u4', name: 'Grace Akinyi', email: 'grace@example.com', plan: 'Free', status: 'Active', joined: 'Mar 2025' },
-    { id: 'u5', name: 'David Otieno', email: 'david@example.com', plan: 'Premium', status: 'Active', joined: 'Apr 2025' },
-  ]);
+// ----- Load data -----
+async function loadUsers() {
+  try {
+    const data = await apiFetch('/admin/users');
+    if (data.success) {
+      allUsers = data.data || [];
+      renderUsers();
+      document.getElementById('statUsers').textContent = allUsers.length;
+    }
+  } catch (e) { showToast('Error loading users: ' + e.message, 'error'); }
 }
 
-function getProfessionals() {
-  return Store.get('admin_professionals', [
-    { id: 'p1', name: 'Dr. Sarah Mwangi', email: 'sarah@example.com', profession: 'Nutritionist', specialization: 'Clinical Nutrition', status: 'Pending' },
-    { id: 'p2', name: 'Dr. Ian Kiprop', email: 'ian@example.com', profession: 'Dietitian', specialization: 'Sports Nutrition', status: 'Verified' },
-    { id: 'p3', name: 'Grace Akinyi', email: 'grace.pro@example.com', profession: 'Nutritionist', specialization: 'Maternal & Child Health', status: 'Pending' },
-    { id: 'p4', name: 'Dr. James Omondi', email: 'james.pro@example.com', profession: 'Dietitian', specialization: 'Clinical Dietetics', status: 'Verified' },
-    { id: 'p5', name: 'Dr. Mary Wanjiru', email: 'mary.pro@example.com', profession: 'Nutritionist', specialization: 'Public Health Nutrition', status: 'Pending' },
-  ]);
+async function loadProfessionals() {
+  try {
+    const data = await apiFetch('/admin/professionals');
+    if (data.success) {
+      allProfessionals = data.data || [];
+      renderProfessionals();
+      document.getElementById('statProfessionals').textContent = allProfessionals.length;
+      const pending = allProfessionals.filter(p => p.approval_status === 'pending').length;
+      document.getElementById('pendingCount').textContent = pending + ' Pending';
+    }
+  } catch (e) { showToast('Error loading professionals: ' + e.message, 'error'); }
 }
 
-function getClients() {
-  return Store.get('admin_clients', [
-    { id: 'c1', name: 'Mary Njeri', email: 'mary.c@example.com', professional: 'Dr. Ian Kiprop', goal: 'Weight Loss', progress: 38, status: 'Active' },
-    { id: 'c2', name: 'David Otieno', email: 'david.c@example.com', professional: 'Dr. Sarah Mwangi', goal: 'Diabetes Management', progress: 62, status: 'Active' },
-    { id: 'c3', name: 'Faith Akinyi', email: 'faith.c@example.com', professional: 'Grace Akinyi', goal: 'Pregnancy Nutrition', progress: 85, status: 'Active' },
-    { id: 'c4', name: 'Peter Ochieng', email: 'peter.c@example.com', professional: 'Dr. James Omondi', goal: 'Heart Health', progress: 45, status: 'Inactive' },
-    { id: 'c5', name: 'Jane Wanjiru', email: 'jane.c@example.com', professional: 'Dr. Ian Kiprop', goal: 'Weight Loss', progress: 20, status: 'Active' },
-  ]);
+async function loadClients() {
+  try {
+    const data = await apiFetch('/admin/clients');
+    if (data.success) {
+      allClients = data.data || [];
+      renderClients();
+      document.getElementById('statClients').textContent = allClients.length;
+    }
+  } catch (e) { showToast('Error loading clients: ' + e.message, 'error'); }
 }
 
-function saveUsers(users) { Store.set('admin_users', users); }
-function saveProfessionals(pros) { Store.set('admin_professionals', pros); }
-function saveClients(clients) { Store.set('admin_clients', clients); }
-
-// ============================================================
-// RENDER FUNCTIONS
-// ============================================================
-
+// ----- Render functions -----
 function renderUsers() {
-  const users = getUsers();
   const search = document.getElementById('userSearchInput').value.toLowerCase().trim();
-  const filtered = users.filter(u => 
-    u.name.toLowerCase().includes(search) || 
+  const filtered = allUsers.filter(u => 
+    ((u.first_name || '') + ' ' + (u.last_name || '')).toLowerCase().includes(search) || 
     u.email.toLowerCase().includes(search)
   );
   const tbody = document.getElementById('usersTableBody');
   if (filtered.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6" class="empty-state"><i class="fa-regular fa-user"></i><div>No users found</div></td></tr>`;
-  } else {
-    tbody.innerHTML = filtered.map(u => `
-      <tr data-id="${u.id}">
-        <td><strong>${u.name}</strong></td>
-        <td>${u.email}</td>
-        <td><span class="badge ${u.plan === 'Premium' ? 'badge-premium' : 'badge-free'}">${u.plan}</span></td>
-        <td><span class="status-badge ${u.status.toLowerCase()}">${u.status}</span></td>
-        <td>${u.joined}</td>
-        <td style="text-align:right;">
-          <div class="action-btns">
-            <button class="btn btn-ghost btn-sm view-user" data-id="${u.id}" title="View"><i class="fa-regular fa-eye"></i></button>
-            <button class="btn btn-ghost btn-sm edit-user" data-id="${u.id}" title="Edit"><i class="fa-regular fa-pen"></i></button>
-            ${u.status === 'Suspended' ? 
-              `<button class="btn btn-ghost btn-sm success activate-user" data-id="${u.id}" title="Activate"><i class="fa-solid fa-check"></i></button>` :
-              `<button class="btn btn-ghost btn-sm danger suspend-user" data-id="${u.id}" title="Suspend"><i class="fa-solid fa-ban"></i></button>`
-            }
-            ${u.plan === 'Free' ? 
-              `<button class="btn btn-ghost btn-sm success upgrade-user" data-id="${u.id}" title="Upgrade"><i class="fa-regular fa-crown"></i></button>` : ''
-            }
-            <button class="btn btn-ghost btn-sm danger delete-user" data-id="${u.id}" title="Delete"><i class="fa-regular fa-trash"></i></button>
-          </div>
-        </td>
-      </tr>
-    `).join('');
+    tbody.innerHTML = `<tr><td colspan="6" class="empty-state"><i class="fa-regular fa-user"></i><div>${allUsers.length === 0 ? 'No users yet.' : 'No users found.'}</div></td></tr>`;
+    return;
   }
-  document.getElementById('statUsers').textContent = users.length;
+  tbody.innerHTML = filtered.map(u => `
+    <tr data-id="${u.id}">
+      <td><strong>${u.first_name || ''} ${u.last_name || ''}</strong></td>
+      <td>${u.email}</td>
+      <td><span class="badge ${u.plan === 'Premium' ? 'badge-premium' : 'badge-free'}">${u.plan || 'Free'}</span></td>
+      <td><span class="status-badge ${u.is_active ? 'active' : 'inactive'}">${u.is_active ? 'Active' : 'Inactive'}</span></td>
+      <td>${u.created_at ? new Date(u.created_at).toLocaleDateString() : 'N/A'}</td>
+      <td style="text-align:right;">
+        <div class="action-btns">
+          <button class="btn btn-ghost btn-sm view-user" data-id="${u.id}" title="View"><i class="fa-regular fa-eye"></i></button>
+          <button class="btn btn-ghost btn-sm edit-user" data-id="${u.id}" title="Edit"><i class="fa-regular fa-pen"></i></button>
+          ${u.is_active ? 
+            `<button class="btn btn-ghost btn-sm danger suspend-user" data-id="${u.id}" title="Suspend"><i class="fa-solid fa-ban"></i></button>` :
+            `<button class="btn btn-ghost btn-sm success activate-user" data-id="${u.id}" title="Activate"><i class="fa-solid fa-check"></i></button>`
+          }
+          ${u.plan === 'Free' ? 
+            `<button class="btn btn-ghost btn-sm success upgrade-user" data-id="${u.id}" title="Upgrade"><i class="fa-regular fa-crown"></i></button>` : ''
+          }
+          <button class="btn btn-ghost btn-sm danger delete-user" data-id="${u.id}" title="Delete"><i class="fa-regular fa-trash"></i></button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
   attachUserEvents();
 }
 
 function renderProfessionals() {
-  const pros = getProfessionals();
   const search = document.getElementById('proSearchInput').value.toLowerCase().trim();
-  const filtered = pros.filter(p => 
+  const filtered = allProfessionals.filter(p => 
     p.name.toLowerCase().includes(search) || 
     p.email.toLowerCase().includes(search) ||
-    p.profession.toLowerCase().includes(search)
+    (p.profession && p.profession.toLowerCase().includes(search))
   );
   const tbody = document.getElementById('professionalsTableBody');
   if (filtered.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5" class="empty-state"><i class="fa-regular fa-user-md"></i><div>No professionals found</div></td></tr>`;
-  } else {
-    tbody.innerHTML = filtered.map(p => {
-      const statusLabel = p.status.charAt(0).toUpperCase() + p.status.slice(1);
-      const statusClass = p.status.toLowerCase();
-      return `
-      <tr data-id="${p.id}">
-        <td><strong>${p.name}</strong></td>
-        <td>${p.profession || '—'}</td>
-        <td>${p.specialization || '—'}</td>
-        <td><span class="approval-badge ${statusClass}">${statusLabel}</span></td>
-        <td style="text-align:right;">
-          <div class="action-btns">
-            <button class="btn btn-ghost btn-sm view-pro" data-id="${p.id}" title="View"><i class="fa-regular fa-eye"></i></button>
-            ${p.status === 'Pending' ? `
-              <button class="btn btn-ghost btn-sm success approve-pro" data-id="${p.id}" title="Approve"><i class="fa-solid fa-check"></i></button>
-              <button class="btn btn-ghost btn-sm danger reject-pro" data-id="${p.id}" title="Reject"><i class="fa-solid fa-xmark"></i></button>
-            ` : `
-              <button class="btn btn-ghost btn-sm edit-pro" data-id="${p.id}" title="Edit"><i class="fa-regular fa-pen"></i></button>
-              ${p.status === 'Suspended' ? 
-                `<button class="btn btn-ghost btn-sm success activate-pro" data-id="${p.id}" title="Activate"><i class="fa-solid fa-check"></i></button>` :
-                `<button class="btn btn-ghost btn-sm danger suspend-pro" data-id="${p.id}" title="Suspend"><i class="fa-solid fa-ban"></i></button>`
-              }
-            `}
-            <button class="btn btn-ghost btn-sm danger delete-pro" data-id="${p.id}" title="Delete"><i class="fa-regular fa-trash"></i></button>
-          </div>
-        </td>
-      </tr>
-    `}).join('');
+    tbody.innerHTML = `<tr><td colspan="5" class="empty-state"><i class="fa-regular fa-user-md"></i><div>${allProfessionals.length === 0 ? 'No professionals yet.' : 'No professionals found.'}</div></td></tr>`;
+    return;
   }
-  const pending = pros.filter(p => p.status === 'Pending').length;
-  document.getElementById('pendingCount').textContent = pending + ' Pending';
-  document.getElementById('statProfessionals').textContent = pros.length;
+  tbody.innerHTML = filtered.map(p => {
+    const status = p.approval_status || 'pending';
+    const statusLabel = status.charAt(0).toUpperCase() + status.slice(1);
+    return `
+    <tr data-id="${p.id}">
+      <td><strong>${p.name}</strong></td>
+      <td>${p.profession || '—'}</td>
+      <td>${Array.isArray(p.specialization) ? p.specialization.join(', ') : p.specialization || '—'}</td>
+      <td><span class="approval-badge ${status}">${statusLabel}</span></td>
+      <td style="text-align:right;">
+        <div class="action-btns">
+          <button class="btn btn-ghost btn-sm view-pro" data-id="${p.id}" title="View"><i class="fa-regular fa-eye"></i></button>
+          ${status === 'pending' ? `
+            <button class="btn btn-ghost btn-sm success approve-pro" data-id="${p.id}" title="Approve"><i class="fa-solid fa-check"></i></button>
+            <button class="btn btn-ghost btn-sm danger reject-pro" data-id="${p.id}" title="Reject"><i class="fa-solid fa-xmark"></i></button>
+          ` : `
+            ${p.is_active ? 
+              `<button class="btn btn-ghost btn-sm danger suspend-pro" data-id="${p.id}" title="Suspend"><i class="fa-solid fa-ban"></i></button>` :
+              `<button class="btn btn-ghost btn-sm success activate-pro" data-id="${p.id}" title="Activate"><i class="fa-solid fa-check"></i></button>`
+            }
+            <button class="btn btn-ghost btn-sm edit-pro" data-id="${p.id}" title="Edit"><i class="fa-regular fa-pen"></i></button>
+          `}
+          <button class="btn btn-ghost btn-sm danger delete-pro" data-id="${p.id}" title="Delete"><i class="fa-regular fa-trash"></i></button>
+        </div>
+      </td>
+    </tr>
+  `}).join('');
   attachProEvents();
 }
 
 function renderClients() {
-  const clients = getClients();
   const search = document.getElementById('clientSearchInput').value.toLowerCase().trim();
-  const filtered = clients.filter(c => 
+  const filtered = allClients.filter(c => 
     c.name.toLowerCase().includes(search) || 
     c.email.toLowerCase().includes(search) ||
-    c.professional.toLowerCase().includes(search)
+    (c.assigned_professional && c.assigned_professional.toLowerCase().includes(search))
   );
   const tbody = document.getElementById('clientsTableBody');
   if (filtered.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6" class="empty-state"><i class="fa-regular fa-user-group"></i><div>No clients found</div></td></tr>`;
-  } else {
-    tbody.innerHTML = filtered.map(c => `
-      <tr data-id="${c.id}">
-        <td><strong>${c.name}</strong></td>
-        <td>${c.professional || 'Unassigned'}</td>
-        <td>${c.goal}</td>
-        <td><span style="font-weight:600;color:${c.progress >= 70 ? 'var(--sukuma)' : c.progress >= 40 ? 'var(--maize-deep)' : '#dc2626'};">${c.progress}%</span></td>
-        <td><span class="status-badge ${c.status.toLowerCase()}">${c.status}</span></td>
-        <td style="text-align:right;">
-          <div class="action-btns">
-            <button class="btn btn-ghost btn-sm view-client" data-id="${c.id}" title="View"><i class="fa-regular fa-eye"></i></button>
-            <button class="btn btn-ghost btn-sm edit-client" data-id="${c.id}" title="Edit"><i class="fa-regular fa-pen"></i></button>
-            ${c.status === 'Suspended' ? 
-              `<button class="btn btn-ghost btn-sm success activate-client" data-id="${c.id}" title="Activate"><i class="fa-solid fa-check"></i></button>` :
-              `<button class="btn btn-ghost btn-sm danger suspend-client" data-id="${c.id}" title="Suspend"><i class="fa-solid fa-ban"></i></button>`
-            }
-            <button class="btn btn-ghost btn-sm danger delete-client" data-id="${c.id}" title="Delete"><i class="fa-regular fa-trash"></i></button>
-          </div>
-        </td>
-      </tr>
-    `).join('');
+    tbody.innerHTML = `<tr><td colspan="6" class="empty-state"><i class="fa-regular fa-user-group"></i><div>${allClients.length === 0 ? 'No clients yet.' : 'No clients found.'}</div></td></tr>`;
+    return;
   }
-  document.getElementById('statClients').textContent = clients.length;
+  tbody.innerHTML = filtered.map(c => `
+    <tr data-id="${c.id}">
+      <td><strong>${c.name}</strong></td>
+      <td>${c.assigned_professional || 'Unassigned'}</td>
+      <td>${c.goal || 'General'}</td>
+      <td><span style="font-weight:600;color:${c.progress >= 70 ? 'var(--sukuma)' : c.progress >= 40 ? 'var(--maize-deep)' : '#dc2626'};">${c.progress || 0}%</span></td>
+      <td><span class="status-badge ${(c.status || 'Active').toLowerCase()}">${c.status || 'Active'}</span></td>
+      <td style="text-align:right;">
+        <div class="action-btns">
+          <button class="btn btn-ghost btn-sm view-client" data-id="${c.id}" title="View"><i class="fa-regular fa-eye"></i></button>
+          <button class="btn btn-ghost btn-sm edit-client" data-id="${c.id}" title="Edit"><i class="fa-regular fa-pen"></i></button>
+          ${c.status === 'Suspended' ? 
+            `<button class="btn btn-ghost btn-sm success activate-client" data-id="${c.id}" title="Activate"><i class="fa-solid fa-check"></i></button>` :
+            `<button class="btn btn-ghost btn-sm danger suspend-client" data-id="${c.id}" title="Suspend"><i class="fa-solid fa-ban"></i></button>`
+          }
+          <button class="btn btn-ghost btn-sm danger delete-client" data-id="${c.id}" title="Delete"><i class="fa-regular fa-trash"></i></button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
   attachClientEvents();
 }
 
-// ============================================================
-// EVENT ATTACHMENT
-// ============================================================
-
+// ----- Event attachment -----
 function attachUserEvents() {
   document.querySelectorAll('.view-user').forEach(b => b.addEventListener('click', () => openUserModal(b.dataset.id, true)));
   document.querySelectorAll('.edit-user').forEach(b => b.addEventListener('click', () => openUserModal(b.dataset.id, false)));
-  document.querySelectorAll('.suspend-user').forEach(b => b.addEventListener('click', () => confirmAction('Suspend User', `Suspend ${getUser(b.dataset.id).name}?`, () => suspendUser(b.dataset.id))));
-  document.querySelectorAll('.activate-user').forEach(b => b.addEventListener('click', () => confirmAction('Activate User', `Activate ${getUser(b.dataset.id).name}?`, () => activateUser(b.dataset.id))));
-  document.querySelectorAll('.delete-user').forEach(b => b.addEventListener('click', () => confirmAction('Delete User', `Delete ${getUser(b.dataset.id).name}? This cannot be undone.`, () => deleteUser(b.dataset.id))));
-  document.querySelectorAll('.upgrade-user').forEach(b => b.addEventListener('click', () => confirmAction('Upgrade User', `Upgrade ${getUser(b.dataset.id).name} to Premium for KES 2,500/month?`, () => upgradeUser(b.dataset.id))));
+  document.querySelectorAll('.suspend-user').forEach(b => b.addEventListener('click', () => confirmAction('Suspend User', `Suspend ${getUser(b.dataset.id).first_name}?`, () => suspendUser(b.dataset.id))));
+  document.querySelectorAll('.activate-user').forEach(b => b.addEventListener('click', () => confirmAction('Activate User', `Activate ${getUser(b.dataset.id).first_name}?`, () => activateUser(b.dataset.id))));
+  document.querySelectorAll('.delete-user').forEach(b => b.addEventListener('click', () => confirmAction('Delete User', `Delete ${getUser(b.dataset.id).first_name}? This cannot be undone.`, () => deleteUser(b.dataset.id))));
+  document.querySelectorAll('.upgrade-user').forEach(b => b.addEventListener('click', () => confirmAction('Upgrade User', `Upgrade ${getUser(b.dataset.id).first_name} to Premium?`, () => upgradeUser(b.dataset.id))));
 }
 
 function attachProEvents() {
   document.querySelectorAll('.view-pro').forEach(b => b.addEventListener('click', () => openProModal(b.dataset.id, true)));
   document.querySelectorAll('.edit-pro').forEach(b => b.addEventListener('click', () => openProModal(b.dataset.id, false)));
   document.querySelectorAll('.approve-pro').forEach(b => b.addEventListener('click', () => approvePro(b.dataset.id)));
-  document.querySelectorAll('.reject-pro').forEach(b => b.addEventListener('click', () => confirmAction('Reject Professional', `Reject ${getPro(b.dataset.id).name}'s application?`, () => rejectPro(b.dataset.id))));
+  document.querySelectorAll('.reject-pro').forEach(b => b.addEventListener('click', () => confirmAction('Reject Professional', `Reject ${getPro(b.dataset.id).name}?`, () => rejectPro(b.dataset.id))));
   document.querySelectorAll('.suspend-pro').forEach(b => b.addEventListener('click', () => confirmAction('Suspend Professional', `Suspend ${getPro(b.dataset.id).name}?`, () => suspendPro(b.dataset.id))));
   document.querySelectorAll('.activate-pro').forEach(b => b.addEventListener('click', () => confirmAction('Activate Professional', `Activate ${getPro(b.dataset.id).name}?`, () => activatePro(b.dataset.id))));
   document.querySelectorAll('.delete-pro').forEach(b => b.addEventListener('click', () => confirmAction('Delete Professional', `Delete ${getPro(b.dataset.id).name}? This cannot be undone.`, () => deletePro(b.dataset.id))));
@@ -768,250 +774,247 @@ function attachClientEvents() {
   document.querySelectorAll('.delete-client').forEach(b => b.addEventListener('click', () => confirmAction('Delete Client', `Delete ${getClient(b.dataset.id).name}? This cannot be undone.`, () => deleteClient(b.dataset.id))));
 }
 
-// ============================================================
-// USER CRUD OPERATIONS
-// ============================================================
+// ----- Helper functions -----
+function getUser(id) { return allUsers.find(u => u.id === id); }
+function getPro(id) { return allProfessionals.find(p => p.id === id); }
+function getClient(id) { return allClients.find(c => c.id === id); }
 
-function getUser(id) { return getUsers().find(u => u.id === id); }
+// ============================================================
+// USER CRUD (Backend API calls)
+// ============================================================
 
 function openUserModal(id, readOnly) {
-  const users = getUsers();
-  const user = id ? users.find(u => u.id === id) : null;
+  const user = id ? allUsers.find(u => u.id === id) : null;
   document.getElementById('userFormId').value = id || '';
   document.getElementById('userModalTitle').textContent = user ? (readOnly ? 'View User' : 'Edit User') : 'Add User';
-  document.getElementById('userFormName').value = user ? user.name : '';
+  document.getElementById('userFormName').value = user ? `${user.first_name||''} ${user.last_name||''}`.trim() : '';
   document.getElementById('userFormEmail').value = user ? user.email : '';
-  document.getElementById('userFormPlan').value = user ? user.plan : 'Free';
-  document.getElementById('userFormStatus').value = user ? user.status : 'Active';
-  
+  document.getElementById('userFormPlan').value = user ? (user.plan || 'Free') : 'Free';
+  document.getElementById('userFormStatus').value = user ? (user.is_active ? 'Active' : 'Inactive') : 'Active';
   const inputs = document.querySelectorAll('#userForm input, #userForm select');
   inputs.forEach(el => el.disabled = readOnly);
   document.getElementById('userFormSubmit').style.display = readOnly ? 'none' : 'inline-flex';
-  
   document.getElementById('userModal').classList.add('open');
 }
 
-function saveUser(e) {
+document.getElementById('userForm').addEventListener('submit', async function(e) {
   e.preventDefault();
   const id = document.getElementById('userFormId').value;
-  const users = getUsers();
+  const nameParts = document.getElementById('userFormName').value.trim().split(' ');
   const data = {
-    name: document.getElementById('userFormName').value.trim(),
+    first_name: nameParts[0] || '',
+    last_name: nameParts.slice(1).join(' ') || '',
     email: document.getElementById('userFormEmail').value.trim(),
     plan: document.getElementById('userFormPlan').value,
-    status: document.getElementById('userFormStatus').value,
-    joined: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+    is_active: document.getElementById('userFormStatus').value === 'Active'
   };
-  if (!data.name || !data.email) { showToast('Please fill in all fields.', 'error'); return; }
-  if (id) {
-    const idx = users.findIndex(u => u.id === id);
-    if (idx > -1) { users[idx] = { ...users[idx], ...data }; }
-  } else {
-    data.id = 'u' + Date.now();
-    users.push(data);
-  }
-  saveUsers(users);
+  if (!data.first_name || !data.email) { showToast('Please fill in all fields.', 'error'); return; }
+  try {
+    if (id) {
+      await apiFetch(`/admin/users/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+      showToast('User updated.');
+    } else {
+      const result = await apiFetch('/admin/users', { method: 'POST', body: JSON.stringify(data) });
+      showToast('User added.');
+    }
+    await loadUsers();
+  } catch (e) { showToast(e.message, 'error'); }
   document.getElementById('userModal').classList.remove('open');
-  renderUsers();
-  showToast(id ? 'User updated successfully.' : 'User added successfully.');
+});
+
+async function suspendUser(id) {
+  try {
+    await apiFetch(`/admin/users/${id}/suspend`, { method: 'PUT' });
+    showToast('User suspended.');
+    await loadUsers();
+  } catch (e) { showToast(e.message, 'error'); }
 }
 
-function suspendUser(id) {
-  const users = getUsers();
-  const u = users.find(u => u.id === id);
-  if (u) { u.status = 'Suspended'; saveUsers(users); renderUsers(); showToast(`${u.name} suspended.`); }
+async function activateUser(id) {
+  try {
+    await apiFetch(`/admin/users/${id}/activate`, { method: 'PUT' });
+    showToast('User activated.');
+    await loadUsers();
+  } catch (e) { showToast(e.message, 'error'); }
 }
 
-function activateUser(id) {
-  const users = getUsers();
-  const u = users.find(u => u.id === id);
-  if (u) { u.status = 'Active'; saveUsers(users); renderUsers(); showToast(`${u.name} activated.`); }
+async function deleteUser(id) {
+  try {
+    await apiFetch(`/admin/users/${id}`, { method: 'DELETE' });
+    showToast('User deleted.');
+    await loadUsers();
+  } catch (e) { showToast(e.message, 'error'); }
 }
 
-function deleteUser(id) {
-  let users = getUsers();
-  const u = users.find(u => u.id === id);
-  users = users.filter(u => u.id !== id);
-  saveUsers(users);
-  renderUsers();
-  showToast(`${u ? u.name : 'User'} deleted.`);
-}
-
-function upgradeUser(id) {
-  const users = getUsers();
-  const u = users.find(u => u.id === id);
-  if (u) { u.plan = 'Premium'; saveUsers(users); renderUsers(); showToast(`${u.name} upgraded to Premium.`); }
+async function upgradeUser(id) {
+  try {
+    await apiFetch(`/admin/users/${id}/upgrade`, { method: 'PUT' });
+    showToast('User upgraded to Premium.');
+    await loadUsers();
+  } catch (e) { showToast(e.message, 'error'); }
 }
 
 // ============================================================
-// PROFESSIONAL CRUD OPERATIONS
+// PROFESSIONAL CRUD (Backend API calls)
 // ============================================================
-
-function getPro(id) { return getProfessionals().find(p => p.id === id); }
 
 function openProModal(id, readOnly) {
-  const pros = getProfessionals();
-  const pro = id ? pros.find(p => p.id === id) : null;
+  const pro = id ? allProfessionals.find(p => p.id === id) : null;
   document.getElementById('proFormId').value = id || '';
   document.getElementById('proModalTitle').textContent = pro ? (readOnly ? 'View Professional' : 'Edit Professional') : 'Add Professional';
   document.getElementById('proFormName').value = pro ? pro.name : '';
   document.getElementById('proFormEmail').value = pro ? pro.email : '';
   document.getElementById('proFormProfession').value = pro ? pro.profession : '';
-  document.getElementById('proFormSpecialization').value = pro ? pro.specialization : '';
-  document.getElementById('proFormStatus').value = pro ? pro.status : 'Pending';
-  
+  document.getElementById('proFormSpecialization').value = Array.isArray(pro.specialization) ? pro.specialization.join(', ') : (pro.specialization || '');
+  document.getElementById('proFormStatus').value = pro ? pro.approval_status || 'Pending' : 'Pending';
   const inputs = document.querySelectorAll('#proForm input, #proForm select');
   inputs.forEach(el => el.disabled = readOnly);
   document.getElementById('proFormSubmit').style.display = readOnly ? 'none' : 'inline-flex';
-  
   document.getElementById('proModal').classList.add('open');
 }
 
-function savePro(e) {
+document.getElementById('proForm').addEventListener('submit', async function(e) {
   e.preventDefault();
   const id = document.getElementById('proFormId').value;
-  const pros = getProfessionals();
   const data = {
     name: document.getElementById('proFormName').value.trim(),
     email: document.getElementById('proFormEmail').value.trim(),
     profession: document.getElementById('proFormProfession').value.trim(),
-    specialization: document.getElementById('proFormSpecialization').value.trim(),
+    specialization: document.getElementById('proFormSpecialization').value.split(',').map(s => s.trim()).filter(Boolean),
     status: document.getElementById('proFormStatus').value
   };
   if (!data.name || !data.email) { showToast('Please fill in all fields.', 'error'); return; }
-  if (id) {
-    const idx = pros.findIndex(p => p.id === id);
-    if (idx > -1) { pros[idx] = { ...pros[idx], ...data }; }
-  } else {
-    data.id = 'p' + Date.now();
-    pros.push(data);
-  }
-  saveProfessionals(pros);
+  try {
+    if (id) {
+      await apiFetch(`/admin/professionals/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+      showToast('Professional updated.');
+    } else {
+      const result = await apiFetch('/admin/professionals', { method: 'POST', body: JSON.stringify(data) });
+      showToast('Professional added.');
+    }
+    await loadProfessionals();
+  } catch (e) { showToast(e.message, 'error'); }
   document.getElementById('proModal').classList.remove('open');
-  renderProfessionals();
-  showToast(id ? 'Professional updated successfully.' : 'Professional added successfully.');
+});
+
+async function approvePro(id) {
+  try {
+    await apiFetch(`/admin/professionals/${id}/approve`, { method: 'PUT' });
+    showToast('Professional approved.');
+    await loadProfessionals();
+  } catch (e) { showToast(e.message, 'error'); }
 }
 
-function approvePro(id) {
-  const pros = getProfessionals();
-  const p = pros.find(p => p.id === id);
-  if (p && p.status === 'Pending') {
-    p.status = 'Verified';
-    saveProfessionals(pros);
-    renderProfessionals();
-    showToast(`${p.name} approved and verified.`);
-  }
+async function rejectPro(id) {
+  try {
+    await apiFetch(`/admin/professionals/${id}/reject`, { method: 'PUT' });
+    showToast('Professional rejected.');
+    await loadProfessionals();
+  } catch (e) { showToast(e.message, 'error'); }
 }
 
-function rejectPro(id) {
-  const pros = getProfessionals();
-  const p = pros.find(p => p.id === id);
-  if (p) { p.status = 'Rejected'; saveProfessionals(pros); renderProfessionals(); showToast(`${p.name} rejected.`); }
+async function suspendPro(id) {
+  try {
+    await apiFetch(`/admin/professionals/${id}/suspend`, { method: 'PUT' });
+    showToast('Professional suspended.');
+    await loadProfessionals();
+  } catch (e) { showToast(e.message, 'error'); }
 }
 
-function suspendPro(id) {
-  const pros = getProfessionals();
-  const p = pros.find(p => p.id === id);
-  if (p) { p.status = 'Suspended'; saveProfessionals(pros); renderProfessionals(); showToast(`${p.name} suspended.`); }
+async function activatePro(id) {
+  try {
+    await apiFetch(`/admin/professionals/${id}/activate`, { method: 'PUT' });
+    showToast('Professional activated.');
+    await loadProfessionals();
+  } catch (e) { showToast(e.message, 'error'); }
 }
 
-function activatePro(id) {
-  const pros = getProfessionals();
-  const p = pros.find(p => p.id === id);
-  if (p) { p.status = 'Verified'; saveProfessionals(pros); renderProfessionals(); showToast(`${p.name} activated.`); }
-}
-
-function deletePro(id) {
-  let pros = getProfessionals();
-  const p = pros.find(p => p.id === id);
-  pros = pros.filter(p => p.id !== id);
-  saveProfessionals(pros);
-  renderProfessionals();
-  showToast(`${p ? p.name : 'Professional'} deleted.`);
+async function deletePro(id) {
+  try {
+    await apiFetch(`/admin/professionals/${id}`, { method: 'DELETE' });
+    showToast('Professional deleted.');
+    await loadProfessionals();
+  } catch (e) { showToast(e.message, 'error'); }
 }
 
 // ============================================================
-// CLIENT CRUD OPERATIONS
+// CLIENT CRUD (Backend API calls)
 // ============================================================
-
-function getClient(id) { return getClients().find(c => c.id === id); }
 
 function populateProSelect() {
-  const pros = getProfessionals().filter(p => p.status === 'Verified');
+  const pros = allProfessionals.filter(p => p.approval_status === 'approved' && p.is_active !== false);
   const select = document.getElementById('clientFormProfessional');
-  select.innerHTML = '<option value="">Unassigned</option>' + 
-    pros.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
+  select.innerHTML = '<option value="">Unassigned</option>' + pros.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
 }
 
 function openClientModal(id, readOnly) {
-  const clients = getClients();
-  const client = id ? clients.find(c => c.id === id) : null;
+  const client = id ? allClients.find(c => c.id === id) : null;
   populateProSelect();
   document.getElementById('clientFormId').value = id || '';
   document.getElementById('clientModalTitle').textContent = client ? (readOnly ? 'View Client' : 'Edit Client') : 'Add Client';
   document.getElementById('clientFormName').value = client ? client.name : '';
   document.getElementById('clientFormEmail').value = client ? client.email : '';
-  document.getElementById('clientFormProfessional').value = client ? client.professional : '';
+  document.getElementById('clientFormProfessional').value = client ? client.assigned_professional : '';
   document.getElementById('clientFormGoal').value = client ? client.goal : 'Weight Loss';
   document.getElementById('clientFormProgress').value = client ? client.progress : 0;
   document.getElementById('clientFormStatus').value = client ? client.status : 'Active';
-  
   const inputs = document.querySelectorAll('#clientForm input, #clientForm select');
   inputs.forEach(el => el.disabled = readOnly);
   document.getElementById('clientFormSubmit').style.display = readOnly ? 'none' : 'inline-flex';
-  
   document.getElementById('clientModal').classList.add('open');
 }
 
-function saveClient(e) {
+document.getElementById('clientForm').addEventListener('submit', async function(e) {
   e.preventDefault();
   const id = document.getElementById('clientFormId').value;
-  const clients = getClients();
   const data = {
     name: document.getElementById('clientFormName').value.trim(),
     email: document.getElementById('clientFormEmail').value.trim(),
-    professional: document.getElementById('clientFormProfessional').value || 'Unassigned',
+    assigned_professional: document.getElementById('clientFormProfessional').value || '',
     goal: document.getElementById('clientFormGoal').value,
     progress: parseInt(document.getElementById('clientFormProgress').value) || 0,
     status: document.getElementById('clientFormStatus').value
   };
   if (!data.name || !data.email) { showToast('Please fill in all fields.', 'error'); return; }
-  if (id) {
-    const idx = clients.findIndex(c => c.id === id);
-    if (idx > -1) { clients[idx] = { ...clients[idx], ...data }; }
-  } else {
-    data.id = 'c' + Date.now();
-    clients.push(data);
-  }
-  saveClients(clients);
+  try {
+    if (id) {
+      await apiFetch(`/admin/clients/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+      showToast('Client updated.');
+    } else {
+      const result = await apiFetch('/admin/clients', { method: 'POST', body: JSON.stringify(data) });
+      showToast('Client added.');
+    }
+    await loadClients();
+  } catch (e) { showToast(e.message, 'error'); }
   document.getElementById('clientModal').classList.remove('open');
-  renderClients();
-  showToast(id ? 'Client updated successfully.' : 'Client added successfully.');
+});
+
+async function suspendClient(id) {
+  try {
+    await apiFetch(`/admin/clients/${id}/suspend`, { method: 'PUT' });
+    showToast('Client suspended.');
+    await loadClients();
+  } catch (e) { showToast(e.message, 'error'); }
 }
 
-function suspendClient(id) {
-  const clients = getClients();
-  const c = clients.find(c => c.id === id);
-  if (c) { c.status = 'Suspended'; saveClients(clients); renderClients(); showToast(`${c.name} suspended.`); }
+async function activateClient(id) {
+  try {
+    await apiFetch(`/admin/clients/${id}/activate`, { method: 'PUT' });
+    showToast('Client activated.');
+    await loadClients();
+  } catch (e) { showToast(e.message, 'error'); }
 }
 
-function activateClient(id) {
-  const clients = getClients();
-  const c = clients.find(c => c.id === id);
-  if (c) { c.status = 'Active'; saveClients(clients); renderClients(); showToast(`${c.name} activated.`); }
-}
-
-function deleteClient(id) {
-  let clients = getClients();
-  const c = clients.find(c => c.id === id);
-  clients = clients.filter(c => c.id !== id);
-  saveClients(clients);
-  renderClients();
-  showToast(`${c ? c.name : 'Client'} deleted.`);
+async function deleteClient(id) {
+  try {
+    await apiFetch(`/admin/clients/${id}`, { method: 'DELETE' });
+    showToast('Client deleted.');
+    await loadClients();
+  } catch (e) { showToast(e.message, 'error'); }
 }
 
 // ============================================================
-// CONFIRMATION MODAL
+// CONFIRM MODAL
 // ============================================================
 
 let confirmCallback = null;
@@ -1046,20 +1049,26 @@ document.querySelectorAll('.modal-overlay').forEach(overlay => {
 });
 
 // ============================================================
-// FORM SUBMISSIONS
-// ============================================================
-
-document.getElementById('userForm').addEventListener('submit', saveUser);
-document.getElementById('proForm').addEventListener('submit', savePro);
-document.getElementById('clientForm').addEventListener('submit', saveClient);
-
-// ============================================================
-// SEARCH HANDLERS
+// SEARCH & APPROVE ALL
 // ============================================================
 
 document.getElementById('userSearchInput').addEventListener('input', renderUsers);
 document.getElementById('proSearchInput').addEventListener('input', renderProfessionals);
 document.getElementById('clientSearchInput').addEventListener('input', renderClients);
+
+document.getElementById('approveAllBtn').addEventListener('click', async function() {
+  const pending = allProfessionals.filter(p => p.approval_status === 'pending');
+  if (pending.length === 0) { showToast('No pending professionals to approve.', 'error'); return; }
+  confirmAction('Approve All', `Approve ${pending.length} pending professional(s)?`, async function() {
+    try {
+      for (const p of pending) {
+        await apiFetch(`/admin/professionals/${p.id}/approve`, { method: 'PUT' });
+      }
+      showToast(`${pending.length} professional(s) approved.`);
+      await loadProfessionals();
+    } catch (e) { showToast(e.message, 'error'); }
+  });
+});
 
 // ============================================================
 // ADD BUTTONS
@@ -1069,24 +1078,86 @@ document.getElementById('addUserBtn').addEventListener('click', () => openUserMo
 document.getElementById('addClientBtn').addEventListener('click', () => openClientModal(null, false));
 
 // ============================================================
-// APPROVE ALL
+// SIDEBAR, THEME, TABS, ETC. (unchanged)
 // ============================================================
 
-document.getElementById('approveAllBtn').addEventListener('click', function() {
-  const pros = getProfessionals();
-  const pending = pros.filter(p => p.status === 'Pending');
-  if (pending.length === 0) { showToast('No pending professionals to approve.', 'error'); return; }
-  confirmAction('Approve All', `Approve ${pending.length} pending professional${pending.length > 1 ? 's' : ''}?`, function() {
-    pending.forEach(p => p.status = 'Verified');
-    saveProfessionals(pros);
-    renderProfessionals();
-    showToast(`${pending.length} professional${pending.length > 1 ? 's' : ''} approved.`);
+function logout() {
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('smartlishe_role');
+  window.location.href = '../login.html';
+}
+
+function initTheme() {
+  const saved = localStorage.getItem('smartlishe_theme') || 'light';
+  document.body.setAttribute('data-theme', saved);
+  if (saved === 'dark') document.body.classList.add('dark-mode');
+  const icon = document.getElementById('themeIcon');
+  if (icon) icon.className = saved === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+  const toggle = document.getElementById('themeToggle');
+  if (toggle) {
+    toggle.addEventListener('click', function() {
+      document.body.classList.toggle('dark-mode');
+      const isDark = document.body.classList.contains('dark-mode');
+      if (icon) icon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+      localStorage.setItem('smartlishe_theme', isDark ? 'dark' : 'light');
+    });
+  }
+}
+
+function initSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  const hamburger = document.getElementById('hamburgerBtn');
+  const topbarHamburger = document.getElementById('topbarHamburger');
+
+  function openSidebar() { sidebar.classList.add('open'); overlay.classList.add('show'); }
+  function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('show'); }
+  if (hamburger) hamburger.addEventListener('click', openSidebar);
+  if (topbarHamburger) topbarHamburger.addEventListener('click', openSidebar);
+  if (overlay) overlay.addEventListener('click', closeSidebar);
+
+  function toggleDropdown(headerId, dropdownId) {
+    const header = document.getElementById(headerId);
+    const dropdown = document.getElementById(dropdownId);
+    if (!header || !dropdown) return;
+    header.addEventListener('click', function(e) {
+      e.preventDefault();
+      const isOpen = dropdown.classList.contains('open');
+      document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+      document.querySelectorAll('.dropdown-chevron').forEach(c => c.classList.remove('open'));
+      if (!isOpen) {
+        dropdown.classList.add('open');
+        const chevron = header.querySelector('.dropdown-chevron');
+        if (chevron) chevron.classList.add('open');
+      }
+    });
+  }
+  toggleDropdown('accountsToggle', 'accountsDropdown');
+  toggleDropdown('operationsToggle', 'operationsDropdown');
+
+  document.querySelectorAll('.nav-link').forEach(function(link) {
+    link.addEventListener('click', function() {
+      if (window.innerWidth <= 768) closeSidebar();
+    });
   });
-});
+}
 
-// ============================================================
-// TABS
-// ============================================================
+function loadAdminInfo() {
+  apiFetch('/profile').then(data => {
+    if (data.success && data.data) {
+      const name = data.data.first_name || data.data.email || 'Admin';
+      document.getElementById('adminName').textContent = name;
+      document.getElementById('adminAvatar').textContent = name.charAt(0).toUpperCase();
+    }
+  }).catch(() => {});
+}
+
+function initNotifications() {
+  document.getElementById('notifBtn').addEventListener('click', function() {
+    const pending = allProfessionals.filter(p => p.approval_status === 'pending').length;
+    showToast(pending > 0 ? `You have ${pending} pending professional approvals.` : 'No pending professional approvals.');
+  });
+}
 
 function initTabs() {
   const container = document.getElementById('accountTabs');
@@ -1106,10 +1177,9 @@ function initTabs() {
         panels[key].classList.toggle('active', key === target);
       });
       history.pushState(null, '', '#' + target);
-      // Re-render the active tab
-      if (target === 'users') renderUsers();
-      else if (target === 'professionals') renderProfessionals();
-      else if (target === 'clients') renderClients();
+      if (target === 'users') loadUsers();
+      else if (target === 'professionals') loadProfessionals();
+      else if (target === 'clients') loadClients();
     });
   });
 
@@ -1119,109 +1189,25 @@ function initTabs() {
     Object.keys(panels).forEach(function(key) {
       panels[key].classList.toggle('active', key === hash);
     });
+    if (hash === 'users') loadUsers();
+    else if (hash === 'professionals') loadProfessionals();
+    else if (hash === 'clients') loadClients();
   }
-}
-
-// ============================================================
-// THEME & SIDEBAR
-// ============================================================
-
-function initTheme() {
-  const saved = Store.get('theme', 'light');
-  document.body.setAttribute('data-theme', saved);
-  if (saved === 'dark') document.body.classList.add('dark-mode');
-  const icon = document.getElementById('themeIcon');
-  if (icon) icon.className = saved === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-  const toggle = document.getElementById('themeToggle');
-  if (toggle) {
-    toggle.addEventListener('click', function() {
-      document.body.classList.toggle('dark-mode');
-      const isDark = document.body.classList.contains('dark-mode');
-      if (icon) icon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-      Store.set('theme', isDark ? 'dark' : 'light');
-      document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
-    });
-  }
-}
-
-function initSidebar() {
-  const sidebar = document.getElementById('sidebar');
-  const overlay = document.getElementById('sidebarOverlay');
-  const hamburger = document.getElementById('hamburgerBtn');
-  const topbarHamburger = document.getElementById('topbarHamburger');
-
-  function openSidebar() { sidebar.classList.add('open'); overlay.classList.add('show'); }
-  function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('show'); }
-
-  if (hamburger) hamburger.addEventListener('click', openSidebar);
-  if (topbarHamburger) topbarHamburger.addEventListener('click', openSidebar);
-  if (overlay) overlay.addEventListener('click', closeSidebar);
-
-  function toggleDropdown(headerId, dropdownId) {
-    const header = document.getElementById(headerId);
-    const dropdown = document.getElementById(dropdownId);
-    if (!header || !dropdown) return;
-    header.addEventListener('click', function(e) {
-      e.preventDefault();
-      const isOpen = dropdown.classList.contains('open');
-      document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
-      document.querySelectorAll('.dropdown-chevron').forEach(c => c.classList.remove('open'));
-      if (!isOpen) {
-        dropdown.classList.add('open');
-        header.querySelector('.dropdown-chevron').classList.add('open');
-      }
-    });
-  }
-  toggleDropdown('accountsToggle', 'accountsDropdown');
-  toggleDropdown('operationsToggle', 'operationsDropdown');
-
-  document.querySelectorAll('.nav-link').forEach(function(link) {
-    link.addEventListener('click', function() {
-      if (window.innerWidth <= 768) closeSidebar();
-    });
-  });
-}
-
-function loadAdminInfo() {
-  const profile = Store.get('profileData', null);
-  const profileRaw = localStorage.getItem('smartlishe_profile');
-  let name = 'Admin';
-  if (profileRaw) {
-    try { const p = JSON.parse(profileRaw); if (p.name) name = p.name; } catch(e) {}
-  }
-  if (profile && profile.name) name = profile.name;
-  document.getElementById('adminName').textContent = name;
-  document.getElementById('adminAvatar').textContent = name.charAt(0).toUpperCase();
-}
-
-function initNotifications() {
-  document.getElementById('notifBtn').addEventListener('click', function() {
-    showToast('You have ' + (getProfessionals().filter(p => p.status === 'Pending').length) + ' pending professional approvals.');
-  });
-}
-
-function initSearch() {
-  document.getElementById('globalSearch').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter' && e.target.value.trim()) {
-      showToast('Searching for "' + e.target.value.trim() + '"...');
-    }
-  });
 }
 
 // ============================================================
 // BOOT
 // ============================================================
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
   initTheme();
   initSidebar();
   loadAdminInfo();
   initTabs();
-  renderUsers();
-  renderProfessionals();
-  renderClients();
+  await Promise.all([loadUsers(), loadProfessionals(), loadClients()]);
   initNotifications();
-  initSearch();
+
+  console.log('✅ Accounts page (full backend CRUD) ready – no toasts on sidebar');
 });
 </script>
 </body>

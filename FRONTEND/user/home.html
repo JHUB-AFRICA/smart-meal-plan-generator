@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
 <title>Smart Lishe — Home</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -24,7 +24,6 @@
 
 <!-- ══ NO AUTO-REDIRECT — Home page always loads ══ -->
 <script>
-// Just log the current state for debugging, but don't auto-redirect
 (function(){
   var role = localStorage.getItem('smartlishe_role') || localStorage.getItem('role');
   var loggedIn = localStorage.getItem('smartlishe_logged_in') === 'true';
@@ -57,12 +56,9 @@
       <a href="contact.html" class="nav-link"><i class="fa-solid fa-envelope"></i> Contact</a>
 
       <div class="nav-section-divider"><span>Account</span><i class="fa-solid fa-user-gear"></i></div>
-      <!-- ✅ Sign In → Always goes to Login Page -->
       <a href="../auth/login.html"    class="nav-link" id="navSignIn"><i class="fa-solid fa-right-to-bracket"></i> Sign In</a>
-      <!-- ✅ Register → Register Page -->
       <a href="../auth/register.html" class="nav-link" id="navRegister"><i class="fa-solid fa-user-plus"></i> Register</a>
 
-      <!-- shown only when logged in -->
       <div id="featureNav" style="display:none;">
         <div class="nav-section-divider"><span>My App</span><i class="fa-solid fa-layer-group"></i></div>
         <a href="dashboard.html"         class="nav-link"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
@@ -101,7 +97,6 @@
       </div>
       <div class="topbar-actions">
         <button class="icon-btn" id="notifBtn"><i class="fa-regular fa-bell"></i><span class="dot"></span></button>
-        <!-- ✅ Guest → Login Page, Logged in → Dashboard (updated by JS) -->
         <a href="../auth/login.html" class="profile-chip" id="topbarChip" style="text-decoration:none;cursor:pointer;">
           <div class="avatar" id="topbarAvatar"><i class="fa-solid fa-user" style="font-size:.8rem;"></i></div>
           <span class="label" id="topbarName">Guest</span>
@@ -121,9 +116,7 @@
               <h1>The food you grew up on <em>is the diet plan you've been looking for.</em></h1>
               <p class="lead">Stop fighting your culture to eat healthy. Smart Lishe turns ugali, sukuma wiki, githeri and the rest of your kitchen into a science-backed nutrition plan.</p>
               <div class="hero-ctas">
-                <!-- ✅ Get Started → Register Page -->
                 <a href="../auth/register.html" class="btn btn-primary"><i class="fa-solid fa-user-plus"></i> Get Started Free</a>
-                <!-- ✅ Sign In → Always goes to Login Page -->
                 <a href="../auth/login.html"    class="btn btn-ghost"><i class="fa-solid fa-right-to-bracket"></i> Sign In</a>
               </div>
               <div class="hero-stats-row">
@@ -232,9 +225,7 @@
         <div class="quick-access" id="quickAccess">
           <div class="qa-title" id="qaTitle">🔒 Sign in or register to access all features</div>
           <div class="qa-links" id="qaLinks">
-            <!-- ✅ Sign In → Always goes to Login Page -->
             <a href="../auth/login.html"><i class="fa-solid fa-right-to-bracket"></i> Sign In</a>
-            <!-- ✅ Register → Register Page -->
             <a href="../auth/register.html"><i class="fa-solid fa-user-plus"></i> Register</a>
           </div>
         </div>
@@ -251,38 +242,49 @@
               <div class="icon-wrap" style="background:var(--sukuma);"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
               <h3>AI Meal Generator</h3>
               <p>Tell us your age, weight, goal and health condition — get a full meal plan built from real Kenyan dishes.</p>
-              <!-- ✅ Register to Try → Register Page -->
-              <a href="../auth/register.html" class="btn btn-secondary btn-sm" style="margin-top:12px;width:auto;">Register to Try →</a>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;">
+                <a href="../auth/register.html" class="btn btn-secondary btn-sm">Register to Try →</a>
+              </div>
             </div>
             <div class="feature-card">
               <div class="icon-wrap" style="background:var(--char);"><i class="fa-solid fa-camera-retro"></i></div>
               <h3>NutriScan</h3>
               <p>Snap or upload a photo of your plate — get an instant breakdown of calories, protein, carbs, fat and a health score.</p>
-              <a href="../auth/register.html" class="btn btn-secondary btn-sm" style="margin-top:12px;width:auto;">Register to Try →</a>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;">
+                <a href="../auth/register.html" class="btn btn-secondary btn-sm">Register to Try →</a>
+              </div>
             </div>
             <div class="feature-card">
               <div class="icon-wrap" style="background:var(--maize-deep);"><i class="fa-solid fa-heart-pulse"></i></div>
               <h3>Health Condition Guidance</h3>
               <p>Diabetes, hypertension, pregnancy? Foods to favour, foods to avoid, and meal ideas built around your condition.</p>
-              <a href="../auth/register.html" class="btn btn-secondary btn-sm" style="margin-top:12px;width:auto;">Register to Explore →</a>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;">
+                <a href="../auth/register.html" class="btn btn-secondary btn-sm">Register to Explore →</a>
+              </div>
             </div>
             <div class="feature-card">
               <div class="icon-wrap" style="background:#3D6FA8;"><i class="fa-solid fa-calendar-days"></i></div>
               <h3>Weekly Meal Planner</h3>
               <p>Plan breakfast, lunch, dinner and snacks for the week, then turn it straight into a shopping list — no double work.</p>
-              <a href="../auth/register.html" class="btn btn-secondary btn-sm" style="margin-top:12px;width:auto;">Register to Plan →</a>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;">
+                <a href="../auth/register.html" class="btn btn-secondary btn-sm">Register to Plan →</a>
+              </div>
             </div>
             <div class="feature-card">
               <div class="icon-wrap" style="background:#8B5CB8;"><i class="fa-solid fa-chart-line"></i></div>
               <h3>Real Analytics</h3>
               <p>Track calorie trends, macro balance and water intake over time with a weekly nutrition score that actually means something.</p>
-              <a href="../auth/register.html" class="btn btn-secondary btn-sm" style="margin-top:12px;width:auto;">Register to View →</a>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;">
+                <a href="../auth/register.html" class="btn btn-secondary btn-sm">Register to View →</a>
+              </div>
             </div>
             <div class="feature-card">
               <div class="icon-wrap" style="background:#2D8C82;"><i class="fa-solid fa-comments"></i></div>
               <h3>Ask the AI, Anytime</h3>
               <p>A nutrition chatbot that understands local food — ask about weight loss, diabetes meals, or what to eat before training.</p>
-              <a href="../auth/register.html" class="btn btn-secondary btn-sm" style="margin-top:12px;width:auto;">Register to Chat →</a>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;">
+                <a href="../auth/register.html" class="btn btn-secondary btn-sm">Register to Chat →</a>
+              </div>
             </div>
           </div>
         </div>
@@ -292,10 +294,11 @@
           <div class="cta-banner">
             <h2>Ready to transform your nutrition?</h2>
             <p>Join thousands of Kenyans using Smart Lishe to eat better, manage health conditions, and reach their goals.</p>
-            <!-- ✅ Get Started → Register Page -->
-            <a href="../auth/register.html" class="btn btn-primary">
-              <i class="fa-solid fa-user-plus"></i> Get Started Free
-            </a>
+            <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;">
+              <a href="../auth/register.html" class="btn btn-primary">
+                <i class="fa-solid fa-user-plus"></i> Get Started Free
+              </a>
+            </div>
           </div>
         </div>
 
@@ -323,9 +326,7 @@
             <div class="footer-col">
               <h4>Account</h4>
               <ul>
-                <!-- ✅ Sign In → Login Page -->
                 <li><a href="../auth/login.html">Sign In</a></li>
-                <!-- ✅ Register → Register Page -->
                 <li><a href="../auth/register.html">Register</a></li>
               </ul>
             </div>
@@ -347,32 +348,14 @@
   </div>
 </div>
 
-<!-- ══ CHATBOT ══ -->
-<button class="chatbot-fab" id="chatbotFab"><i class="fa-solid fa-robot"></i><span class="ping"></span></button>
-<div class="chatbot-panel" id="chatbotPanel">
-  <div class="chatbot-head">
-    <div class="ai-avatar"><i class="fa-solid fa-robot"></i></div>
-    <div class="info"><strong>Smart Lishe Assistant</strong><span>Online</span></div>
-    <button class="chatbot-close" id="chatbotClose"><i class="fa-solid fa-xmark"></i></button>
-  </div>
-  <div class="chatbot-body" id="chatbotBody"></div>
-  <div class="chatbot-suggestions">
-    <button class="chip-suggestion" data-q="weight loss">Weight loss tips</button>
-    <button class="chip-suggestion" data-q="diabetes meal">Diabetes-friendly meal</button>
-    <button class="chip-suggestion" data-q="water intake">How much water?</button>
-  </div>
-  <div class="chatbot-input-row">
-    <input type="text" id="chatbotInput" placeholder="Ask about meals, health, recipes...">
-    <button class="chatbot-send" id="chatbotSend"><i class="fa-solid fa-paper-plane"></i></button>
-  </div>
-</div>
+<!-- ══ NO AI CHATBOT ON HOME PAGE ══ -->
 
 <button class="scroll-top-btn" id="scrollTopBtn"><i class="fa-solid fa-arrow-up"></i></button>
 <div class="toast-stack" id="toastStack"></div>
 
 <script>
 /* ============================================================
-   SMART LISHE — home.html
+   SMART LISHE — home.html (No Upgrade Buttons, No AI Chatbot)
    ============================================================ */
 
 var Store = {
@@ -448,12 +431,10 @@ function syncState(){
     var fn=(profile&&profile.firstName)||(account&&account.firstName)||'User';
     if(nameEl) nameEl.textContent=fn;
     if(avEl)   avEl.textContent=fn.charAt(0).toUpperCase();
-    // ✅ When logged in, topbar chip goes to Dashboard
     if(chipEl) chipEl.href='dashboard.html';
   } else {
     if(nameEl) nameEl.textContent='Guest';
     if(avEl)   avEl.innerHTML='<i class="fa-solid fa-user" style="font-size:.8rem;"></i>';
-    // ✅ When guest, topbar chip goes to Login Page
     if(chipEl) chipEl.href='../auth/login.html';
   }
 
@@ -474,7 +455,6 @@ function syncState(){
       '<a href="profile.html"><i class="fa-solid fa-user"></i> Profile</a>';
     var fn3=document.getElementById('featureNav');
     if(fn3) fn3.style.display='block';
-    // Hide login/register in sidebar when logged in
     var signIn = document.getElementById('navSignIn');
     var register = document.getElementById('navRegister');
     if(signIn) signIn.style.display='none';
@@ -532,55 +512,6 @@ function initScroll(){
   b.addEventListener('click',function(){ window.scrollTo({top:0,behavior:'smooth'}); });
 }
 
-var greeted=false;
-var KB=[
-  {keys:['weight loss','lose weight','slim'],reply:'For healthy weight loss, aim for a 300–500 kcal daily deficit. Ugali with sukuma wiki and lean protein is a great base.'},
-  {keys:['diabetes','diabetic','blood sugar'],reply:'For diabetes, choose high-fibre carbs in moderate portions — mukimo, githeri and brown ugali are better than plain white rice.'},
-  {keys:['water','hydration','how much water'],reply:'Most adults need about 2–2.5 litres (8 glasses) per day. Smart Lishe\'s water tracker can remind you!'},
-  {keys:['protein','muscle','build'],reply:'For muscle, aim for 1.6–2g protein per kg bodyweight. Nyama choma, eggs, fish and beans are great Kenyan sources.'},
-  {keys:['hypertension','blood pressure'],reply:'Reduce salt and processed foods. Favour potassium-rich foods like bananas, sweet potatoes and leafy greens.'},
-];
-function botReply(txt){
-  var l=txt.toLowerCase();
-  for(var i=0;i<KB.length;i++) for(var j=0;j<KB[i].keys.length;j++) if(l.indexOf(KB[i].keys[j])!==-1) return KB[i].reply;
-  return "I'm still learning that one! Try asking about weight loss, diabetes, hydration, or protein.";
-}
-function addMsg(txt,who){
-  var b=document.getElementById('chatbotBody'); if(!b) return;
-  var d=document.createElement('div'); d.className='chat-msg '+who;
-  var t=new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
-  d.innerHTML='<div class="bubble">'+txt+'</div><span class="timestamp">'+t+'</span>';
-  b.appendChild(d); b.scrollTop=b.scrollHeight;
-}
-function sendMsg(txt){
-  if(!txt||!txt.trim()) return;
-  addMsg(txt,'user');
-  var inp=document.getElementById('chatbotInput'); if(inp) inp.value='';
-  var b=document.getElementById('chatbotBody');
-  var ty=document.createElement('div'); ty.className='chat-msg bot'; ty.id='tyDot';
-  ty.innerHTML='<div class="bubble typing-dots"><span></span><span></span><span></span></div>';
-  if(b){ b.appendChild(ty); b.scrollTop=b.scrollHeight; }
-  setTimeout(function(){ var e=document.getElementById('tyDot'); if(e)e.remove(); addMsg(botReply(txt),'bot'); },700+Math.random()*400);
-}
-function initChatbot(){
-  var fab=document.getElementById('chatbotFab');
-  var pan=document.getElementById('chatbotPanel');
-  var cl=document.getElementById('chatbotClose');
-  var inp=document.getElementById('chatbotInput');
-  var snd=document.getElementById('chatbotSend');
-  if(!fab||!pan) return;
-  fab.addEventListener('click',function(){
-    pan.classList.toggle('open');
-    if(pan.classList.contains('open')&&!greeted){ greeted=true; addMsg("Habari! I'm your Smart Lishe assistant. Ask me about meals, health conditions, weight goals, or hydration.",'bot'); }
-  });
-  if(cl) cl.addEventListener('click',function(){ pan.classList.remove('open'); });
-  if(snd) snd.addEventListener('click',function(){ sendMsg(inp?inp.value:''); });
-  if(inp) inp.addEventListener('keypress',function(e){ if(e.key==='Enter') sendMsg(inp.value); });
-  document.querySelectorAll('.chip-suggestion').forEach(function(c){
-    c.addEventListener('click',function(){ sendMsg(c.dataset.q); });
-  });
-}
-
 function initNotif(){
   var b=document.getElementById('notifBtn');
   if(b) b.addEventListener('click',function(){ toast("You're all caught up — no new notifications."); });
@@ -598,7 +529,6 @@ document.addEventListener('DOMContentLoaded',function(){
   initSidebar();
   initScroll();
   initHero();
-  initChatbot();
   initNotif();
   initSearch();
   syncState();

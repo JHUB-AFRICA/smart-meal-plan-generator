@@ -2,18 +2,21 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
 <title>Dashboard — Smart Lishe</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<!-- ===== YOUR EXISTING STYLE.CSS ===== -->
 <link rel="stylesheet" href="style.css">
+
+<!-- ===== DASHBOARD‑SPECIFIC OVERRIDES (minimal) ===== -->
 <style>
-  /* ===== PROFILE BANNER STYLES ===== */
+  /* ===== PROFILE COMPLETION BANNER (already in your CSS, but we keep it) ===== */
   .profile-banner {
     background: linear-gradient(135deg, #fef3c7, #fde68a);
     border: 1px solid #f59e0b;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-md, 16px);
     padding: 18px 24px;
     display: none;
     align-items: center;
@@ -22,24 +25,10 @@
     margin-bottom: 24px;
     flex-wrap: wrap;
   }
-  .profile-banner.show {
-    display: flex;
-  }
-  .profile-banner .banner-icon {
-    font-size: 1.8rem;
-    color: #d97706;
-  }
-  .profile-banner .banner-text {
-    flex: 1;
-    font-weight: 600;
-    color: #78350f;
-    font-size: 0.95rem;
-  }
-  .profile-banner .banner-text strong {
-    display: block;
-    font-size: 1.05rem;
-    margin-bottom: 2px;
-  }
+  .profile-banner.show { display: flex; }
+  .profile-banner .banner-icon { font-size: 1.8rem; color: #d97706; }
+  .profile-banner .banner-text { flex: 1; font-weight: 600; color: #78350f; font-size: 0.95rem; }
+  .profile-banner .banner-text strong { display: block; font-size: 1.05rem; margin-bottom: 2px; }
   .profile-banner .btn-banner {
     background: #d97706;
     color: #fff;
@@ -56,26 +45,90 @@
     gap: 8px;
     white-space: nowrap;
   }
-  .profile-banner .btn-banner:hover {
-    background: #b45309;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+  .profile-banner .btn-banner:hover { background: #b45309; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3); }
+
+  /* ===== UPGRADE BANNER (new) ===== */
+  .upgrade-banner {
+    background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+    border: 1px solid #10b981;
+    border-radius: var(--radius-md, 16px);
+    padding: 16px 24px;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
   }
+  .upgrade-banner.show { display: flex; }
+  .upgrade-banner .ub-icon { font-size: 1.8rem; color: #047857; }
+  .upgrade-banner .ub-text { flex: 1; font-weight: 600; color: #065f46; font-size: 0.95rem; }
+  .upgrade-banner .ub-text strong { display: block; font-size: 1.05rem; margin-bottom: 2px; }
+  .upgrade-banner .btn-upgrade {
+    background: #047857;
+    color: #fff;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+  }
+  .upgrade-banner .btn-upgrade:hover { background: #065f46; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(4, 120, 87, 0.3); }
+
+  /* ===== FLOATING AI BUTTON ===== */
+  .floating-ai-btn {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 999;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--sukuma, #2b7a4b);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    box-shadow: 0 6px 20px rgba(43, 122, 75, 0.4);
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: none;
+    cursor: pointer;
+  }
+  .floating-ai-btn:hover { transform: scale(1.05); box-shadow: 0 8px 28px rgba(43, 122, 75, 0.5); }
+  .floating-ai-btn i { line-height: 1; }
+
   @media (max-width: 600px) {
-    .profile-banner {
+    .profile-banner, .upgrade-banner {
       flex-direction: column;
       text-align: center;
       padding: 16px;
     }
-    .profile-banner .banner-icon {
+    .profile-banner .banner-icon,
+    .upgrade-banner .ub-icon {
       font-size: 1.4rem;
+    }
+    .floating-ai-btn {
+      width: 52px;
+      height: 52px;
+      font-size: 1.4rem;
+      bottom: 20px;
+      right: 20px;
     }
   }
 </style>
 </head>
 <body>
 
-<!-- ===== AUTH CHECK - Redirect if NOT logged in ===== -->
+<!-- ===== AUTH CHECK ===== -->
 <script>
 (function() {
   const email = localStorage.getItem('email');
@@ -110,7 +163,7 @@
 
 <div class="app-shell">
 
-  <!-- ===== SIDEBAR ===== -->
+  <!-- ===== SIDEBAR (no About / Contact) ===== -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
       <div class="mark"><i class="fa-solid fa-seedling"></i></div>
@@ -153,19 +206,19 @@
         </div>
       </div>
       
+      <!-- ===== PROFILE – Only User Profile, Settings, and Logout (no About/Contact) ===== -->
       <div class="nav-section-divider"><span>Profile</span><i class="fa-solid fa-user-gear"></i></div>
       <div class="service-group" data-group="profile">
         <button type="button" class="service-group-header" data-group-toggle="profile">
           <div class="sg-icon-wrap" style="background:#3D6FA8;"><i class="fa-solid fa-user"></i></div>
           <span class="sg-title">Profile</span>
-          <span class="sg-count">4</span>
+          <span class="sg-count">2</span>
           <span class="sg-dropdown-hint"><i class="fa-solid fa-chevron-down sg-chevron"></i></span>
         </button>
         <div class="service-group-body">
           <a href="profile.html" class="nav-link"><i class="fa-solid fa-id-card"></i> User Profile</a>
           <a href="settings.html" class="nav-link"><i class="fa-solid fa-gear"></i> Settings</a>
-          <a href="about.html" class="nav-link"><i class="fa-solid fa-circle-info"></i> About</a>
-          <a href="contact.html" class="nav-link"><i class="fa-solid fa-envelope"></i> Contact</a>
+          <!-- About and Contact removed – only on landing page -->
         </div>
       </div>
 
@@ -194,8 +247,8 @@
       <div class="topbar-actions">
         <button class="icon-btn" id="notifBtn"><i class="fa-regular fa-bell"></i><span class="dot"></span></button>
         <a href="profile.html" class="profile-chip" style="cursor:pointer;">
-          <div class="avatar" id="topbarAvatar">W</div>
-          <span class="label" id="topbarName">Wanjiru</span>
+          <div class="avatar" id="topbarAvatar">U</div>
+          <span class="label" id="topbarName">User</span>
         </a>
       </div>
     </header>
@@ -205,7 +258,7 @@
 
         <div class="dash-welcome">
           <div>
-            <h2 id="dashGreeting">Habari, Wanjiru 👋</h2>
+            <h2 id="dashGreeting">Habari, User 👋</h2>
             <p>Here's how your nutrition is looking today.</p>
           </div>
           <div class="date-chip font-mono" id="dashDate">Mon, 22 Jun 2026</div>
@@ -223,16 +276,29 @@
           </a>
         </div>
 
+        <!-- ===== UPGRADE BANNER (only for free users) ===== -->
+        <div class="upgrade-banner" id="upgradeBanner">
+          <div class="ub-icon"><i class="fa-regular fa-crown"></i></div>
+          <div class="ub-text">
+            <strong>Unlock Premium Features</strong>
+            <span>Get unlimited AI requests, advanced analytics, priority support, and more – only KES 2,500/month.</span>
+          </div>
+          <a href="billing.html" class="btn-upgrade">
+            <i class="fa-solid fa-arrow-right"></i> Upgrade Now
+          </a>
+        </div>
+
+        <!-- Stats Cards -->
         <div class="stat-row">
           <div class="stat-bar-card">
             <div class="sb-icon" style="background:var(--sukuma);"><i class="fa-solid fa-fire"></i></div>
             <div class="sb-main">
               <div class="sb-top-row">
                 <span class="sb-label">Calories today</span>
-                <span class="sb-value" id="statCalValue">1,420 <span>/ 2,200 kcal</span></span>
+                <span class="sb-value" id="statCalValue">0 <span>/ 0 kcal</span></span>
               </div>
               <div class="sb-track"><div class="sb-fill" id="statCalBar" style="width:0%;background:var(--sukuma);"></div></div>
-              <div class="sb-sub"><span>780 kcal remaining</span><span id="statCalPct">64%</span></div>
+              <div class="sb-sub"><span id="statCalRemaining">0 kcal remaining</span><span id="statCalPct">0%</span></div>
             </div>
           </div>
 
@@ -241,7 +307,7 @@
             <div class="sb-main">
               <div class="sb-top-row">
                 <span class="sb-label">Macros today</span>
-                <span class="sb-value">68g <span>P</span> · 180g <span>C</span> · 38g <span>F</span></span>
+                <span class="sb-value" id="statMacroValue">0g <span>P</span> · 0g <span>C</span> · 0g <span>F</span></span>
               </div>
               <div class="sb-track" id="statMacroStackedBar">
                 <div class="sb-fill" id="statMacroProteinSeg" style="width:0%;background:var(--char);"></div>
@@ -250,9 +316,9 @@
               </div>
               <div class="sb-sub">
                 <span class="sb-legend">
-                  <span><i class="fa-solid fa-circle" style="color:var(--char);"></i> Protein <span id="statMacroProteinPct">62%</span></span>
-                  <span><i class="fa-solid fa-circle" style="color:var(--maize-deep);"></i> Carbs <span id="statMacroCarbsPct">69%</span></span>
-                  <span><i class="fa-solid fa-circle" style="color:#3D6FA8;"></i> Fat <span id="statMacroFatPct">54%</span></span>
+                  <span><i class="fa-solid fa-circle" style="color:var(--char);"></i> Protein <span id="statMacroProteinPct">0%</span></span>
+                  <span><i class="fa-solid fa-circle" style="color:var(--maize-deep);"></i> Carbs <span id="statMacroCarbsPct">0%</span></span>
+                  <span><i class="fa-solid fa-circle" style="color:#3D6FA8;"></i> Fat <span id="statMacroFatPct">0%</span></span>
                 </span>
               </div>
             </div>
@@ -263,10 +329,10 @@
             <div class="sb-main">
               <div class="sb-top-row">
                 <span class="sb-label">Water intake</span>
-                <span class="sb-value" id="statWaterValue">1.6<span>L / 2.5L</span></span>
+                <span class="sb-value" id="statWaterValue">0<span>L / 0L</span></span>
               </div>
               <div class="sb-track"><div class="sb-fill" id="statWaterBar" style="width:0%;background:#3D6FA8;"></div></div>
-              <div class="sb-sub"><span>4 of 8 glasses</span><a href="water-tracker.html" style="font-weight:700;color:var(--accent-3);">Log a glass →</a></div>
+              <div class="sb-sub"><span id="statWaterRemaining">0 glasses</span><a href="water-tracker.html" style="font-weight:700;color:var(--accent-3);">Log a glass →</a></div>
             </div>
           </div>
         </div>
@@ -278,10 +344,10 @@
               <a href="analytics.html">Full analytics →</a>
             </div>
             <div class="weekly-bars" id="weeklyBarsChart"></div>
-            <div class="macro-ring-row">
-              <div class="macro-item"><strong style="color:var(--sukuma);">42%</strong><span class="label">Carbs</span></div>
-              <div class="macro-item"><strong style="color:var(--char);">28%</strong><span class="label">Protein</span></div>
-              <div class="macro-item"><strong style="color:var(--maize-deep);">30%</strong><span class="label">Fat</span></div>
+            <div class="macro-ring-row" id="macroRingRow">
+              <div class="macro-item"><strong style="color:var(--sukuma);">0%</strong><span class="label">Carbs</span></div>
+              <div class="macro-item"><strong style="color:var(--char);">0%</strong><span class="label">Protein</span></div>
+              <div class="macro-item"><strong style="color:var(--maize-deep);">0%</strong><span class="label">Fat</span></div>
             </div>
           </div>
 
@@ -290,17 +356,17 @@
               <h3>Goal progress</h3>
               <a href="goal-tracker.html">Tracker →</a>
             </div>
-            <div class="goal-mini">
-              <div class="goal-mini-row"><span>Weight goal</span><strong>71.2kg → 66kg</strong></div>
-              <div class="progress-track"><div class="progress-fill" style="width:38%;background:var(--sukuma);"></div></div>
+            <div class="goal-mini" id="goalWeight">
+              <div class="goal-mini-row"><span>Weight goal</span><strong>—</strong></div>
+              <div class="progress-track"><div class="progress-fill" style="width:0%;background:var(--sukuma);"></div></div>
             </div>
-            <div class="goal-mini">
-              <div class="goal-mini-row"><span>Weekly calorie target</span><strong>5 / 7 days on plan</strong></div>
-              <div class="progress-track"><div class="progress-fill" style="width:71%;background:var(--char);"></div></div>
+            <div class="goal-mini" id="goalCalories">
+              <div class="goal-mini-row"><span>Weekly calorie target</span><strong>—</strong></div>
+              <div class="progress-track"><div class="progress-fill" style="width:0%;background:var(--char);"></div></div>
             </div>
-            <div class="goal-mini">
-              <div class="goal-mini-row"><span>Water streak</span><strong>4 days</strong></div>
-              <div class="progress-track"><div class="progress-fill" style="width:57%;background:#3D6FA8;"></div></div>
+            <div class="goal-mini" id="goalWater">
+              <div class="goal-mini-row"><span>Water streak</span><strong>—</strong></div>
+              <div class="progress-track"><div class="progress-fill" style="width:0%;background:#3D6FA8;"></div></div>
             </div>
           </div>
         </div>
@@ -318,6 +384,11 @@
 
   </div>
 </div>
+
+<!-- ===== FLOATING AI BUTTON ===== -->
+<a href="ai-assistant.html" class="floating-ai-btn" aria-label="AI Assistant">
+  <i class="fa-regular fa-robot"></i>
+</a>
 
 <!-- ===== CHATBOT ===== -->
 <button class="chatbot-fab" id="chatbotFab"><i class="fa-solid fa-robot"></i><span class="ping"></span></button>
@@ -344,7 +415,7 @@
 
 <script>
 // ============================================================
-// SMART LISHE — DASHBOARD
+// SMART LISHE — DASHBOARD (ALL DATA FROM localStorage)
 // ============================================================
 
 const Store = {
@@ -376,7 +447,7 @@ function showToast(message, type = 'success'){
   }, 3500);
 }
 
-// ===== WELCOME MESSAGE FROM PROFILE SETUP (toast) =====
+// ===== WELCOME TOAST =====
 (function checkWelcome() {
   const showWelcome = sessionStorage.getItem('showProfileWelcome') === 'true';
   if (showWelcome) {
@@ -391,12 +462,8 @@ function showToast(message, type = 'success'){
 (function checkProfileCompletion() {
   const banner = document.getElementById('profileBanner');
   if (!banner) return;
-
-  // Check if user profile is complete (using 'profileComplete' flag or userProfile data)
   const profileComplete = Store.get('profileComplete', false);
   const userProfile = Store.get('userProfile', null);
-
-  // If profile is not complete or missing key fields, show banner
   const isComplete = profileComplete && userProfile && userProfile.fullName;
   if (!isComplete) {
     banner.classList.add('show');
@@ -405,6 +472,19 @@ function showToast(message, type = 'success'){
   }
 })();
 
+// ===== UPGRADE BANNER (free users) =====
+(function checkUpgradeBanner() {
+  const banner = document.getElementById('upgradeBanner');
+  if (!banner) return;
+  const membership = localStorage.getItem('user_membership') || 'free';
+  if (membership === 'free') {
+    banner.classList.add('show');
+  } else {
+    banner.classList.remove('show');
+  }
+})();
+
+// ===== THEME =====
 function initTheme(){
   const saved = Store.get('theme', 'light');
   document.body.setAttribute('data-theme', saved);
@@ -418,6 +498,7 @@ function initTheme(){
   });
 }
 
+// ===== SIDEBAR =====
 function initSidebar(){
   const sidebar = document.getElementById('sidebar');
   const overlay = document.getElementById('sidebarOverlay');
@@ -437,82 +518,122 @@ function initSidebar(){
   document.querySelectorAll('.nav-link').forEach(link => link.addEventListener('click', closeSidebar));
 }
 
+// ===== SCROLL TOP =====
 function initScrollTop(){
   const btn = document.getElementById('scrollTopBtn');
   window.addEventListener('scroll', () => btn.classList.toggle('show', window.scrollY > 400));
   btn.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
 }
 
-function initDashboard(){
-  const today = new Date();
-  document.getElementById('dashDate').textContent = today.toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short', year:'numeric' });
-
-  const userProfile = Store.get('userProfile', null);
+// ===== DASHBOARD DATA =====
+function loadDashboardData() {
+  // --- User name ---
+  const userProfile = Store.get('userProfile', {});
   const profile = JSON.parse(localStorage.getItem('smartlishe_profile') || '{}');
   const firstName = localStorage.getItem('firstName') || 'User';
   const email = localStorage.getItem('email') || '';
-  
+
   let userName = 'User';
-  if(userProfile && userProfile.fullName) {
-    userName = userProfile.fullName.split(' ')[0];
-  } else if(profile && profile.name) {
-    userName = profile.name;
-  } else if(firstName && firstName !== 'User') {
-    userName = firstName;
-  } else if(email) {
-    userName = email.split('@')[0];
-  }
+  if (userProfile.fullName) userName = userProfile.fullName.split(' ')[0];
+  else if (profile.name) userName = profile.name;
+  else if (firstName && firstName !== 'User') userName = firstName;
+  else if (email) userName = email.split('@')[0];
 
   document.getElementById('dashGreeting').textContent = `Habari, ${userName} 👋`;
   document.getElementById('topbarName').textContent = userName;
   document.getElementById('topbarAvatar').textContent = userName.charAt(0).toUpperCase();
 
-  const isNewUser = sessionStorage.getItem('newUser') === 'true';
-  if(isNewUser) {
-    setTimeout(() => {
-      showToast(`🎉 Welcome ${userName}! Your journey to better health starts now.`);
-    }, 500);
-    sessionStorage.removeItem('newUser');
-  }
+  // --- Date ---
+  const today = new Date();
+  document.getElementById('dashDate').textContent = today.toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short', year:'numeric' });
 
-  requestAnimationFrame(() => {
-    document.getElementById('statCalBar').style.width = '64%';
-    document.getElementById('statWaterBar').style.width = '64%';
-    document.getElementById('statMacroProteinSeg').style.width = '21%';
-    document.getElementById('statMacroCarbsSeg').style.width = '23%';
-    document.getElementById('statMacroFatSeg').style.width = '18%';
-  });
+  // --- Calories ---
+  const calorieTarget = parseInt(localStorage.getItem('dailyCalorieTarget')) || 2200;
+  const caloriesConsumed = parseInt(localStorage.getItem('caloriesConsumed')) || 0;
+  const calPercent = Math.min(100, Math.round((caloriesConsumed / calorieTarget) * 100));
+  document.getElementById('statCalValue').innerHTML = `${caloriesConsumed} <span>/ ${calorieTarget} kcal</span>`;
+  document.getElementById('statCalBar').style.width = calPercent + '%';
+  document.getElementById('statCalRemaining').textContent = `${Math.max(0, calorieTarget - caloriesConsumed)} kcal remaining`;
+  document.getElementById('statCalPct').textContent = calPercent + '%';
 
+  // --- Macros ---
+  const protein = parseInt(localStorage.getItem('protein')) || 0;
+  const carbs = parseInt(localStorage.getItem('carbs')) || 0;
+  const fat = parseInt(localStorage.getItem('fat')) || 0;
+  const totalMacro = protein + carbs + fat || 1;
+  const proteinPct = Math.round((protein / totalMacro) * 100);
+  const carbsPct = Math.round((carbs / totalMacro) * 100);
+  const fatPct = Math.round((fat / totalMacro) * 100);
+
+  document.getElementById('statMacroValue').innerHTML = `${protein}g <span>P</span> · ${carbs}g <span>C</span> · ${fat}g <span>F</span>`;
+  document.getElementById('statMacroProteinSeg').style.width = Math.min(100, proteinPct) + '%';
+  document.getElementById('statMacroCarbsSeg').style.width = Math.min(100, carbsPct) + '%';
+  document.getElementById('statMacroFatSeg').style.width = Math.min(100, fatPct) + '%';
+  document.getElementById('statMacroProteinPct').textContent = proteinPct + '%';
+  document.getElementById('statMacroCarbsPct').textContent = carbsPct + '%';
+  document.getElementById('statMacroFatPct').textContent = fatPct + '%';
+
+  // --- Water ---
+  const waterTarget = parseFloat(localStorage.getItem('waterTarget')) || 2.5;
+  const waterConsumed = parseFloat(localStorage.getItem('waterConsumed')) || 0;
+  const waterPct = Math.min(100, Math.round((waterConsumed / waterTarget) * 100));
+  document.getElementById('statWaterValue').innerHTML = `${waterConsumed.toFixed(1)}<span>L / ${waterTarget.toFixed(1)}L</span>`;
+  document.getElementById('statWaterBar').style.width = waterPct + '%';
+  const glasses = Math.round(waterConsumed / 0.3);
+  document.getElementById('statWaterRemaining').textContent = `${glasses} of 8 glasses`;
+
+  // --- Weekly bars ---
   const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  const values = [1850, 2100, 1700, 1950, 2200, 1600, 1420];
-  const max = 2400;
+  // Read weekly data from localStorage, or use defaults
+  const weeklyData = JSON.parse(localStorage.getItem('weeklyCalories') || JSON.stringify([1850, 2100, 1700, 1950, 2200, 1600, 1420]));
+  const maxVal = Math.max(...weeklyData, 2400);
   const container = document.getElementById('weeklyBarsChart');
   const todayIndex = (today.getDay() + 6) % 7;
   container.innerHTML = days.map((day, i) => {
-    const heightPct = Math.round((values[i] / max) * 100);
+    const heightPct = Math.round((weeklyData[i] / maxVal) * 100);
     const isToday = i === todayIndex;
     return `<div class="bar-col ${isToday ? 'today' : ''}"><div class="bar" style="height:0%;" data-final-height="${heightPct}%"></div><span>${day}</span></div>`;
   }).join('');
-  requestAnimationFrame(() => {
-    setTimeout(() => {
-      container.querySelectorAll('.bar').forEach(bar => {
-        bar.style.height = bar.dataset.finalHeight;
-      });
-    }, 100);
-  });
+  setTimeout(() => {
+    container.querySelectorAll('.bar').forEach(bar => {
+      bar.style.height = bar.dataset.finalHeight;
+    });
+  }, 150);
 
-  const activity = [
+  // --- Macro ring (weekly average) ---
+  const weeklyMacros = JSON.parse(localStorage.getItem('weeklyMacros') || JSON.stringify({ protein: 28, carbs: 42, fat: 30 }));
+  document.querySelector('#macroRingRow .macro-item:nth-child(1) strong').textContent = weeklyMacros.carbs + '%';
+  document.querySelector('#macroRingRow .macro-item:nth-child(2) strong').textContent = weeklyMacros.protein + '%';
+  document.querySelector('#macroRingRow .macro-item:nth-child(3) strong').textContent = weeklyMacros.fat + '%';
+
+  // --- Goal progress ---
+  const weightGoal = localStorage.getItem('weightGoal') || '—';
+  const currentWeight = localStorage.getItem('currentWeight') || '—';
+  const weightProgress = localStorage.getItem('weightProgress') || 0;
+  document.querySelector('#goalWeight .goal-mini-row strong').textContent = currentWeight + ' → ' + weightGoal;
+  document.querySelector('#goalWeight .progress-fill').style.width = weightProgress + '%';
+
+  const daysOnPlan = parseInt(localStorage.getItem('daysOnPlan')) || 0;
+  document.querySelector('#goalCalories .goal-mini-row strong').textContent = daysOnPlan + ' / 7 days on plan';
+  document.querySelector('#goalCalories .progress-fill').style.width = Math.min(100, Math.round((daysOnPlan / 7) * 100)) + '%';
+
+  const waterStreak = parseInt(localStorage.getItem('waterStreak')) || 0;
+  document.querySelector('#goalWater .goal-mini-row strong').textContent = waterStreak + ' days';
+  document.querySelector('#goalWater .progress-fill').style.width = Math.min(100, Math.round((waterStreak / 7) * 100)) + '%';
+
+  // --- Recent meal activity ---
+  const meals = JSON.parse(localStorage.getItem('recentMeals') || JSON.stringify([
     { name:'Breakfast: Uji ya Mtama with groundnuts', time:'7:15 AM', cal:320, icon:'fa-mug-hot', color:'var(--maize-deep)' },
     { name:'Snack: Boiled arrowroot with tea', time:'10:30 AM', cal:180, icon:'fa-leaf', color:'var(--sukuma)' },
     { name:'Lunch: Ugali, sukuma wiki & omena', time:'1:05 PM', cal:610, icon:'fa-bowl-food', color:'var(--char)' },
     { name:'Snack: A glass of mursik', time:'4:00 PM', cal:90, icon:'fa-glass-water', color:'#3D6FA8' },
-    { name:'Dinner: Githeri with avocado', time:'7:45 PM', cal:520, icon:'fa-utensils', color:'var(--maize-deep)' },
-  ];
-  document.getElementById('recentActivityList').innerHTML = activity.map(a => `
+    { name:'Dinner: Githeri with avocado', time:'7:45 PM', cal:520, icon:'fa-utensils', color:'var(--maize-deep)' }
+  ]));
+  document.getElementById('recentActivityList').innerHTML = meals.map(m => `
     <div class="activity-item">
-      <div class="a-icon" style="background:${a.color};"><i class="fa-solid ${a.icon}"></i></div>
-      <div class="a-info"><strong>${a.name}</strong><span>${a.time}</span></div>
-      <div class="a-cal">${a.cal} kcal</div>
+      <div class="a-icon" style="background:${m.color};"><i class="fa-solid ${m.icon}"></i></div>
+      <div class="a-info"><strong>${m.name}</strong><span>${m.time}</span></div>
+      <div class="a-cal">${m.cal} kcal</div>
     </div>
   `).join('');
 }
@@ -605,7 +726,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initTheme();
   initSidebar();
   initScrollTop();
-  initDashboard();
+  loadDashboardData();
   initChatbot();
   initNotifications();
   initGlobalSearch();
