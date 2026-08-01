@@ -1,8 +1,8 @@
-"""initial schema
+"""initial_schema
 
-Revision ID: 9099f7629162
+Revision ID: b1c39b65fc91
 Revises: 
-Create Date: 2026-08-01 22:00:42.969551
+Create Date: 2026-08-02 00:13:43.800121
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = '9099f7629162'
+revision = 'b1c39b65fc91'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -65,10 +65,10 @@ def upgrade():
                nullable=False,
                existing_server_default=sa.text('now()'))
         batch_op.drop_index(batch_op.f('idx_appointments_professional_id'))
-        batch_op.drop_constraint(batch_op.f('appointments_client_id_fkey'), type_='foreignkey')
         batch_op.drop_constraint(batch_op.f('appointments_professional_id_fkey'), type_='foreignkey')
-        batch_op.create_foreign_key(None, 'clients', ['client_id'], ['id'])
+        batch_op.drop_constraint(batch_op.f('appointments_client_id_fkey'), type_='foreignkey')
         batch_op.create_foreign_key(None, 'professionals', ['professional_id'], ['id'])
+        batch_op.create_foreign_key(None, 'clients', ['client_id'], ['id'])
 
     with op.batch_alter_table('audit_logs', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('idx_audit_logs_created_at'))
@@ -149,10 +149,10 @@ def upgrade():
     with op.batch_alter_table('invoices', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('idx_invoices_payment_id'))
         batch_op.drop_index(batch_op.f('idx_invoices_user_id'))
-        batch_op.drop_constraint(batch_op.f('invoices_payment_id_fkey'), type_='foreignkey')
         batch_op.drop_constraint(batch_op.f('invoices_user_id_fkey'), type_='foreignkey')
-        batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
+        batch_op.drop_constraint(batch_op.f('invoices_payment_id_fkey'), type_='foreignkey')
         batch_op.create_foreign_key(None, 'payments', ['payment_id'], ['id'])
+        batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
 
     with op.batch_alter_table('login_history', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('idx_login_history_user_id'))
@@ -164,14 +164,14 @@ def upgrade():
         batch_op.drop_index(batch_op.f('idx_meal_plans_created_by'))
         batch_op.drop_index(batch_op.f('idx_meal_plans_date_range'))
         batch_op.drop_index(batch_op.f('idx_meal_plans_professional_id'))
-        batch_op.drop_constraint(batch_op.f('fk_meal_plans_created_by'), type_='foreignkey')
-        batch_op.drop_constraint(batch_op.f('meal_plans_professional_id_fkey'), type_='foreignkey')
         batch_op.drop_constraint(batch_op.f('meal_plans_client_id_fkey'), type_='foreignkey')
+        batch_op.drop_constraint(batch_op.f('meal_plans_professional_id_fkey'), type_='foreignkey')
+        batch_op.drop_constraint(batch_op.f('meal_plans_created_by_user_id_fkey'), type_='foreignkey')
         batch_op.drop_constraint(batch_op.f('fk_meal_plans_client'), type_='foreignkey')
         batch_op.drop_constraint(batch_op.f('fk_meal_plans_professional'), type_='foreignkey')
-        batch_op.create_foreign_key(None, 'users', ['created_by_user_id'], ['id'])
-        batch_op.create_foreign_key(None, 'professionals', ['professional_id'], ['id'])
         batch_op.create_foreign_key(None, 'clients', ['client_id'], ['id'])
+        batch_op.create_foreign_key(None, 'professionals', ['professional_id'], ['id'])
+        batch_op.create_foreign_key(None, 'users', ['created_by_user_id'], ['id'])
         batch_op.drop_table_comment(
         existing_comment='Meal plans created for clients by professionals or AI.'
     )
@@ -185,10 +185,10 @@ def upgrade():
         batch_op.drop_index(batch_op.f('idx_meals_meal_plan_id'))
         batch_op.drop_index(batch_op.f('idx_meals_recipe_id'))
         batch_op.drop_index(batch_op.f('idx_meals_scheduled_date'))
-        batch_op.drop_constraint(batch_op.f('meals_recipe_id_fkey'), type_='foreignkey')
         batch_op.drop_constraint(batch_op.f('meals_meal_plan_id_fkey'), type_='foreignkey')
-        batch_op.create_foreign_key(None, 'meal_plans', ['meal_plan_id'], ['id'])
+        batch_op.drop_constraint(batch_op.f('meals_recipe_id_fkey'), type_='foreignkey')
         batch_op.create_foreign_key(None, 'recipes', ['recipe_id'], ['id'])
+        batch_op.create_foreign_key(None, 'meal_plans', ['meal_plan_id'], ['id'])
 
     with op.batch_alter_table('notification_preferences', schema=None) as batch_op:
         batch_op.drop_constraint(batch_op.f('notification_preferences_user_id_fkey'), type_='foreignkey')
@@ -228,16 +228,16 @@ def upgrade():
         batch_op.drop_index(batch_op.f('idx_payments_subscription_id'))
         batch_op.drop_index(batch_op.f('idx_payments_transaction_reference'))
         batch_op.drop_index(batch_op.f('idx_payments_user_id'))
-        batch_op.drop_constraint(batch_op.f('payments_user_id_fkey'), type_='foreignkey')
         batch_op.drop_constraint(batch_op.f('payments_subscription_id_fkey'), type_='foreignkey')
-        batch_op.create_foreign_key(None, 'user_subscriptions', ['subscription_id'], ['id'])
+        batch_op.drop_constraint(batch_op.f('payments_user_id_fkey'), type_='foreignkey')
         batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
+        batch_op.create_foreign_key(None, 'user_subscriptions', ['subscription_id'], ['id'])
 
     with op.batch_alter_table('professional_category_assignments', schema=None) as batch_op:
-        batch_op.drop_constraint(batch_op.f('professional_category_assignments_category_id_fkey'), type_='foreignkey')
         batch_op.drop_constraint(batch_op.f('professional_category_assignments_professional_id_fkey'), type_='foreignkey')
-        batch_op.create_foreign_key(None, 'professionals', ['professional_id'], ['id'])
+        batch_op.drop_constraint(batch_op.f('professional_category_assignments_category_id_fkey'), type_='foreignkey')
         batch_op.create_foreign_key(None, 'professional_categories', ['category_id'], ['id'])
+        batch_op.create_foreign_key(None, 'professionals', ['professional_id'], ['id'])
 
     with op.batch_alter_table('professionals', schema=None) as batch_op:
         batch_op.alter_column('approval_status',
@@ -249,10 +249,10 @@ def upgrade():
         batch_op.drop_index(batch_op.f('idx_professionals_approval_status'))
         batch_op.drop_index(batch_op.f('idx_professionals_license_number'))
         batch_op.drop_index(batch_op.f('idx_professionals_user_id'))
-        batch_op.drop_constraint(batch_op.f('fk_professionals_subscription_plan'), type_='foreignkey')
         batch_op.drop_constraint(batch_op.f('professionals_user_id_fkey'), type_='foreignkey')
-        batch_op.create_foreign_key(None, 'subscription_plans', ['subscription_plan_id'], ['id'])
+        batch_op.drop_constraint(batch_op.f('fk_professionals_subscription_plan'), type_='foreignkey')
         batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
+        batch_op.create_foreign_key(None, 'subscription_plans', ['subscription_plan_id'], ['id'])
         batch_op.drop_table_comment(
         existing_comment='Professionals extending users with approval and subscription.'
     )
@@ -260,10 +260,10 @@ def upgrade():
     with op.batch_alter_table('recipe_ingredients', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('idx_recipe_ingredients_food_id'))
         batch_op.drop_index(batch_op.f('idx_recipe_ingredients_recipe_id'))
-        batch_op.drop_constraint(batch_op.f('recipe_ingredients_food_id_fkey'), type_='foreignkey')
         batch_op.drop_constraint(batch_op.f('recipe_ingredients_recipe_id_fkey'), type_='foreignkey')
-        batch_op.create_foreign_key(None, 'foods', ['food_id'], ['id'])
+        batch_op.drop_constraint(batch_op.f('recipe_ingredients_food_id_fkey'), type_='foreignkey')
         batch_op.create_foreign_key(None, 'recipes', ['recipe_id'], ['id'])
+        batch_op.create_foreign_key(None, 'foods', ['food_id'], ['id'])
 
     with op.batch_alter_table('recipe_steps', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('idx_recipe_steps_recipe_id'))
@@ -310,12 +310,12 @@ def upgrade():
         batch_op.drop_index(batch_op.f('idx_reports_professional_id'))
         batch_op.drop_index(batch_op.f('idx_reports_report_type'))
         batch_op.drop_index(batch_op.f('idx_reports_user_id'))
-        batch_op.drop_constraint(batch_op.f('reports_client_id_fkey'), type_='foreignkey')
-        batch_op.drop_constraint(batch_op.f('reports_user_id_fkey'), type_='foreignkey')
+        batch_op.drop_constraint(batch_op.f('fk_reports_client'), type_='foreignkey')
         batch_op.drop_constraint(batch_op.f('reports_professional_id_fkey'), type_='foreignkey')
-        batch_op.create_foreign_key(None, 'professionals', ['professional_id'], ['id'])
-        batch_op.create_foreign_key(None, 'clients', ['client_id'], ['id'])
+        batch_op.drop_constraint(batch_op.f('reports_user_id_fkey'), type_='foreignkey')
         batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
+        batch_op.create_foreign_key(None, 'clients', ['client_id'], ['id'])
+        batch_op.create_foreign_key(None, 'professionals', ['professional_id'], ['id'])
 
     with op.batch_alter_table('sessions', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('idx_sessions_session_token'))
@@ -326,8 +326,8 @@ def upgrade():
     with op.batch_alter_table('shopping_items', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('idx_shopping_items_food_id'))
         batch_op.drop_index(batch_op.f('idx_shopping_items_shopping_list_id'))
-        batch_op.drop_constraint(batch_op.f('shopping_items_food_id_fkey'), type_='foreignkey')
         batch_op.drop_constraint(batch_op.f('shopping_items_shopping_list_id_fkey'), type_='foreignkey')
+        batch_op.drop_constraint(batch_op.f('shopping_items_food_id_fkey'), type_='foreignkey')
         batch_op.create_foreign_key(None, 'shopping_lists', ['shopping_list_id'], ['id'])
         batch_op.create_foreign_key(None, 'foods', ['food_id'], ['id'])
 
@@ -336,8 +336,8 @@ def upgrade():
         batch_op.drop_index(batch_op.f('idx_shopping_lists_meal_plan_id'))
         batch_op.drop_constraint(batch_op.f('shopping_lists_client_id_fkey'), type_='foreignkey')
         batch_op.drop_constraint(batch_op.f('shopping_lists_meal_plan_id_fkey'), type_='foreignkey')
-        batch_op.create_foreign_key(None, 'clients', ['client_id'], ['id'])
         batch_op.create_foreign_key(None, 'meal_plans', ['meal_plan_id'], ['id'])
+        batch_op.create_foreign_key(None, 'clients', ['client_id'], ['id'])
 
     with op.batch_alter_table('subscription_plans', schema=None) as batch_op:
         batch_op.alter_column('billing_cycle',
@@ -352,10 +352,10 @@ def upgrade():
         batch_op.drop_index(batch_op.f('idx_system_settings_key'))
 
     with op.batch_alter_table('user_food_restrictions', schema=None) as batch_op:
-        batch_op.drop_constraint(batch_op.f('user_food_restrictions_restriction_id_fkey'), type_='foreignkey')
         batch_op.drop_constraint(batch_op.f('user_food_restrictions_user_id_fkey'), type_='foreignkey')
-        batch_op.create_foreign_key(None, 'food_restrictions', ['restriction_id'], ['id'])
+        batch_op.drop_constraint(batch_op.f('user_food_restrictions_restriction_id_fkey'), type_='foreignkey')
         batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
+        batch_op.create_foreign_key(None, 'food_restrictions', ['restriction_id'], ['id'])
 
     with op.batch_alter_table('user_health_conditions', schema=None) as batch_op:
         batch_op.drop_constraint(batch_op.f('user_health_conditions_user_id_fkey'), type_='foreignkey')
@@ -538,8 +538,8 @@ def downgrade():
     with op.batch_alter_table('user_food_restrictions', schema=None) as batch_op:
         batch_op.drop_constraint(None, type_='foreignkey')
         batch_op.drop_constraint(None, type_='foreignkey')
-        batch_op.create_foreign_key(batch_op.f('user_food_restrictions_user_id_fkey'), 'users', ['user_id'], ['id'], ondelete='CASCADE')
         batch_op.create_foreign_key(batch_op.f('user_food_restrictions_restriction_id_fkey'), 'food_restrictions', ['restriction_id'], ['id'], ondelete='CASCADE')
+        batch_op.create_foreign_key(batch_op.f('user_food_restrictions_user_id_fkey'), 'users', ['user_id'], ['id'], ondelete='CASCADE')
 
     with op.batch_alter_table('system_settings', schema=None) as batch_op:
         batch_op.create_index(batch_op.f('idx_system_settings_key'), ['key'], unique=False)
@@ -564,8 +564,8 @@ def downgrade():
     with op.batch_alter_table('shopping_items', schema=None) as batch_op:
         batch_op.drop_constraint(None, type_='foreignkey')
         batch_op.drop_constraint(None, type_='foreignkey')
-        batch_op.create_foreign_key(batch_op.f('shopping_items_shopping_list_id_fkey'), 'shopping_lists', ['shopping_list_id'], ['id'], ondelete='CASCADE')
         batch_op.create_foreign_key(batch_op.f('shopping_items_food_id_fkey'), 'foods', ['food_id'], ['id'], ondelete='SET NULL')
+        batch_op.create_foreign_key(batch_op.f('shopping_items_shopping_list_id_fkey'), 'shopping_lists', ['shopping_list_id'], ['id'], ondelete='CASCADE')
         batch_op.create_index(batch_op.f('idx_shopping_items_shopping_list_id'), ['shopping_list_id'], unique=False)
         batch_op.create_index(batch_op.f('idx_shopping_items_food_id'), ['food_id'], unique=False)
 
@@ -579,9 +579,9 @@ def downgrade():
         batch_op.drop_constraint(None, type_='foreignkey')
         batch_op.drop_constraint(None, type_='foreignkey')
         batch_op.drop_constraint(None, type_='foreignkey')
-        batch_op.create_foreign_key(batch_op.f('reports_professional_id_fkey'), 'professionals', ['professional_id'], ['id'], ondelete='CASCADE')
         batch_op.create_foreign_key(batch_op.f('reports_user_id_fkey'), 'users', ['user_id'], ['id'], ondelete='CASCADE')
-        batch_op.create_foreign_key(batch_op.f('reports_client_id_fkey'), 'clients', ['client_id'], ['id'], ondelete='CASCADE')
+        batch_op.create_foreign_key(batch_op.f('reports_professional_id_fkey'), 'professionals', ['professional_id'], ['id'], ondelete='CASCADE')
+        batch_op.create_foreign_key(batch_op.f('fk_reports_client'), 'clients', ['client_id'], ['id'], ondelete='CASCADE')
         batch_op.create_index(batch_op.f('idx_reports_user_id'), ['user_id'], unique=False)
         batch_op.create_index(batch_op.f('idx_reports_report_type'), ['report_type'], unique=False)
         batch_op.create_index(batch_op.f('idx_reports_professional_id'), ['professional_id'], unique=False)
@@ -631,8 +631,8 @@ def downgrade():
     with op.batch_alter_table('recipe_ingredients', schema=None) as batch_op:
         batch_op.drop_constraint(None, type_='foreignkey')
         batch_op.drop_constraint(None, type_='foreignkey')
-        batch_op.create_foreign_key(batch_op.f('recipe_ingredients_recipe_id_fkey'), 'recipes', ['recipe_id'], ['id'], ondelete='CASCADE')
         batch_op.create_foreign_key(batch_op.f('recipe_ingredients_food_id_fkey'), 'foods', ['food_id'], ['id'], ondelete='SET NULL')
+        batch_op.create_foreign_key(batch_op.f('recipe_ingredients_recipe_id_fkey'), 'recipes', ['recipe_id'], ['id'], ondelete='CASCADE')
         batch_op.create_index(batch_op.f('idx_recipe_ingredients_recipe_id'), ['recipe_id'], unique=False)
         batch_op.create_index(batch_op.f('idx_recipe_ingredients_food_id'), ['food_id'], unique=False)
 
@@ -643,8 +643,8 @@ def downgrade():
     )
         batch_op.drop_constraint(None, type_='foreignkey')
         batch_op.drop_constraint(None, type_='foreignkey')
-        batch_op.create_foreign_key(batch_op.f('professionals_user_id_fkey'), 'users', ['user_id'], ['id'], ondelete='CASCADE')
         batch_op.create_foreign_key(batch_op.f('fk_professionals_subscription_plan'), 'subscription_plans', ['subscription_plan_id'], ['id'], ondelete='SET NULL')
+        batch_op.create_foreign_key(batch_op.f('professionals_user_id_fkey'), 'users', ['user_id'], ['id'], ondelete='CASCADE')
         batch_op.create_index(batch_op.f('idx_professionals_user_id'), ['user_id'], unique=False)
         batch_op.create_index(batch_op.f('idx_professionals_license_number'), ['license_number'], unique=False)
         batch_op.create_index(batch_op.f('idx_professionals_approval_status'), ['approval_status'], unique=False)
@@ -658,14 +658,14 @@ def downgrade():
     with op.batch_alter_table('professional_category_assignments', schema=None) as batch_op:
         batch_op.drop_constraint(None, type_='foreignkey')
         batch_op.drop_constraint(None, type_='foreignkey')
-        batch_op.create_foreign_key(batch_op.f('professional_category_assignments_professional_id_fkey'), 'professionals', ['professional_id'], ['id'], ondelete='CASCADE')
         batch_op.create_foreign_key(batch_op.f('professional_category_assignments_category_id_fkey'), 'professional_categories', ['category_id'], ['id'], ondelete='CASCADE')
+        batch_op.create_foreign_key(batch_op.f('professional_category_assignments_professional_id_fkey'), 'professionals', ['professional_id'], ['id'], ondelete='CASCADE')
 
     with op.batch_alter_table('payments', schema=None) as batch_op:
         batch_op.drop_constraint(None, type_='foreignkey')
         batch_op.drop_constraint(None, type_='foreignkey')
-        batch_op.create_foreign_key(batch_op.f('payments_subscription_id_fkey'), 'user_subscriptions', ['subscription_id'], ['id'], ondelete='SET NULL')
         batch_op.create_foreign_key(batch_op.f('payments_user_id_fkey'), 'users', ['user_id'], ['id'], ondelete='CASCADE')
+        batch_op.create_foreign_key(batch_op.f('payments_subscription_id_fkey'), 'user_subscriptions', ['subscription_id'], ['id'], ondelete='SET NULL')
         batch_op.create_index(batch_op.f('idx_payments_user_id'), ['user_id'], unique=False)
         batch_op.create_index(batch_op.f('idx_payments_transaction_reference'), ['transaction_reference'], unique=False)
         batch_op.create_index(batch_op.f('idx_payments_subscription_id'), ['subscription_id'], unique=False)
@@ -709,8 +709,8 @@ def downgrade():
     with op.batch_alter_table('meals', schema=None) as batch_op:
         batch_op.drop_constraint(None, type_='foreignkey')
         batch_op.drop_constraint(None, type_='foreignkey')
-        batch_op.create_foreign_key(batch_op.f('meals_meal_plan_id_fkey'), 'meal_plans', ['meal_plan_id'], ['id'], ondelete='CASCADE')
         batch_op.create_foreign_key(batch_op.f('meals_recipe_id_fkey'), 'recipes', ['recipe_id'], ['id'], ondelete='SET NULL')
+        batch_op.create_foreign_key(batch_op.f('meals_meal_plan_id_fkey'), 'meal_plans', ['meal_plan_id'], ['id'], ondelete='CASCADE')
         batch_op.create_index(batch_op.f('idx_meals_scheduled_date'), ['scheduled_date'], unique=False)
         batch_op.create_index(batch_op.f('idx_meals_recipe_id'), ['recipe_id'], unique=False)
         batch_op.create_index(batch_op.f('idx_meals_meal_plan_id'), ['meal_plan_id'], unique=False)
@@ -730,9 +730,9 @@ def downgrade():
         batch_op.drop_constraint(None, type_='foreignkey')
         batch_op.create_foreign_key(batch_op.f('fk_meal_plans_professional'), 'professionals', ['professional_id'], ['id'], ondelete='CASCADE')
         batch_op.create_foreign_key(batch_op.f('fk_meal_plans_client'), 'clients', ['client_id'], ['id'], ondelete='CASCADE')
-        batch_op.create_foreign_key(batch_op.f('meal_plans_client_id_fkey'), 'clients', ['client_id'], ['id'], ondelete='SET NULL')
+        batch_op.create_foreign_key(batch_op.f('meal_plans_created_by_user_id_fkey'), 'users', ['created_by_user_id'], ['id'], ondelete='SET NULL')
         batch_op.create_foreign_key(batch_op.f('meal_plans_professional_id_fkey'), 'professionals', ['professional_id'], ['id'], ondelete='SET NULL')
-        batch_op.create_foreign_key(batch_op.f('fk_meal_plans_created_by'), 'users', ['created_by_user_id'], ['id'], ondelete='SET NULL')
+        batch_op.create_foreign_key(batch_op.f('meal_plans_client_id_fkey'), 'clients', ['client_id'], ['id'], ondelete='SET NULL')
         batch_op.create_index(batch_op.f('idx_meal_plans_professional_id'), ['professional_id'], unique=False)
         batch_op.create_index(batch_op.f('idx_meal_plans_date_range'), ['start_date', 'end_date'], unique=False)
         batch_op.create_index(batch_op.f('idx_meal_plans_created_by'), ['created_by_user_id'], unique=False)
@@ -746,8 +746,8 @@ def downgrade():
     with op.batch_alter_table('invoices', schema=None) as batch_op:
         batch_op.drop_constraint(None, type_='foreignkey')
         batch_op.drop_constraint(None, type_='foreignkey')
-        batch_op.create_foreign_key(batch_op.f('invoices_user_id_fkey'), 'users', ['user_id'], ['id'], ondelete='CASCADE')
         batch_op.create_foreign_key(batch_op.f('invoices_payment_id_fkey'), 'payments', ['payment_id'], ['id'], ondelete='SET NULL')
+        batch_op.create_foreign_key(batch_op.f('invoices_user_id_fkey'), 'users', ['user_id'], ['id'], ondelete='CASCADE')
         batch_op.create_index(batch_op.f('idx_invoices_user_id'), ['user_id'], unique=False)
         batch_op.create_index(batch_op.f('idx_invoices_payment_id'), ['payment_id'], unique=False)
 
@@ -834,8 +834,8 @@ def downgrade():
     with op.batch_alter_table('appointments', schema=None) as batch_op:
         batch_op.drop_constraint(None, type_='foreignkey')
         batch_op.drop_constraint(None, type_='foreignkey')
-        batch_op.create_foreign_key(batch_op.f('appointments_professional_id_fkey'), 'professionals', ['professional_id'], ['id'], ondelete='CASCADE')
         batch_op.create_foreign_key(batch_op.f('appointments_client_id_fkey'), 'clients', ['client_id'], ['id'], ondelete='CASCADE')
+        batch_op.create_foreign_key(batch_op.f('appointments_professional_id_fkey'), 'professionals', ['professional_id'], ['id'], ondelete='CASCADE')
         batch_op.create_index(batch_op.f('idx_appointments_professional_id'), ['professional_id'], unique=False)
         batch_op.alter_column('updated_at',
                existing_type=postgresql.TIMESTAMP(timezone=True),
