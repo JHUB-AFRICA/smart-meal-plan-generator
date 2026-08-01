@@ -4,7 +4,7 @@ from flask_cors import CORS
 from werkzeug.exceptions import HTTPException
 
 from config import Config
-from extensions import db, bcrypt, mail   # Added bcrypt and mail
+from extensions import db, bcrypt, mail
 
 
 def create_app(config_class=Config):
@@ -13,8 +13,8 @@ def create_app(config_class=Config):
 
     # Initialize extensions
     db.init_app(app)
-    bcrypt.init_app(app)    # <-- Added
-    mail.init_app(app)      # <-- Added
+    bcrypt.init_app(app)
+    mail.init_app(app)
     CORS(app, origins=app.config.get('CORS_ORIGINS', '*'))
 
     # Lazy import to avoid circular dependency
@@ -37,7 +37,6 @@ def create_app(config_class=Config):
             'code': e.code
         }), e.code
 
-    # Fixed: added @app.errorhandler decorator
     @app.errorhandler(Exception)
     def handle_generic_exception(e):
         app.logger.error(f'Unhandled exception: {e}', exc_info=True)
@@ -50,7 +49,16 @@ def create_app(config_class=Config):
     return app
 
 
+# =====================================================
+# Create the Flask application for Gunicorn
+# =====================================================
+app = create_app()
+
+
 if __name__ == '__main__':
-    app = create_app()
     debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
-    app.run(debug=debug_mode, host='0.0.0.0', port=5000)
+    app.run(
+        debug=debug_mode,
+        host='0.0.0.0',
+        port=5000
+    )
