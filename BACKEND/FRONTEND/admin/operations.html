@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Accounts — Smart Lishe Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    /* ===== FULL ADMIN STYLES (self-contained) ===== */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f8f7f4;
+      color: #1e1e1e;
+      min-height: 100vh;
+      display: flex;
+    }
+    :root {
+      --sidebar-width: 260px;
+      --sukuma: #2b7a4b;
+      --sukuma-dark: #1f5f3a;
+      --sukuma-light: #4a9e6b;
+      --maize-deep: #d4a24e;
+      --char: #b34a3a;
+      --basket-line: #e8e6e1;
+      --bg-card: #ffffff;
+      --bg-body: #f8f7f4;
+      --bg-elevated: #f2f0eb;
+      --text-primary: #1e1e1e;
+      --text-secondary: #5a5a5a;
+      --text-muted: #8a8a8a;
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --shadow-hover: 0 8px 30px rgba(0,0,0,0.08);
+      --font-display: 'Fraunces', serif;
+      --font-body: 'Inter', sans-serif;
+    }
+    body.dark-mode {
+      --bg-body: #1a1a1a;
+      --bg-card: #2a2a2a;
+      --bg-elevated: #333333;
+      --basket-line: #444444;
+      --text-primary: #eeeeee;
+      --text-secondary: #bbbbbb;
+      --text-muted: #888888;
+    }
+
+    .app-shell { display: flex; width: 100%; min-height: 100vh; }
+    .main-content { flex: 1; margin-left: var(--sidebar-width); padding: 20px 32px 40px; transition: margin-left 0.3s; }
+    @media (max-width: 1024px) { .main-content { margin-left: 0; padding: 16px; } }
+
+    /* ---- SIDEBAR ---- */
+    .sidebar {
+      position: fixed; top: 0; left: 0; width: var(--sidebar-width); height: 100%;
+      background: #fff; border-right: 1px solid var(--basket-line);
+      display: flex; flex-direction: column; padding: 24px 16px 20px;
+      transition: transform 0.3s ease; z-index: 100; overflow-y: auto;
+    }
+    .sidebar-brand {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 28px; padding-bottom: 16px; border-bottom: 1px solid var(--basket-line);
+    }
+    .sidebar-brand .mark {
+      width: 40px; height: 40px; background: var(--sukuma); border-radius: 12px;
+      display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1.2rem;
+    }
+    .sidebar-brand .name {
+      font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; line-height: 1.2;
+    }
+    .sidebar-brand .name span { display: block; font-size: 0.6rem; font-weight: 500; opacity: 0.7; letter-spacing: 0.5px; }
+    .sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+    .nav-link {
+      display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: var(--radius-sm);
+      text-decoration: none; color: var(--text-secondary); font-weight: 500; font-size: 0.85rem; transition: all 0.2s; cursor: pointer;
+    }
+    .nav-link i { width: 20px; font-size: 1rem; }
+    .nav-link:hover { background: var(--bg-elevated); color: var(--text-primary); }
+    .nav-link.active { background: var(--sukuma); color: #fff; }
+    .nav-dropdown { display: none; flex-direction: column; gap: 2px; padding-left: 16px; }
+    .nav-dropdown.open { display: flex; }
+    .dropdown-chevron { margin-left: auto; transition: transform 0.2s; }
+    .dropdown-chevron.open { transform: rotate(180deg); }
+    .sidebar-footer { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--basket-line); }
+    .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 99; }
+    .sidebar-overlay.show { display: block; }
+
+    .hamburger-btn { display: none; background: none; border: none; font-size: 1.4rem; color: var(--text-primary); cursor: pointer; padding: 4px 8px; }
+    @media (max-width: 1024px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .hamburger-btn { display: block; }
+      .sidebar-overlay.show { display: block; }
+    }
+
+    /* ---- TOPBAR ---- */
+    .topbar {
+      display: flex; justify-content: space-between; align-items: center; padding: 8px 0 16px; flex-wrap: wrap; gap: 12px;
+      border-bottom: 1px solid var(--basket-line); margin-bottom: 20px;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 12px; flex: 1; }
+    .search-box {
+      display: flex; align-items: center; background: var(--bg-card); border: 1px solid var(--basket-line); border-radius: 30px;
+      padding: 0 14px; flex: 1; max-width: 320px;
+    }
+    .search-box input {
+      border: none; background: transparent; padding: 8px 10px; width: 100%; font-size: 0.85rem;
+      color: var(--text-primary); outline: none;
+    }
+    .search-box i { color: var(--text-muted); font-size: 0.9rem; }
+    .topbar-actions { display: flex; align-items: center; gap: 10px; }
+    .icon-btn {
+      background: none; border: none; font-size: 1.1rem; color: var(--text-secondary); cursor: pointer;
+      position: relative; padding: 6px;
+    }
+    .icon-btn .dot {
+      width: 8px; height: 8px; background: #e74c3c; border-radius: 50%; position: absolute; top: 4px; right: 4px; border: 2px solid var(--bg-card);
+    }
+    .profile-chip {
+      display: flex; align-items: center; gap: 6px; background: var(--bg-card); padding: 4px 12px 4px 4px;
+      border-radius: 30px; border: 1px solid var(--basket-line); cursor: pointer; text-decoration: none; color: var(--text-primary);
+    }
+    .profile-chip .avatar {
+      width: 30px; height: 30px; background: var(--sukuma); border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 700; font-size: 0.75rem;
+    }
+    .profile-chip .label { font-size: 0.75rem; font-weight: 500; }
+    .profile-chip .pro-badge { font-size: 0.55rem; padding: 2px 8px; background: var(--maize-deep); color: #fff; border-radius: 20px; font-weight: 700; }
+
+    /* ---- PAGE HEADER ---- */
+    .page-header { margin-bottom: 24px; }
+    .page-header .section-eyebrow {
+      font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); display: flex; align-items: center; gap: 6px;
+    }
+    .page-header h1 { font-family: var(--font-display); font-size: 1.8rem; font-weight: 700; margin: 4px 0 6px; }
+    .page-header p { color: var(--text-secondary); font-size: 0.95rem; }
+
+    /* ---- TABS ---- */
+    .tabs {
+      display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 2px solid var(--basket-line); margin-bottom: 24px; padding-bottom: 0;
+    }
+    .tab-btn {
+      padding: 10px 20px; font-size: 0.82rem; font-weight: 700; color: var(--text-secondary); cursor: pointer;
+      border-bottom: 3px solid transparent; transition: all 0.25s ease; background: none; border-top: none; border-left: none; border-right: none;
+    }
+    .tab-btn:hover { color: var(--text-primary); }
+    .tab-btn.active { color: var(--sukuma); border-bottom-color: var(--sukuma); }
+    .tab-btn i { margin-right: 8px; }
+    .tab-panel { display: none; animation: fadeIn 0.35s ease; }
+    .tab-panel.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ---- CARDS & TABLES ---- */
+    .card { background: var(--bg-card); border-radius: var(--radius-md); border: 1px solid var(--basket-line); padding: 16px 20px; }
+    .table-wrap { overflow-x: auto; }
+    .table {
+      width: 100%; border-collapse: collapse; font-size: 0.85rem;
+    }
+    .table th {
+      text-align: left; padding: 10px 12px; font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; letter-spacing: 0.3px;
+      border-bottom: 1px solid var(--basket-line);
+    }
+    .table td { padding: 10px 12px; border-bottom: 1px solid var(--basket-line); vertical-align: middle; }
+    .table tr:last-child td { border-bottom: none; }
+    .table .empty-state { text-align: center; padding: 30px 10px; color: var(--text-muted); }
+    .table .empty-state i { font-size: 2rem; display: block; margin-bottom: 8px; opacity: 0.4; }
+
+    /* ---- BADGES & STATUS ---- */
+    .badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; }
+    .badge-free { background: #e2e8f0; color: #475569; }
+    .badge-premium { background: #fef3c7; color: #92400e; }
+    .badge-pending { background: #fef3c7; color: #92400e; }
+
+    .approval-badge {
+      display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 600;
+    }
+    .approval-badge.pending { background: #fef3c7; color: #92400e; }
+    .approval-badge.approved { background: #d1fae5; color: #065f46; }
+    .approval-badge.rejected { background: #fce4e4; color: #b91c1c; }
+    .approval-badge.verified { background: #dbeafe; color: #1e40af; }
+
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 600;
+    }
+    .status-badge.active { background: #d1fae5; color: #065f46; }
+    .status-badge.suspended { background: #fce4e4; color: #b91c1c; }
+    .status-badge.inactive { background: #fef3c7; color: #92400e; }
+
+    /* ---- MODALS ---- */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 2000; display: none; align-items: center; justify-content: center;
+      padding: 20px; backdrop-filter: blur(4px);
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--bg-card); border-radius: var(--radius-md); max-width: 520px; width: 100%; max-height: 90vh; overflow-y: auto;
+      padding: 24px 28px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); border: 1px solid var(--basket-line);
+    }
+    .modal-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--basket-line);
+    }
+    .modal-header h3 { font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; }
+    .modal-close {
+      background: none; border: none; font-size: 1.4rem; color: var(--text-muted); cursor: pointer; padding: 0 4px; transition: color 0.2s;
+    }
+    .modal-close:hover { color: var(--text-primary); }
+    .modal-field { margin-bottom: 14px; }
+    .modal-field label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; }
+    .modal-field input, .modal-field select, .modal-field textarea {
+      width: 100%; padding: 8px 12px; border-radius: var(--radius-sm); border: 1px solid var(--basket-line);
+      background: var(--bg-body); font-family: var(--font-body); font-size: 0.85rem; color: var(--text-primary); transition: border 0.2s ease;
+    }
+    .modal-field input:focus, .modal-field select:focus { outline: none; border-color: var(--sukuma); }
+    .modal-field textarea { resize: vertical; min-height: 60px; }
+    .modal-actions {
+      display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; border-radius: 30px; border: none;
+      font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; text-decoration: none;
+    }
+    .btn-sm { padding: 5px 14px; font-size: 0.7rem; min-height: 30px; }
+    .btn-primary { background: var(--sukuma); color: #fff; }
+    .btn-primary:hover { background: var(--sukuma-dark); transform: translateY(-1px); }
+    .btn-secondary { background: var(--basket-line); color: var(--text-primary); }
+    .btn-secondary:hover { background: #d6d3cc; }
+    .btn-danger { background: #dc2626; color: #fff; }
+    .btn-danger:hover { background: #b91c1c; }
+    .btn-ghost { background: transparent; color: var(--text-secondary); border: none; }
+    .btn-ghost:hover { background: var(--bg-elevated); color: var(--text-primary); }
+    .btn-ghost.danger { color: #dc2626; }
+    .btn-ghost.danger:hover { background: #fce4e4; }
+    .btn-ghost.success { color: var(--sukuma); }
+    .btn-ghost.success:hover { background: var(--sukuma-light); }
+    .btn-ghost.warning { color: #d97706; }
+    .btn-ghost.warning:hover { background: #fef3c7; }
+
+    .action-btns { display: flex; gap: 4px; flex-wrap: wrap; }
+
+    /* ---- STATS ---- */
+    .accounts-stats {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;
+    }
+    .stat-mini {
+      background: var(--bg-card); border-radius: var(--radius-sm); padding: 14px 18px; border: 1px solid var(--basket-line);
+    }
+    .stat-mini .val { font-family: var(--font-display); font-weight: 700; font-size: 1.4rem; }
+    .stat-mini .lbl { font-size: 0.75rem; color: var(--text-secondary); }
+
+    /* ---- TOAST ---- */
+    .toast-stack {
+      position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; max-width: 360px; width: calc(100% - 48px);
+    }
+    .toast {
+      background: var(--bg-card); border: 1px solid var(--basket-line); border-left: 4px solid var(--sukuma); border-radius: 12px;
+      padding: 14px 18px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 12px;
+      font-size: 0.85rem; font-weight: 600; color: var(--text-primary); animation: slideUp 0.3s ease; backdrop-filter: blur(8px);
+    }
+    .toast.error { border-left-color: #dc2626; }
+    .toast i { font-size: 1.2rem; color: var(--sukuma); }
+    .toast.error i { color: #dc2626; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ---- RESPONSIVE ---- */
+    @media (max-width: 600px) {
+      .accounts-stats { grid-template-columns: 1fr; }
+      .tab-toolbar { flex-direction: column; align-items: stretch; }
+      .tab-toolbar .search-box-sm { max-width: 100%; }
+      .action-btns .btn-sm { font-size: 0.6rem; padding: 2px 6px; }
+      .table td, .table th { padding: 6px 8px; font-size: 0.75rem; }
+      .modal { padding: 16px; }
+    }
+    .mobile-topbar {
+      display: none; align-items: center; justify-content: space-between; padding: 12px 16px; background: #fff; border-bottom: 1px solid var(--basket-line);
+    }
+    .brand-mini { display: flex; align-items: center; gap: 8px; font-weight: 700; }
+    .brand-mini .mark { width: 32px; height: 32px; background: var(--sukuma); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; }
+    @media (max-width: 1024px) {
+      .mobile-topbar { display: flex; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== AUTH CHECK ===== -->
+<script>
+(function() {
+  const token = localStorage.getItem('access_token');
+  const role = localStorage.getItem('smartlishe_role') || localStorage.getItem('role');
+  if (!token || role !== 'admin') {
+    window.location.href = '../login.html';
+  }
+})();
+</script>
+
+<!-- ===== MOBILE TOPBAR ===== -->
+<div class="mobile-topbar">
+  <div class="brand-mini">
+    <div class="mark"><i class="fa-solid fa-seedling"></i></div>
+    <span>Smart Lishe Admin</span>
+  </div>
+  <button class="hamburger-btn" id="hamburgerBtn"><i class="fa-solid fa-bars"></i></button>
+</div>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="app-shell">
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="mark"><i class="fa-solid fa-seedling"></i></div>
+      <div class="name">Smart Lishe<span>Admin</span></div>
+    </div>
+    <nav class="sidebar-nav" id="sidebarNav">
+      <a href="dashboard.html" class="nav-link"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+
+      <!-- Accounts dropdown -->
+      <div class="nav-link" id="accountsToggle">
+        <i class="fa-solid fa-users"></i> Accounts
+        <span class="dropdown-chevron open"><i class="fa-solid fa-chevron-down"></i></span>
+      </div>
+      <div class="nav-dropdown open" id="accountsDropdown">
+        <a href="accounts.html#users" class="nav-link active"><i class="fa-solid fa-user"></i> Users</a>
+        <a href="accounts.html#professionals" class="nav-link"><i class="fa-solid fa-user-md"></i> Professionals</a>
+        <a href="accounts.html#clients" class="nav-link"><i class="fa-solid fa-user-group"></i> Clients</a>
+      </div>
+
+      <!-- Operations dropdown (no toasts) -->
+      <div class="nav-link" id="operationsToggle">
+        <i class="fa-solid fa-gears"></i> Operations
+        <span class="dropdown-chevron"><i class="fa-solid fa-chevron-down"></i></span>
+      </div>
+      <div class="nav-dropdown" id="operationsDropdown">
+        <a href="#" class="nav-link" onclick="event.preventDefault();"><i class="fa-solid fa-credit-card"></i> Billing</a>
+        <a href="#" class="nav-link" onclick="event.preventDefault();"><i class="fa-solid fa-book-open"></i> Recipes</a>
+        <a href="#" class="nav-link" onclick="event.preventDefault();"><i class="fa-solid fa-database"></i> Datasets</a>
+        <a href="#" class="nav-link" onclick="event.preventDefault();"><i class="fa-solid fa-chart-bar"></i> Reports</a>
+        <a href="#" class="nav-link" onclick="event.preventDefault();"><i class="fa-solid fa-robot"></i> AI Monitoring</a>
+      </div>
+
+      <a href="#" class="nav-link" onclick="event.preventDefault();"><i class="fa-solid fa-headset"></i> Support</a>
+      <a href="#" class="nav-link" onclick="event.preventDefault();"><i class="fa-solid fa-gear"></i> Settings</a>
+      <a href="#" class="nav-link" onclick="event.preventDefault();"><i class="fa-solid fa-user-circle"></i> Profile</a>
+
+      <div style="margin-top:12px;">
+        <a href="#" class="nav-link" onclick="event.preventDefault(); logout();" style="color:var(--char);">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </a>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="theme-toggle" id="themeToggle">
+        <span><i class="fa-solid fa-moon" id="themeIcon"></i> Dark mode</span>
+        <span class="switch"></span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <div class="main-content">
+
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="hamburger-btn" id="topbarHamburger"><i class="fa-solid fa-bars"></i></button>
+        <div class="search-box">
+          <i class="fa-solid fa-search"></i>
+          <input type="text" id="globalSearch" placeholder="Search accounts...">
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="notifBtn"><i class="fa-regular fa-bell"></i><span class="dot"></span></button>
+        <a href="#" class="profile-chip" onclick="event.preventDefault();">
+          <div class="avatar" id="adminAvatar">A</div>
+          <span class="label" id="adminName">Admin</span>
+        </a>
+      </div>
+    </header>
+
+    <div class="page-header">
+      <div>
+        <div class="section-eyebrow"><i class="fa-solid fa-users"></i> Accounts</div>
+        <h1>Manage Users, Professionals &amp; Clients</h1>
+        <p>View, edit, and manage all accounts on the platform.</p>
+      </div>
+    </div>
+
+    <!-- Mini Stats -->
+    <div class="accounts-stats">
+      <div class="stat-mini"><div class="val" id="statUsers">0</div><div class="lbl">Total Users</div></div>
+      <div class="stat-mini"><div class="val" id="statProfessionals">0</div><div class="lbl">Professionals</div></div>
+      <div class="stat-mini"><div class="val" id="statClients">0</div><div class="lbl">Clients</div></div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs" id="accountTabs">
+      <button class="tab-btn active" data-tab="users"><i class="fa-solid fa-user"></i> Users</button>
+      <button class="tab-btn" data-tab="professionals"><i class="fa-solid fa-user-md"></i> Professionals</button>
+      <button class="tab-btn" data-tab="clients"><i class="fa-solid fa-user-group"></i> Clients</button>
+    </div>
+
+    <!-- ===== USERS TAB ===== -->
+    <div class="tab-panel active" id="tab-users">
+      <div class="tab-toolbar" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+        <div class="search-box-sm" style="display:flex; align-items:center; background:var(--bg-card); border:1px solid var(--basket-line); border-radius:30px; padding:4px 14px; max-width:260px;">
+          <i class="fa-solid fa-search" style="color:var(--text-muted); font-size:0.8rem;"></i>
+          <input type="text" id="userSearchInput" placeholder="Search users..." style="border:none; background:transparent; padding:6px 0 6px 8px; font-size:0.82rem; width:100%; outline:none; font-family:var(--font-body); color:var(--text-primary);">
+        </div>
+        <div>
+          <button class="btn btn-primary btn-sm" id="addUserBtn"><i class="fa-solid fa-plus"></i> Add User</button>
+        </div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div class="table-wrap">
+          <table class="table" id="usersTable">
+            <thead><tr><th>Name</th><th>Email</th><th>Plan</th><th>Status</th><th>Joined</th><th style="text-align:right;">Actions</th></tr></thead>
+            <tbody id="usersTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PROFESSIONALS TAB ===== -->
+    <div class="tab-panel" id="tab-professionals">
+      <div class="tab-toolbar" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+        <div class="search-box-sm" style="display:flex; align-items:center; background:var(--bg-card); border:1px solid var(--basket-line); border-radius:30px; padding:4px 14px; max-width:260px;">
+          <i class="fa-solid fa-search" style="color:var(--text-muted); font-size:0.8rem;"></i>
+          <input type="text" id="proSearchInput" placeholder="Search professionals..." style="border:none; background:transparent; padding:6px 0 6px 8px; font-size:0.82rem; width:100%; outline:none; font-family:var(--font-body); color:var(--text-primary);">
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="badge badge-pending" id="pendingCount" style="padding:4px 12px;">0 Pending</span>
+          <button class="btn btn-primary btn-sm" id="approveAllBtn"><i class="fa-solid fa-check-double"></i> Approve All</button>
+        </div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div class="table-wrap">
+          <table class="table" id="professionalsTable">
+            <thead><tr><th>Name</th><th>Profession</th><th>Specialization</th><th>Status</th><th style="text-align:right;">Actions</th></tr></thead>
+            <tbody id="professionalsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CLIENTS TAB ===== -->
+    <div class="tab-panel" id="tab-clients">
+      <div class="tab-toolbar" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+        <div class="search-box-sm" style="display:flex; align-items:center; background:var(--bg-card); border:1px solid var(--basket-line); border-radius:30px; padding:4px 14px; max-width:260px;">
+          <i class="fa-solid fa-search" style="color:var(--text-muted); font-size:0.8rem;"></i>
+          <input type="text" id="clientSearchInput" placeholder="Search clients..." style="border:none; background:transparent; padding:6px 0 6px 8px; font-size:0.82rem; width:100%; outline:none; font-family:var(--font-body); color:var(--text-primary);">
+        </div>
+        <div>
+          <button class="btn btn-primary btn-sm" id="addClientBtn"><i class="fa-solid fa-plus"></i> Add Client</button>
+        </div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div class="table-wrap">
+          <table class="table" id="clientsTable">
+            <thead><tr><th>Name</th><th>Assigned Professional</th><th>Goal</th><th>Progress</th><th>Status</th><th style="text-align:right;">Actions</th></tr></thead>
+            <tbody id="clientsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================
+  MODALS
+  ============================================================ -->
+<!-- USER MODAL -->
+<div class="modal-overlay" id="userModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="userModalTitle">User Details</h3>
+      <button class="modal-close" data-modal="userModal"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form id="userForm">
+      <input type="hidden" id="userFormId">
+      <div class="modal-field"><label>Full Name</label><input type="text" id="userFormName" required></div>
+      <div class="modal-field"><label>Email</label><input type="email" id="userFormEmail" required></div>
+      <div class="modal-field"><label>Plan</label><select id="userFormPlan"><option value="Free">Free</option><option value="Premium">Premium</option></select></div>
+      <div class="modal-field"><label>Status</label><select id="userFormStatus"><option value="Active">Active</option><option value="Suspended">Suspended</option><option value="Inactive">Inactive</option></select></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" data-modal="userModal">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="userFormSubmit">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- PROFESSIONAL MODAL -->
+<div class="modal-overlay" id="proModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="proModalTitle">Professional Details</h3>
+      <button class="modal-close" data-modal="proModal"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form id="proForm">
+      <input type="hidden" id="proFormId">
+      <div class="modal-field"><label>Full Name</label><input type="text" id="proFormName" required></div>
+      <div class="modal-field"><label>Email</label><input type="email" id="proFormEmail" required></div>
+      <div class="modal-field"><label>Profession</label><input type="text" id="proFormProfession" placeholder="e.g. Nutritionist"></div>
+      <div class="modal-field"><label>Specialization</label><input type="text" id="proFormSpecialization" placeholder="e.g. Clinical Nutrition, Sports"></div>
+      <div class="modal-field"><label>Status</label><select id="proFormStatus"><option value="Pending">Pending</option><option value="Verified">Verified</option><option value="Rejected">Rejected</option><option value="Suspended">Suspended</option></select></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" data-modal="proModal">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="proFormSubmit">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- CLIENT MODAL -->
+<div class="modal-overlay" id="clientModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="clientModalTitle">Client Details</h3>
+      <button class="modal-close" data-modal="clientModal"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form id="clientForm">
+      <input type="hidden" id="clientFormId">
+      <div class="modal-field"><label>Full Name</label><input type="text" id="clientFormName" required></div>
+      <div class="modal-field"><label>Email</label><input type="email" id="clientFormEmail" required></div>
+      <div class="modal-field"><label>Assigned Professional</label><select id="clientFormProfessional"></select></div>
+      <div class="modal-field"><label>Goal</label><select id="clientFormGoal"><option value="Weight Loss">Weight Loss</option><option value="Diabetes Management">Diabetes Management</option><option value="Pregnancy Nutrition">Pregnancy Nutrition</option><option value="Heart Health">Heart Health</option><option value="General Wellness">General Wellness</option></select></div>
+      <div class="modal-field"><label>Progress (%)</label><input type="number" id="clientFormProgress" min="0" max="100" value="0"></div>
+      <div class="modal-field"><label>Status</label><select id="clientFormStatus"><option value="Active">Active</option><option value="Inactive">Inactive</option><option value="Suspended">Suspended</option></select></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" data-modal="clientModal">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="clientFormSubmit">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- CONFIRMATION MODAL -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header">
+      <h3 id="confirmTitle">Confirm Action</h3>
+      <button class="modal-close" data-modal="confirmModal"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <p id="confirmMessage" style="color:var(--text-secondary);margin-bottom:20px;">Are you sure you want to perform this action?</p>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" data-modal="confirmModal">Cancel</button>
+      <button type="button" class="btn btn-danger" id="confirmActionBtn">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast-stack" id="toastStack"></div>
+
+<script>
+// ============================================================
+// ADMIN ACCOUNTS – FULL BACKEND CRUD INTEGRATION (self-contained)
+// ============================================================
+
+const BASE_URL = 'http://127.0.0.1:5000/api';
+const token = localStorage.getItem('access_token');
+
+// ----- API fetch helper -----
+async function apiFetch(endpoint, options = {}) {
+  const resp = await fetch(`${BASE_URL}${endpoint}`, {
+    ...options,
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      ...options.headers
+    }
+  });
+  if (resp.status === 401) {
+    localStorage.removeItem('access_token');
+    window.location.href = '../login.html';
+    throw new Error('Unauthorized');
+  }
+  const data = await resp.json();
+  if (!resp.ok) {
+    throw new Error(data.error || data.message || 'Request failed');
+  }
+  return data;
+}
+
+function showToast(msg, type = 'success') {
+  const stack = document.getElementById('toastStack');
+  const old = document.querySelector('.toast');
+  if (old) old.remove();
+  const t = document.createElement('div');
+  t.className = 'toast' + (type === 'error' ? ' error' : '');
+  t.innerHTML = `<i class="fa-solid ${type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-check'}"></i> ${msg}`;
+  stack.appendChild(t);
+  setTimeout(() => t.remove(), 4000);
+}
+window.showToast = showToast;
+
+// ----- Data state -----
+let allUsers = [];
+let allProfessionals = [];
+let allClients = [];
+
+// ----- Load data from backend -----
+async function loadUsers() {
+  try {
+    const data = await apiFetch('/admin/users');
+    allUsers = data.data || [];
+    renderUsers();
+    document.getElementById('statUsers').textContent = allUsers.length;
+  } catch (e) { showToast('Error loading users: ' + e.message, 'error'); }
+}
+
+async function loadProfessionals() {
+  try {
+    const data = await apiFetch('/admin/professionals');
+    allProfessionals = data.data || [];
+    renderProfessionals();
+    document.getElementById('statProfessionals').textContent = allProfessionals.length;
+    const pending = allProfessionals.filter(p => p.approval_status === 'pending').length;
+    document.getElementById('pendingCount').textContent = pending + ' Pending';
+  } catch (e) { showToast('Error loading professionals: ' + e.message, 'error'); }
+}
+
+async function loadClients() {
+  try {
+    const data = await apiFetch('/admin/clients');
+    allClients = data.data || [];
+    renderClients();
+    document.getElementById('statClients').textContent = allClients.length;
+  } catch (e) { showToast('Error loading clients: ' + e.message, 'error'); }
+}
+
+// ----- Render functions (search-aware) -----
+function renderUsers() {
+  const search = document.getElementById('userSearchInput').value.toLowerCase().trim();
+  const filtered = allUsers.filter(u => 
+    ((u.first_name || '') + ' ' + (u.last_name || '')).toLowerCase().includes(search) || 
+    u.email.toLowerCase().includes(search)
+  );
+  const tbody = document.getElementById('usersTableBody');
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" class="empty-state"><i class="fa-regular fa-user"></i><div>${allUsers.length === 0 ? 'No users yet.' : 'No users found.'}</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = filtered.map(u => `
+    <tr data-id="${u.id}">
+      <td><strong>${u.first_name || ''} ${u.last_name || ''}</strong></td>
+      <td>${u.email}</td>
+      <td><span class="badge ${u.plan === 'Premium' ? 'badge-premium' : 'badge-free'}">${u.plan || 'Free'}</span></td>
+      <td><span class="status-badge ${u.is_active ? 'active' : 'inactive'}">${u.is_active ? 'Active' : 'Inactive'}</span></td>
+      <td>${u.created_at ? new Date(u.created_at).toLocaleDateString() : 'N/A'}</td>
+      <td style="text-align:right;">
+        <div class="action-btns">
+          <button class="btn btn-ghost btn-sm view-user" data-id="${u.id}" title="View"><i class="fa-regular fa-eye"></i></button>
+          <button class="btn btn-ghost btn-sm edit-user" data-id="${u.id}" title="Edit"><i class="fa-regular fa-pen"></i></button>
+          ${u.is_active ? 
+            `<button class="btn btn-ghost btn-sm danger suspend-user" data-id="${u.id}" title="Suspend"><i class="fa-solid fa-ban"></i></button>` :
+            `<button class="btn btn-ghost btn-sm success activate-user" data-id="${u.id}" title="Activate"><i class="fa-solid fa-check"></i></button>`
+          }
+          ${u.plan === 'Free' ? 
+            `<button class="btn btn-ghost btn-sm success upgrade-user" data-id="${u.id}" title="Upgrade"><i class="fa-regular fa-crown"></i></button>` : ''
+          }
+          <button class="btn btn-ghost btn-sm danger delete-user" data-id="${u.id}" title="Delete"><i class="fa-regular fa-trash"></i></button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+  attachUserEvents();
+}
+
+function renderProfessionals() {
+  const search = document.getElementById('proSearchInput').value.toLowerCase().trim();
+  const filtered = allProfessionals.filter(p => 
+    p.name.toLowerCase().includes(search) || 
+    p.email.toLowerCase().includes(search) ||
+    (p.profession && p.profession.toLowerCase().includes(search))
+  );
+  const tbody = document.getElementById('professionalsTableBody');
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" class="empty-state"><i class="fa-regular fa-user-md"></i><div>${allProfessionals.length === 0 ? 'No professionals yet.' : 'No professionals found.'}</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = filtered.map(p => {
+    const status = p.approval_status || 'pending';
+    const statusLabel = status.charAt(0).toUpperCase() + status.slice(1);
+    return `
+    <tr data-id="${p.id}">
+      <td><strong>${p.name}</strong></td>
+      <td>${p.profession || '—'}</td>
+      <td>${Array.isArray(p.specialization) ? p.specialization.join(', ') : p.specialization || '—'}</td>
+      <td><span class="approval-badge ${status}">${statusLabel}</span></td>
+      <td style="text-align:right;">
+        <div class="action-btns">
+          <button class="btn btn-ghost btn-sm view-pro" data-id="${p.id}" title="View"><i class="fa-regular fa-eye"></i></button>
+          ${status === 'pending' ? `
+            <button class="btn btn-ghost btn-sm success approve-pro" data-id="${p.id}" title="Approve"><i class="fa-solid fa-check"></i></button>
+            <button class="btn btn-ghost btn-sm danger reject-pro" data-id="${p.id}" title="Reject"><i class="fa-solid fa-xmark"></i></button>
+          ` : `
+            ${p.is_active ? 
+              `<button class="btn btn-ghost btn-sm danger suspend-pro" data-id="${p.id}" title="Suspend"><i class="fa-solid fa-ban"></i></button>` :
+              `<button class="btn btn-ghost btn-sm success activate-pro" data-id="${p.id}" title="Activate"><i class="fa-solid fa-check"></i></button>`
+            }
+            <button class="btn btn-ghost btn-sm edit-pro" data-id="${p.id}" title="Edit"><i class="fa-regular fa-pen"></i></button>
+          `}
+          <button class="btn btn-ghost btn-sm danger delete-pro" data-id="${p.id}" title="Delete"><i class="fa-regular fa-trash"></i></button>
+        </div>
+      </td>
+    </tr>
+  `}).join('');
+  attachProEvents();
+}
+
+function renderClients() {
+  const search = document.getElementById('clientSearchInput').value.toLowerCase().trim();
+  const filtered = allClients.filter(c => 
+    c.name.toLowerCase().includes(search) || 
+    c.email.toLowerCase().includes(search) ||
+    (c.assigned_professional && c.assigned_professional.toLowerCase().includes(search))
+  );
+  const tbody = document.getElementById('clientsTableBody');
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" class="empty-state"><i class="fa-regular fa-user-group"></i><div>${allClients.length === 0 ? 'No clients yet.' : 'No clients found.'}</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = filtered.map(c => `
+    <tr data-id="${c.id}">
+      <td><strong>${c.name}</strong></td>
+      <td>${c.assigned_professional || 'Unassigned'}</td>
+      <td>${c.goal || 'General'}</td>
+      <td><span style="font-weight:600;color:${c.progress >= 70 ? 'var(--sukuma)' : c.progress >= 40 ? 'var(--maize-deep)' : '#dc2626'};">${c.progress || 0}%</span></td>
+      <td><span class="status-badge ${(c.status || 'Active').toLowerCase()}">${c.status || 'Active'}</span></td>
+      <td style="text-align:right;">
+        <div class="action-btns">
+          <button class="btn btn-ghost btn-sm view-client" data-id="${c.id}" title="View"><i class="fa-regular fa-eye"></i></button>
+          <button class="btn btn-ghost btn-sm edit-client" data-id="${c.id}" title="Edit"><i class="fa-regular fa-pen"></i></button>
+          ${c.status === 'Suspended' ? 
+            `<button class="btn btn-ghost btn-sm success activate-client" data-id="${c.id}" title="Activate"><i class="fa-solid fa-check"></i></button>` :
+            `<button class="btn btn-ghost btn-sm danger suspend-client" data-id="${c.id}" title="Suspend"><i class="fa-solid fa-ban"></i></button>`
+          }
+          <button class="btn btn-ghost btn-sm danger delete-client" data-id="${c.id}" title="Delete"><i class="fa-regular fa-trash"></i></button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+  attachClientEvents();
+}
+
+// ----- Event attachment -----
+function attachUserEvents() {
+  document.querySelectorAll('.view-user').forEach(b => b.addEventListener('click', () => openUserModal(b.dataset.id, true)));
+  document.querySelectorAll('.edit-user').forEach(b => b.addEventListener('click', () => openUserModal(b.dataset.id, false)));
+  document.querySelectorAll('.suspend-user').forEach(b => b.addEventListener('click', () => confirmAction('Suspend User', 'Suspend user?', () => suspendUser(b.dataset.id))));
+  document.querySelectorAll('.activate-user').forEach(b => b.addEventListener('click', () => confirmAction('Activate User', 'Activate user?', () => activateUser(b.dataset.id))));
+  document.querySelectorAll('.delete-user').forEach(b => b.addEventListener('click', () => confirmAction('Delete User', 'Delete user? This cannot be undone.', () => deleteUser(b.dataset.id))));
+  document.querySelectorAll('.upgrade-user').forEach(b => b.addEventListener('click', () => confirmAction('Upgrade User', 'Upgrade user to Premium?', () => upgradeUser(b.dataset.id))));
+}
+
+function attachProEvents() {
+  document.querySelectorAll('.view-pro').forEach(b => b.addEventListener('click', () => openProModal(b.dataset.id, true)));
+  document.querySelectorAll('.edit-pro').forEach(b => b.addEventListener('click', () => openProModal(b.dataset.id, false)));
+  document.querySelectorAll('.approve-pro').forEach(b => b.addEventListener('click', () => approvePro(b.dataset.id)));
+  document.querySelectorAll('.reject-pro').forEach(b => b.addEventListener('click', () => confirmAction('Reject Professional', 'Reject professional?', () => rejectPro(b.dataset.id))));
+  document.querySelectorAll('.suspend-pro').forEach(b => b.addEventListener('click', () => confirmAction('Suspend Professional', 'Suspend professional?', () => suspendPro(b.dataset.id))));
+  document.querySelectorAll('.activate-pro').forEach(b => b.addEventListener('click', () => confirmAction('Activate Professional', 'Activate professional?', () => activatePro(b.dataset.id))));
+  document.querySelectorAll('.delete-pro').forEach(b => b.addEventListener('click', () => confirmAction('Delete Professional', 'Delete professional? This cannot be undone.', () => deletePro(b.dataset.id))));
+}
+
+function attachClientEvents() {
+  document.querySelectorAll('.view-client').forEach(b => b.addEventListener('click', () => openClientModal(b.dataset.id, true)));
+  document.querySelectorAll('.edit-client').forEach(b => b.addEventListener('click', () => openClientModal(b.dataset.id, false)));
+  document.querySelectorAll('.suspend-client').forEach(b => b.addEventListener('click', () => confirmAction('Suspend Client', 'Suspend client?', () => suspendClient(b.dataset.id))));
+  document.querySelectorAll('.activate-client').forEach(b => b.addEventListener('click', () => confirmAction('Activate Client', 'Activate client?', () => activateClient(b.dataset.id))));
+  document.querySelectorAll('.delete-client').forEach(b => b.addEventListener('click', () => confirmAction('Delete Client', 'Delete client? This cannot be undone.', () => deleteClient(b.dataset.id))));
+}
+
+// ----- User CRUD (real API) -----
+async function suspendUser(id) {
+  try {
+    await apiFetch(`/admin/users/${id}/suspend`, { method: 'PUT' });
+    showToast('User suspended');
+    await loadUsers();
+  } catch (e) { showToast('Error: ' + e.message, 'error'); }
+}
+async function activateUser(id) {
+  try {
+    await apiFetch(`/admin/users/${id}/activate`, { method: 'PUT' });
+    showToast('User activated');
+    await loadUsers();
+  } catch (e) { showToast('Error: ' + e.message, 'error'); }
+}
+async function deleteUser(id) {
+  try {
+    await apiFetch(`/admin/users/${id}`, { method: 'DELETE' });
+    showToast('User deleted');
+    await loadUsers();
+  } catch (e) { showToast('Error: ' + e.message, 'error'); }
+}
+async function upgradeUser(id) {
+  try {
+    await apiFetch(`/admin/users/${id}/upgrade`, { method: 'PUT' });
+    showToast('User upgraded to Premium');
+    await loadUsers();
+  } catch (e) { showToast('Error: ' + e.message, 'error'); }
+}
+
+async function saveUser(e) {
+  e.preventDefault();
+  const id = document.getElementById('userFormId').value;
+  const data = {
+    first_name: document.getElementById('userFormName').value.trim().split(' ')[0] || '',
+    last_name: document.getElementById('userFormName').value.trim().split(' ').slice(1).join(' ') || '',
+    email: document.getElementById('userFormEmail').value.trim(),
+    plan: document.getElementById('userFormPlan').value,
+    is_active: document.getElementById('userFormStatus').value === 'Active'
+  };
+  if (!data.first_name || !data.email) { showToast('Please fill in all fields.', 'error'); return; }
+  try {
+    if (id) {
+      await apiFetch(`/admin/users/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+      showToast('User updated');
+    } else {
+      data.password = 'TempPass123!';
+      await apiFetch('/admin/users', { method: 'POST', body: JSON.stringify(data) });
+      showToast('User created');
+    }
+    document.getElementById('userModal').classList.remove('open');
+    await loadUsers();
+  } catch (e) { showToast('Error: ' + e.message, 'error'); }
+}
+
+function openUserModal(id, readOnly) {
+  const user = id ? allUsers.find(u => u.id === id) : null;
+  document.getElementById('userFormId').value = id || '';
+  document.getElementById('userModalTitle').textContent = user ? (readOnly ? 'View User' : 'Edit User') : 'Add User';
+  document.getElementById('userFormName').value = user ? `${user.first_name || ''} ${user.last_name || ''}`.trim() : '';
+  document.getElementById('userFormEmail').value = user ? user.email : '';
+  document.getElementById('userFormPlan').value = user ? (user.plan || 'Free') : 'Free';
+  document.getElementById('userFormStatus').value = user ? (user.is_active ? 'Active' : 'Inactive') : 'Active';
+  const inputs = document.querySelectorAll('#userForm input, #userForm select');
+  inputs.forEach(el => el.disabled = readOnly);
+  document.getElementById('userFormSubmit').style.display = readOnly ? 'none' : 'inline-flex';
+  document.getElementById('userModal').classList.add('open');
+}
+
+// ----- Professional CRUD (real API) -----
+async function approvePro(id) {
+  try {
+    await apiFetch(`/admin/professionals/${id}/approve`, { method: 'PUT' });
+    showToast('Professional approved');
+    await loadProfessionals();
+  } catch (e) { showToast('Error: ' + e.message, 'error'); }
+}
+async function rejectPro(id) {
+  try {
+    await apiFetch(`/admin/professionals/${id}/reject`, { method: 'PUT' });
+    showToast('Professional rejected');
+    await loadProfessionals();
+  } catch (e) { showToast('Error: ' + e.message, 'error'); }
+}
+async function suspendPro(id) {
+  try {
+    await apiFetch(`/admin/professionals/${id}/suspend`, { method: 'PUT' });
+    showToast('Professional suspended');
+    await loadProfessionals();
+  } catch (e) { showToast('Error: ' + e.message, 'error'); }
+}
+async function activatePro(id) {
+  try {
+    await apiFetch(`/admin/professionals/${id}/activate`, { method: 'PUT' });
+    showToast('Professional activated');
+    await loadProfessionals();
+  } catch (e) { showToast('Error: ' + e.message, 'error'); }
+}
+async function deletePro(id) {
+  try {
+    await apiFetch(`/admin/professionals/${id}`, { method: 'DELETE' });
+    showToast('Professional deleted');
+    await loadProfessionals();
+  } catch (e) { showToast('Error: ' + e.message, 'error'); }
+}
+
+async function savePro(e) {
+  e.preventDefault();
+  const id = document.getElementById('proFormId').value;
+  const data = {
+    name: document.getElementById('proFormName').value.trim(),
+    email: document.getElementById('proFormEmail').value.trim(),
+    profession: document.getElementById('proFormProfession').value.trim(),
+    specialization: document.getElementById('proFormSpecialization').value.split(',').map(s => s.trim()).filter(Boolean),
+    approval_status: document.getElementById('proFormStatus').value,
+    is_active: true
+  };
+  if (!data.name || !data.email) { showToast('Please fill in all fields.', 'error'); return; }
+  try {
+    if (id) {
+      await apiFetch(`/admin/professionals/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+      showToast('Professional updated');
+    } else {
+      data.password = 'TempPass123!';
+      await apiFetch('/admin/professionals', { method: 'POST', body: JSON.stringify(data) });
+      showToast('Professional created');
+    }
+    document.getElementById('proModal').classList.remove('open');
+    await loadProfessionals();
+  } catch (e) { showToast('Error: ' + e.message, 'error'); }
+}
+
+function openProModal(id, readOnly) {
+  const pro = id ? allProfessionals.find(p => p.id === id) : null;
+  document.getElementById('proFormId').value = id || '';
+  document.getElementById('proModalTitle').textContent = pro ? (readOnly ? 'View Professional' : 'Edit Professional') : 'Add Professional';
+  document.getElementById('proFormName').value = pro ? pro.name : '';
+  document.getElementById('proFormEmail').value = pro ? pro.email : '';
+  document.getElementById('proFormProfession').value = pro ? pro.profession : '';
+  document.getElementById('proFormSpecialization').value = Array.isArray(pro.specialization) ? pro.specialization.join(', ') : (pro.specialization || '');
+  document.getElementById('proFormStatus').value = pro ? pro.approval_status || 'Pending' : 'Pending';
+  const inputs = document.querySelectorAll('#proForm input, #proForm select');
+  inputs.forEach(el => el.disabled = readOnly);
+  document.getElementById('proFormSubmit').style.display = readOnly ? 'none' : 'inline-flex';
+  document.getElementById('proModal').classList.add('open');
+}
+
+// ----- Client CRUD (real API) -----
+async function suspendClient(id) {
+  try {
+    await apiFetch(`/admin/clients/${id}/suspend`, { method: 'PUT' });
+    showToast('Client suspended');
+    await loadClients();
+  } catch (e) { showToast('Error: ' + e.message, 'error'); }
+}
+async function activateClient(id) {
+  try {
+    await apiFetch(`/admin/clients/${id}/activate`, { method: 'PUT' });
+    showToast('Client activated');
+    await loadClients();
+  } catch (e) { showToast('Error: ' + e.message, 'error'); }
+}
+async function deleteClient(id) {
+  try {
+    await apiFetch(`/admin/clients/${id}`, { method: 'DELETE' });
+    showToast('Client deleted');
+    await loadClients();
+  } catch (e) { showToast('Error: ' + e.message, 'error'); }
+}
+
+async function saveClient(e) {
+  e.preventDefault();
+  const id = document.getElementById('clientFormId').value;
+  const data = {
+    name: document.getElementById('clientFormName').value.trim(),
+    email: document.getElementById('clientFormEmail').value.trim(),
+    assigned_professional_id: document.getElementById('clientFormProfessional').value || null,
+    goal: document.getElementById('clientFormGoal').value,
+    progress: parseInt(document.getElementById('clientFormProgress').value) || 0,
+    status: document.getElementById('clientFormStatus').value
+  };
+  if (!data.name || !data.email) { showToast('Please fill in all fields.', 'error'); return; }
+  try {
+    if (id) {
+      await apiFetch(`/admin/clients/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+      showToast('Client updated');
+    } else {
+      data.password = 'TempPass123!';
+      await apiFetch('/admin/clients', { method: 'POST', body: JSON.stringify(data) });
+      showToast('Client created');
+    }
+    document.getElementById('clientModal').classList.remove('open');
+    await loadClients();
+  } catch (e) { showToast('Error: ' + e.message, 'error'); }
+}
+
+function populateProSelect() {
+  const pros = allProfessionals.filter(p => p.approval_status === 'approved' && p.is_active !== false);
+  const select = document.getElementById('clientFormProfessional');
+  select.innerHTML = '<option value="">Unassigned</option>' + 
+    pros.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+}
+
+function openClientModal(id, readOnly) {
+  const client = id ? allClients.find(c => c.id === id) : null;
+  populateProSelect();
+  document.getElementById('clientFormId').value = id || '';
+  document.getElementById('clientModalTitle').textContent = client ? (readOnly ? 'View Client' : 'Edit Client') : 'Add Client';
+  document.getElementById('clientFormName').value = client ? client.name : '';
+  document.getElementById('clientFormEmail').value = client ? client.email : '';
+  document.getElementById('clientFormProfessional').value = client ? (client.assigned_professional_id || '') : '';
+  document.getElementById('clientFormGoal').value = client ? client.goal : 'Weight Loss';
+  document.getElementById('clientFormProgress').value = client ? client.progress : 0;
+  document.getElementById('clientFormStatus').value = client ? client.status : 'Active';
+  const inputs = document.querySelectorAll('#clientForm input, #clientForm select');
+  inputs.forEach(el => el.disabled = readOnly);
+  document.getElementById('clientFormSubmit').style.display = readOnly ? 'none' : 'inline-flex';
+  document.getElementById('clientModal').classList.add('open');
+}
+
+// ----- Confirm modal -----
+let confirmCallback = null;
+function confirmAction(title, message, callback) {
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmMessage').textContent = message;
+  confirmCallback = callback;
+  document.getElementById('confirmModal').classList.add('open');
+}
+document.getElementById('confirmActionBtn').addEventListener('click', function() {
+  if (confirmCallback) { confirmCallback(); confirmCallback = null; }
+  document.getElementById('confirmModal').classList.remove('open');
+});
+
+// ----- Modal close handlers -----
+document.querySelectorAll('.modal-close, [data-modal]').forEach(el => {
+  el.addEventListener('click', function() {
+    const id = this.dataset.modal;
+    if (id) document.getElementById(id).classList.remove('open');
+  });
+});
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('open');
+  });
+});
+
+// ----- Search handlers -----
+document.getElementById('userSearchInput').addEventListener('input', renderUsers);
+document.getElementById('proSearchInput').addEventListener('input', renderProfessionals);
+document.getElementById('clientSearchInput').addEventListener('input', renderClients);
+
+// ----- Approve All -----
+document.getElementById('approveAllBtn').addEventListener('click', async function() {
+  const pending = allProfessionals.filter(p => p.approval_status === 'pending');
+  if (pending.length === 0) { showToast('No pending professionals to approve.', 'error'); return; }
+  confirmAction('Approve All', `Approve ${pending.length} pending professional(s)?`, async function() {
+    for (const p of pending) {
+      try { await apiFetch(`/admin/professionals/${p.id}/approve`, { method: 'PUT' }); } catch (e) {}
+    }
+    await loadProfessionals();
+    showToast(`${pending.length} professional(s) approved.`);
+  });
+});
+
+// ----- Sidebar, theme, tabs, etc. -----
+function logout() {
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('smartlishe_role');
+  window.location.href = '../login.html';
+}
+
+function initTheme() {
+  const saved = localStorage.getItem('smartlishe_theme') || 'light';
+  document.body.setAttribute('data-theme', saved);
+  if (saved === 'dark') document.body.classList.add('dark-mode');
+  const icon = document.getElementById('themeIcon');
+  if (icon) icon.className = saved === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+  const toggle = document.getElementById('themeToggle');
+  if (toggle) {
+    toggle.addEventListener('click', function() {
+      document.body.classList.toggle('dark-mode');
+      const isDark = document.body.classList.contains('dark-mode');
+      if (icon) icon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+      localStorage.setItem('smartlishe_theme', isDark ? 'dark' : 'light');
+    });
+  }
+}
+
+function initSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  const hamburger = document.getElementById('hamburgerBtn');
+  const topbarHamburger = document.getElementById('topbarHamburger');
+
+  function openSidebar() { sidebar.classList.add('open'); overlay.classList.add('show'); }
+  function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('show'); }
+  if (hamburger) hamburger.addEventListener('click', openSidebar);
+  if (topbarHamburger) topbarHamburger.addEventListener('click', openSidebar);
+  if (overlay) overlay.addEventListener('click', closeSidebar);
+
+  function toggleDropdown(headerId, dropdownId) {
+    const header = document.getElementById(headerId);
+    const dropdown = document.getElementById(dropdownId);
+    if (!header || !dropdown) return;
+    header.addEventListener('click', function(e) {
+      e.preventDefault();
+      const isOpen = dropdown.classList.contains('open');
+      document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+      document.querySelectorAll('.dropdown-chevron').forEach(c => c.classList.remove('open'));
+      if (!isOpen) {
+        dropdown.classList.add('open');
+        const chevron = header.querySelector('.dropdown-chevron');
+        if (chevron) chevron.classList.add('open');
+      }
+    });
+  }
+  toggleDropdown('accountsToggle', 'accountsDropdown');
+  toggleDropdown('operationsToggle', 'operationsDropdown');
+
+  document.querySelectorAll('.nav-link').forEach(function(link) {
+    link.addEventListener('click', function() {
+      if (window.innerWidth <= 768) closeSidebar();
+    });
+  });
+}
+
+async function loadAdminInfo() {
+  try {
+    const data = await apiFetch('/profile');
+    if (data.success && data.data) {
+      const name = data.data.first_name || data.data.email || 'Admin';
+      document.getElementById('adminName').textContent = name;
+      document.getElementById('adminAvatar').textContent = name.charAt(0).toUpperCase();
+    }
+  } catch (e) {}
+}
+
+function initNotifications() {
+  document.getElementById('notifBtn').addEventListener('click', function() {
+    const pending = allProfessionals.filter(p => p.approval_status === 'pending').length;
+    showToast(pending > 0 ? `You have ${pending} pending professional approvals.` : 'No pending professional approvals.');
+  });
+}
+
+function initTabs() {
+  const container = document.getElementById('accountTabs');
+  const tabs = container.querySelectorAll('.tab-btn');
+  const panels = {
+    users: document.getElementById('tab-users'),
+    professionals: document.getElementById('tab-professionals'),
+    clients: document.getElementById('tab-clients')
+  };
+
+  tabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      tabs.forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      const target = this.dataset.tab;
+      Object.keys(panels).forEach(function(key) {
+        panels[key].classList.toggle('active', key === target);
+      });
+      history.pushState(null, '', '#' + target);
+      if (target === 'users') loadUsers();
+      else if (target === 'professionals') loadProfessionals();
+      else if (target === 'clients') loadClients();
+    });
+  });
+
+  const hash = window.location.hash.replace('#', '');
+  if (hash && panels[hash]) {
+    tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === hash));
+    Object.keys(panels).forEach(function(key) {
+      panels[key].classList.toggle('active', key === hash);
+    });
+    if (hash === 'users') loadUsers();
+    else if (hash === 'professionals') loadProfessionals();
+    else if (hash === 'clients') loadClients();
+  }
+}
+
+// ---- Boot ----
+document.addEventListener('DOMContentLoaded', async function() {
+  initTheme();
+  initSidebar();
+  loadAdminInfo();
+  initTabs();
+  await Promise.all([loadUsers(), loadProfessionals(), loadClients()]);
+  initNotifications();
+
+  document.getElementById('addUserBtn').addEventListener('click', () => openUserModal(null, false));
+  document.getElementById('addClientBtn').addEventListener('click', () => openClientModal(null, false));
+
+  // Form submissions
+  document.getElementById('userForm').addEventListener('submit', saveUser);
+  document.getElementById('proForm').addEventListener('submit', savePro);
+  document.getElementById('clientForm').addEventListener('submit', saveClient);
+
+  console.log('✅ Admin Accounts page fully integrated with backend CRUD (self-contained CSS).');
+});
+</script>
+</body>
+</html>
