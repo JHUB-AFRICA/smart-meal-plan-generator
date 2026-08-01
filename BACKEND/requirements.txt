@@ -7,7 +7,7 @@ Flask-Mail==0.10.0
 Flask-Migrate==4.0.5
 
 # ===== Database =====
-psycopg2-binary==2.9.9
+psycopg2-binary==2.9.10
 
 # ===== Environment =====
 python-dotenv==1.0.0
