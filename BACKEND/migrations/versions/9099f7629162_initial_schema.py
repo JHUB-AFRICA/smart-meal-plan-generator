@@ -20,12 +20,12 @@ def upgrade():
     with op.batch_alter_table('activity_logs', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('idx_activity_logs_activity_type'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_activity_logs_user_id'), if_exists=True)
-        batch_op.drop_constraint(batch_op.f('activity_logs_user_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE activity_logs DROP CONSTRAINT IF EXISTS activity_logs_user_id_fkey;')
         batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
 
     with op.batch_alter_table('admins', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('idx_admins_user_id'), if_exists=True)
-        batch_op.drop_constraint(batch_op.f('admins_user_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE admins DROP CONSTRAINT IF EXISTS admins_user_id_fkey;')
         batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
         batch_op.drop_table_comment(
         existing_comment='Administrators extending users.'
@@ -33,7 +33,7 @@ def upgrade():
 
     with op.batch_alter_table('ai_conversations', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('idx_ai_conversations_user_id'), if_exists=True)
-        batch_op.drop_constraint(batch_op.f('ai_conversations_user_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE ai_conversations DROP CONSTRAINT IF EXISTS ai_conversations_user_id_fkey;')
         batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
         batch_op.drop_table_comment(
         existing_comment='Conversations with the AI assistant.'
@@ -42,16 +42,16 @@ def upgrade():
     with op.batch_alter_table('ai_messages', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('idx_ai_messages_conversation_id'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_ai_messages_sender'), if_exists=True)
-        batch_op.drop_constraint(batch_op.f('ai_messages_conversation_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE ai_messages DROP CONSTRAINT IF EXISTS ai_messages_conversation_id_fkey;')
         batch_op.create_foreign_key(None, 'ai_conversations', ['conversation_id'], ['id'])
 
     with op.batch_alter_table('ai_recommendations', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('idx_ai_recommendations_user_id'), if_exists=True)
-        batch_op.drop_constraint(batch_op.f('ai_recommendations_user_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE ai_recommendations DROP CONSTRAINT IF EXISTS ai_recommendations_user_id_fkey;')
         batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
 
     with op.batch_alter_table('application_settings', schema=None) as batch_op:
-        batch_op.drop_constraint(batch_op.f('application_settings_user_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE application_settings DROP CONSTRAINT IF EXISTS application_settings_user_id_fkey;')
         batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
 
     with op.batch_alter_table('appointments', schema=None) as batch_op:
@@ -64,8 +64,8 @@ def upgrade():
                nullable=False,
                existing_server_default=sa.text('now()'))
         batch_op.drop_index(batch_op.f('idx_appointments_professional_id'), if_exists=True)
-        batch_op.drop_constraint(batch_op.f('appointments_professional_id_fkey'), type_='foreignkey', if_exists=True)
-        batch_op.drop_constraint(batch_op.f('appointments_client_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE appointments DROP CONSTRAINT IF EXISTS appointments_professional_id_fkey;')
+        op.execute('ALTER TABLE appointments DROP CONSTRAINT IF EXISTS appointments_client_id_fkey;')
         batch_op.create_foreign_key(None, 'clients', ['client_id'], ['id'])
         batch_op.create_foreign_key(None, 'professionals', ['professional_id'], ['id'])
 
@@ -73,7 +73,7 @@ def upgrade():
         batch_op.drop_index(batch_op.f('idx_audit_logs_created_at'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_audit_logs_entity_type_entity_id'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_audit_logs_user_id'), if_exists=True)
-        batch_op.drop_constraint(batch_op.f('audit_logs_user_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE audit_logs DROP CONSTRAINT IF EXISTS audit_logs_user_id_fkey;')
         batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
         batch_op.drop_table_comment(
         existing_comment='Audit trail for administrative actions.'
@@ -83,8 +83,8 @@ def upgrade():
         batch_op.drop_index(batch_op.f('idx_clients_assigned_professional_id'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_clients_invitation_token'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_clients_user_id'), if_exists=True)
-        batch_op.drop_constraint(batch_op.f('clients_user_id_fkey'), type_='foreignkey', if_exists=True)
-        batch_op.drop_constraint(batch_op.f('clients_assigned_professional_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE clients DROP CONSTRAINT IF EXISTS clients_user_id_fkey;')
+        op.execute('ALTER TABLE clients DROP CONSTRAINT IF EXISTS clients_assigned_professional_id_fkey;')
         batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
         batch_op.create_foreign_key(None, 'professionals', ['assigned_professional_id'], ['id'])
         batch_op.drop_table_comment(
@@ -93,25 +93,25 @@ def upgrade():
 
     with op.batch_alter_table('condition_recommendations', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('idx_condition_recommendations_condition_id'), if_exists=True)
-        batch_op.drop_constraint(batch_op.f('condition_recommendations_condition_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE condition_recommendations DROP CONSTRAINT IF EXISTS condition_recommendations_condition_id_fkey;')
         batch_op.create_foreign_key(None, 'health_conditions', ['condition_id'], ['id'])
 
     with op.batch_alter_table('contact_messages', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('idx_contact_messages_status'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_contact_messages_user_id'), if_exists=True)
-        batch_op.drop_constraint(batch_op.f('contact_messages_user_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE contact_messages DROP CONSTRAINT IF EXISTS contact_messages_user_id_fkey;')
         batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
 
     with op.batch_alter_table('email_verification_tokens', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('idx_email_verification_tokens_token'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_email_verification_tokens_user_id'), if_exists=True)
-        batch_op.drop_constraint(batch_op.f('email_verification_tokens_user_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE email_verification_tokens DROP CONSTRAINT IF EXISTS email_verification_tokens_user_id_fkey;')
         batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
 
     with op.batch_alter_table('files', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('idx_files_file_type'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_files_user_id'), if_exists=True)
-        batch_op.drop_constraint(batch_op.f('files_user_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE files DROP CONSTRAINT IF EXISTS files_user_id_fkey;')
         batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
 
     with op.batch_alter_table('foods', schema=None) as batch_op:
@@ -123,7 +123,7 @@ def upgrade():
         batch_op.drop_index(batch_op.f('idx_foods_category_id'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_foods_name'), if_exists=True)
         batch_op.create_index('idx_foods_source_source_id', ['source', 'source_id'], unique=False)
-        batch_op.drop_constraint(batch_op.f('foods_category_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE foods DROP CONSTRAINT IF EXISTS foods_category_id_fkey;')
         batch_op.create_foreign_key(None, 'food_categories', ['category_id'], ['id'])
         batch_op.drop_table_comment(
         existing_comment='Food composition database with nutritional values.'
@@ -133,13 +133,13 @@ def upgrade():
         batch_op.drop_index(batch_op.f('idx_goal_progress_goal_date'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_goal_progress_goal_id'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_goal_progress_progress_date'), if_exists=True)
-        batch_op.drop_constraint(batch_op.f('goal_progress_goal_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE goal_progress DROP CONSTRAINT IF EXISTS goal_progress_goal_id_fkey;')
         batch_op.create_foreign_key(None, 'goal_tracker', ['goal_id'], ['id'])
 
     with op.batch_alter_table('goal_tracker', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('idx_goal_tracker_status'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_goal_tracker_user_id'), if_exists=True)
-        batch_op.drop_constraint(batch_op.f('goal_tracker_user_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE goal_tracker DROP CONSTRAINT IF EXISTS goal_tracker_user_id_fkey;')
         batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
         batch_op.drop_table_comment(
         existing_comment='User goals for nutrition, fitness, weight.'
@@ -148,14 +148,14 @@ def upgrade():
     with op.batch_alter_table('invoices', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('idx_invoices_payment_id'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_invoices_user_id'), if_exists=True)
-        batch_op.drop_constraint(batch_op.f('invoices_payment_id_fkey'), type_='foreignkey', if_exists=True)
-        batch_op.drop_constraint(batch_op.f('invoices_user_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE invoices DROP CONSTRAINT IF EXISTS invoices_payment_id_fkey;')
+        op.execute('ALTER TABLE invoices DROP CONSTRAINT IF EXISTS invoices_user_id_fkey;')
         batch_op.create_foreign_key(None, 'payments', ['payment_id'], ['id'])
         batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
 
     with op.batch_alter_table('login_history', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('idx_login_history_user_id'), if_exists=True)
-        batch_op.drop_constraint(batch_op.f('login_history_user_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE login_history DROP CONSTRAINT IF EXISTS login_history_user_id_fkey;')
         batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
 
     with op.batch_alter_table('meal_plans', schema=None) as batch_op:
@@ -163,11 +163,11 @@ def upgrade():
         batch_op.drop_index(batch_op.f('idx_meal_plans_created_by'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_meal_plans_date_range'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_meal_plans_professional_id'), if_exists=True)
-        batch_op.drop_constraint(batch_op.f('meal_plans_professional_id_fkey'), type_='foreignkey', if_exists=True)
-        batch_op.drop_constraint(batch_op.f('meal_plans_client_id_fkey'), type_='foreignkey', if_exists=True)
-        batch_op.drop_constraint(batch_op.f('fk_meal_plans_created_by'), type_='foreignkey', if_exists=True)
-        batch_op.drop_constraint(batch_op.f('fk_meal_plans_client'), type_='foreignkey', if_exists=True)
-        batch_op.drop_constraint(batch_op.f('fk_meal_plans_professional'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE meal_plans DROP CONSTRAINT IF EXISTS meal_plans_professional_id_fkey;')
+        op.execute('ALTER TABLE meal_plans DROP CONSTRAINT IF EXISTS meal_plans_client_id_fkey;')
+        op.execute('ALTER TABLE meal_plans DROP CONSTRAINT IF EXISTS fk_meal_plans_created_by;')
+        op.execute('ALTER TABLE meal_plans DROP CONSTRAINT IF EXISTS fk_meal_plans_client;')
+        op.execute('ALTER TABLE meal_plans DROP CONSTRAINT IF EXISTS fk_meal_plans_professional;')
         batch_op.create_foreign_key(None, 'users', ['created_by_user_id'], ['id'])
         batch_op.create_foreign_key(None, 'professionals', ['professional_id'], ['id'])
         batch_op.create_foreign_key(None, 'clients', ['client_id'], ['id'])
@@ -184,19 +184,19 @@ def upgrade():
         batch_op.drop_index(batch_op.f('idx_meals_meal_plan_id'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_meals_recipe_id'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_meals_scheduled_date'), if_exists=True)
-        batch_op.drop_constraint(batch_op.f('meals_meal_plan_id_fkey'), type_='foreignkey', if_exists=True)
-        batch_op.drop_constraint(batch_op.f('meals_recipe_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE meals DROP CONSTRAINT IF EXISTS meals_meal_plan_id_fkey;')
+        op.execute('ALTER TABLE meals DROP CONSTRAINT IF EXISTS meals_recipe_id_fkey;')
         batch_op.create_foreign_key(None, 'recipes', ['recipe_id'], ['id'])
         batch_op.create_foreign_key(None, 'meal_plans', ['meal_plan_id'], ['id'])
 
     with op.batch_alter_table('notification_preferences', schema=None) as batch_op:
-        batch_op.drop_constraint(batch_op.f('notification_preferences_user_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE notification_preferences DROP CONSTRAINT IF EXISTS notification_preferences_user_id_fkey;')
         batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
 
     with op.batch_alter_table('notifications', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('idx_notifications_is_read'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_notifications_user_id'), if_exists=True)
-        batch_op.drop_constraint(batch_op.f('notifications_user_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE notifications DROP CONSTRAINT IF EXISTS notifications_user_id_fkey;')
         batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
         batch_op.drop_table_comment(
         existing_comment='User notifications.'
@@ -205,7 +205,7 @@ def upgrade():
     with op.batch_alter_table('nutriscan', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('idx_nutriscan_barcode'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_nutriscan_user_id'), if_exists=True)
-        batch_op.drop_constraint(batch_op.f('nutriscan_user_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE nutriscan DROP CONSTRAINT IF EXISTS nutriscan_user_id_fkey;')
         batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
         batch_op.drop_table_comment(
         existing_comment='Scanned food labels with AI analysis.'
@@ -215,7 +215,7 @@ def upgrade():
         batch_op.drop_index(batch_op.f('idx_password_reset_tokens_expires_at'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_password_reset_tokens_token'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_password_reset_tokens_user_id'), if_exists=True)
-        batch_op.drop_constraint(batch_op.f('password_reset_tokens_user_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE password_reset_tokens DROP CONSTRAINT IF EXISTS password_reset_tokens_user_id_fkey;')
         batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
 
     with op.batch_alter_table('payments', schema=None) as batch_op:
@@ -227,14 +227,14 @@ def upgrade():
         batch_op.drop_index(batch_op.f('idx_payments_subscription_id'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_payments_transaction_reference'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_payments_user_id'), if_exists=True)
-        batch_op.drop_constraint(batch_op.f('payments_user_id_fkey'), type_='foreignkey', if_exists=True)
-        batch_op.drop_constraint(batch_op.f('payments_subscription_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE payments DROP CONSTRAINT IF EXISTS payments_user_id_fkey;')
+        op.execute('ALTER TABLE payments DROP CONSTRAINT IF EXISTS payments_subscription_id_fkey;')
         batch_op.create_foreign_key(None, 'user_subscriptions', ['subscription_id'], ['id'])
         batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
 
     with op.batch_alter_table('professional_category_assignments', schema=None) as batch_op:
-        batch_op.drop_constraint(batch_op.f('professional_category_assignments_professional_id_fkey'), type_='foreignkey', if_exists=True)
-        batch_op.drop_constraint(batch_op.f('professional_category_assignments_category_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE professional_category_assignments DROP CONSTRAINT IF EXISTS professional_category_assignments_professional_id_fkey;')
+        op.execute('ALTER TABLE professional_category_assignments DROP CONSTRAINT IF EXISTS professional_category_assignments_category_id_fkey;')
         batch_op.create_foreign_key(None, 'professionals', ['professional_id'], ['id'])
         batch_op.create_foreign_key(None, 'professional_categories', ['category_id'], ['id'])
 
@@ -248,8 +248,8 @@ def upgrade():
         batch_op.drop_index(batch_op.f('idx_professionals_approval_status'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_professionals_license_number'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_professionals_user_id'), if_exists=True)
-        batch_op.drop_constraint(batch_op.f('fk_professionals_subscription_plan'), type_='foreignkey', if_exists=True)
-        batch_op.drop_constraint(batch_op.f('professionals_user_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE professionals DROP CONSTRAINT IF EXISTS fk_professionals_subscription_plan;')
+        op.execute('ALTER TABLE professionals DROP CONSTRAINT IF EXISTS professionals_user_id_fkey;')
         batch_op.create_foreign_key(None, 'subscription_plans', ['subscription_plan_id'], ['id'])
         batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
         batch_op.drop_table_comment(
@@ -259,8 +259,8 @@ def upgrade():
     with op.batch_alter_table('recipe_ingredients', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('idx_recipe_ingredients_food_id'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_recipe_ingredients_recipe_id'), if_exists=True)
-        batch_op.drop_constraint(batch_op.f('recipe_ingredients_recipe_id_fkey'), type_='foreignkey', if_exists=True)
-        batch_op.drop_constraint(batch_op.f('recipe_ingredients_food_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE recipe_ingredients DROP CONSTRAINT IF EXISTS recipe_ingredients_recipe_id_fkey;')
+        op.execute('ALTER TABLE recipe_ingredients DROP CONSTRAINT IF EXISTS recipe_ingredients_food_id_fkey;')
         batch_op.create_foreign_key(None, 'foods', ['food_id'], ['id'])
         batch_op.create_foreign_key(None, 'recipes', ['recipe_id'], ['id'])
 
@@ -268,7 +268,7 @@ def upgrade():
         batch_op.drop_index(batch_op.f('idx_recipe_steps_recipe_id'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_recipe_steps_unique_step'), if_exists=True)
         batch_op.create_unique_constraint('idx_recipe_steps_unique_step', ['recipe_id', 'step_number'])
-        batch_op.drop_constraint(batch_op.f('recipe_steps_recipe_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE recipe_steps DROP CONSTRAINT IF EXISTS recipe_steps_recipe_id_fkey;')
         batch_op.create_foreign_key(None, 'recipes', ['recipe_id'], ['id'])
 
     with op.batch_alter_table('recipes', schema=None) as batch_op:
@@ -283,7 +283,7 @@ def upgrade():
         batch_op.drop_index(batch_op.f('idx_recipes_created_by'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_recipes_meal_type'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_recipes_title'), if_exists=True)
-        batch_op.drop_constraint(batch_op.f('recipes_created_by_user_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE recipes DROP CONSTRAINT IF EXISTS recipes_created_by_user_id_fkey;')
         batch_op.create_foreign_key(None, 'users', ['created_by_user_id'], ['id'])
         batch_op.drop_table_comment(
         existing_comment='Recipes with ingredients and steps.'
@@ -292,7 +292,7 @@ def upgrade():
     with op.batch_alter_table('refresh_tokens', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('idx_refresh_tokens_token'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_refresh_tokens_user_id'), if_exists=True)
-        batch_op.drop_constraint(batch_op.f('refresh_tokens_user_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE refresh_tokens DROP CONSTRAINT IF EXISTS refresh_tokens_user_id_fkey;')
         batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
 
     with op.batch_alter_table('reports', schema=None) as batch_op:
@@ -309,9 +309,9 @@ def upgrade():
         batch_op.drop_index(batch_op.f('idx_reports_professional_id'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_reports_report_type'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_reports_user_id'), if_exists=True)
-        batch_op.drop_constraint(batch_op.f('reports_user_id_fkey'), type_='foreignkey', if_exists=True)
-        batch_op.drop_constraint(batch_op.f('reports_professional_id_fkey'), type_='foreignkey', if_exists=True)
-        batch_op.drop_constraint(batch_op.f('fk_reports_client'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE reports DROP CONSTRAINT IF EXISTS reports_user_id_fkey;')
+        op.execute('ALTER TABLE reports DROP CONSTRAINT IF EXISTS reports_professional_id_fkey;')
+        op.execute('ALTER TABLE reports DROP CONSTRAINT IF EXISTS fk_reports_client;')
         batch_op.create_foreign_key(None, 'clients', ['client_id'], ['id'])
         batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
         batch_op.create_foreign_key(None, 'professionals', ['professional_id'], ['id'])
@@ -319,22 +319,22 @@ def upgrade():
     with op.batch_alter_table('sessions', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('idx_sessions_session_token'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_sessions_user_id'), if_exists=True)
-        batch_op.drop_constraint(batch_op.f('sessions_user_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE sessions DROP CONSTRAINT IF EXISTS sessions_user_id_fkey;')
         batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
 
     with op.batch_alter_table('shopping_items', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('idx_shopping_items_food_id'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_shopping_items_shopping_list_id'), if_exists=True)
-        batch_op.drop_constraint(batch_op.f('shopping_items_food_id_fkey'), type_='foreignkey', if_exists=True)
-        batch_op.drop_constraint(batch_op.f('shopping_items_shopping_list_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE shopping_items DROP CONSTRAINT IF EXISTS shopping_items_food_id_fkey;')
+        op.execute('ALTER TABLE shopping_items DROP CONSTRAINT IF EXISTS shopping_items_shopping_list_id_fkey;')
         batch_op.create_foreign_key(None, 'shopping_lists', ['shopping_list_id'], ['id'])
         batch_op.create_foreign_key(None, 'foods', ['food_id'], ['id'])
 
     with op.batch_alter_table('shopping_lists', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('idx_shopping_lists_client_id'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_shopping_lists_meal_plan_id'), if_exists=True)
-        batch_op.drop_constraint(batch_op.f('shopping_lists_client_id_fkey'), type_='foreignkey', if_exists=True)
-        batch_op.drop_constraint(batch_op.f('shopping_lists_meal_plan_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE shopping_lists DROP CONSTRAINT IF EXISTS shopping_lists_client_id_fkey;')
+        op.execute('ALTER TABLE shopping_lists DROP CONSTRAINT IF EXISTS shopping_lists_meal_plan_id_fkey;')
         batch_op.create_foreign_key(None, 'meal_plans', ['meal_plan_id'], ['id'])
         batch_op.create_foreign_key(None, 'clients', ['client_id'], ['id'])
 
@@ -351,14 +351,14 @@ def upgrade():
         batch_op.drop_index(batch_op.f('idx_system_settings_key'), if_exists=True)
 
     with op.batch_alter_table('user_food_restrictions', schema=None) as batch_op:
-        batch_op.drop_constraint(batch_op.f('user_food_restrictions_restriction_id_fkey'), type_='foreignkey', if_exists=True)
-        batch_op.drop_constraint(batch_op.f('user_food_restrictions_user_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE user_food_restrictions DROP CONSTRAINT IF EXISTS user_food_restrictions_restriction_id_fkey;')
+        op.execute('ALTER TABLE user_food_restrictions DROP CONSTRAINT IF EXISTS user_food_restrictions_user_id_fkey;')
         batch_op.create_foreign_key(None, 'food_restrictions', ['restriction_id'], ['id'])
         batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
 
     with op.batch_alter_table('user_health_conditions', schema=None) as batch_op:
-        batch_op.drop_constraint(batch_op.f('user_health_conditions_user_id_fkey'), type_='foreignkey', if_exists=True)
-        batch_op.drop_constraint(batch_op.f('user_health_conditions_condition_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE user_health_conditions DROP CONSTRAINT IF EXISTS user_health_conditions_user_id_fkey;')
+        op.execute('ALTER TABLE user_health_conditions DROP CONSTRAINT IF EXISTS user_health_conditions_condition_id_fkey;')
         batch_op.create_foreign_key(None, 'health_conditions', ['condition_id'], ['id'])
         batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
 
@@ -377,7 +377,7 @@ def upgrade():
                existing_nullable=True)
         batch_op.drop_index(batch_op.f('idx_user_profiles_bmi'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_user_profiles_user_id'), if_exists=True)
-        batch_op.drop_constraint(batch_op.f('user_profiles_user_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE user_profiles DROP CONSTRAINT IF EXISTS user_profiles_user_id_fkey;')
         batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
         batch_op.drop_table_comment(
         existing_comment='Extended profile information for users.'
@@ -392,7 +392,7 @@ def upgrade():
         batch_op.drop_index(batch_op.f('idx_user_subscriptions_plan_id'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_user_subscriptions_status'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_user_subscriptions_user_id'), if_exists=True)
-        batch_op.drop_constraint(batch_op.f('user_subscriptions_user_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE user_subscriptions DROP CONSTRAINT IF EXISTS user_subscriptions_user_id_fkey;')
         batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
 
     with op.batch_alter_table('user_weekly_plans', schema=None) as batch_op:
@@ -409,7 +409,7 @@ def upgrade():
                nullable=False)
         batch_op.drop_index(batch_op.f('idx_user_weekly_plans_user_id'), if_exists=True)
         batch_op.create_unique_constraint(None, ['user_id'])
-        batch_op.drop_constraint(batch_op.f('user_weekly_plans_user_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE user_weekly_plans DROP CONSTRAINT IF EXISTS user_weekly_plans_user_id_fkey;')
         batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
 
     with op.batch_alter_table('users', schema=None) as batch_op:
@@ -435,7 +435,7 @@ def upgrade():
         batch_op.drop_index(batch_op.f('idx_water_logs_log_date'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_water_logs_user_date'), if_exists=True)
         batch_op.drop_index(batch_op.f('idx_water_logs_user_id'), if_exists=True)
-        batch_op.drop_constraint(batch_op.f('water_logs_user_id_fkey'), type_='foreignkey', if_exists=True)
+        op.execute('ALTER TABLE water_logs DROP CONSTRAINT IF EXISTS water_logs_user_id_fkey;')
         batch_op.create_foreign_key(None, 'users', ['user_id'], ['id'])
         batch_op.drop_table_comment(
         existing_comment='Daily water intake tracking.'
