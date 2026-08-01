@@ -1,9 +1,19 @@
+# ===== Core Flask =====
 Flask==2.3.3
 Flask-SQLAlchemy==3.1.1
 Flask-CORS==4.0.0
 Flask-Bcrypt==1.0.1
-PyJWT==2.8.0
-python-dotenv==1.0.0
+Flask-Mail==0.10.0
+Flask-Migrate==4.0.5
+
+# ===== Database =====
 psycopg2-binary==2.9.9
-openai==0.28.0  # if using OpenAI
-gunicorn==21.2.0  # for deployment
+
+# ===== Environment =====
+python-dotenv==1.0.0
+
+# ===== Security =====
+PyJWT==2.8.0
+
+# ===== Production Server =====
+gunicorn==21.2.0
