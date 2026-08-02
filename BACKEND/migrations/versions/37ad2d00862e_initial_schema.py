@@ -8,7 +8,7 @@ Create Date: 2026-08-02 10:40:40.985674
 Revision ID: 3a4a73a25e41
 Revises: 
 Create Date: 2026-08-01 23:37:40.296257
->>>>>>> 72fb0adaa7b0869eb42da00b471d962dc6b5c392:BACKEND/migrations/versions/9099f7629162_initial_schema.py
+
 
 """
 from alembic import op
@@ -18,9 +18,7 @@ from sqlalchemy.dialects import postgresql
 # revision identifiers, used by Alembic.
 <<<<<<< HEAD:BACKEND/migrations/versions/37ad2d00862e_initial_schema.py
 revision = '37ad2d00862e'
-=======
-revision = '3a4a73a25e41'
->>>>>>> 72fb0adaa7b0869eb42da00b471d962dc6b5c392:BACKEND/migrations/versions/9099f7629162_initial_schema.py
+
 down_revision = None
 branch_labels = None
 depends_on = None
