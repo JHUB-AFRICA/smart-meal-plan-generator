@@ -1,0 +1,1645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Billing — Smart Lishe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* ===== BILLING LAYOUT ===== */
+    body {
+      background: var(--bg-body, #f8f7f4);
+      padding: 16px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .billing-wrapper {
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* ===== TOP BAR ===== */
+    .billing-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0 16px;
+      flex-wrap: wrap;
+      gap: 10px;
+      border-bottom: 1px solid var(--basket-line, #e8e6e1);
+      margin-bottom: 20px;
+    }
+
+    .billing-topbar .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-display, 'Fraunces', serif);
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--text-primary, #1e1e1e);
+      text-decoration: none;
+    }
+
+    .billing-topbar .brand .mark {
+      width: 34px;
+      height: 34px;
+      background: var(--sukuma, #2b7a4b);
+      color: #fff;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .billing-topbar .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .billing-topbar .icon-btn {
+      background: none;
+      border: none;
+      font-size: 1.1rem;
+      color: var(--text-secondary, #5a5a5a);
+      cursor: pointer;
+      position: relative;
+      padding: 6px;
+    }
+
+    .billing-topbar .icon-btn .dot {
+      width: 8px;
+      height: 8px;
+      background: #e74c3c;
+      border-radius: 50%;
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      border: 2px solid var(--bg-body, #f8f7f4);
+    }
+
+    .billing-topbar .profile-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      color: var(--text-primary, #1e1e1e);
+      background: var(--bg-card, #fff);
+      padding: 3px 10px 3px 3px;
+      border-radius: 30px;
+      border: 1px solid var(--basket-line, #e8e6e1);
+      cursor: pointer;
+      font-family: var(--font-body, 'Inter', sans-serif);
+      font-size: 0.8rem;
+    }
+
+    .billing-topbar .profile-chip .avatar {
+      width: 30px;
+      height: 30px;
+      background: var(--sukuma, #2b7a4b);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.75rem;
+    }
+
+    .billing-topbar .profile-chip .label {
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .billing-topbar .profile-chip .chevron {
+      font-size: 0.5rem;
+      color: var(--text-muted, #8a8a8a);
+      margin-left: 2px;
+    }
+
+    /* ===== ACCOUNT DROPDOWN ===== */
+    .account-dropdown {
+      position: relative;
+    }
+
+    .account-dropdown .dropdown-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      min-width: 180px;
+      background: #fff;
+      border: 1px solid var(--basket-line, #e8e6e1);
+      border-radius: var(--radius-sm, 10px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-6px);
+      transition: opacity 0.2s, transform 0.2s;
+      z-index: 100;
+      overflow: hidden;
+      padding: 6px 0;
+    }
+
+    .account-dropdown .dropdown-menu.open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .dropdown-menu a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      text-decoration: none;
+      color: var(--text-primary, #1e1e1e);
+      font-size: 0.82rem;
+      font-weight: 500;
+      transition: background 0.15s;
+    }
+
+    .dropdown-menu a:hover {
+      background: var(--accent-light, #eaf5ee);
+    }
+
+    .dropdown-menu a i {
+      width: 18px;
+      color: var(--text-muted, #8a8a8a);
+    }
+
+    .dropdown-menu .divider {
+      height: 1px;
+      background: var(--basket-line, #e8e6e1);
+      margin: 4px 0;
+    }
+
+    /* ===== BACK TO HOME ===== */
+    .back-home {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted, #8a8a8a);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 500;
+      margin-bottom: 16px;
+      transition: color 0.2s;
+    }
+
+    .back-home:hover {
+      color: var(--text-primary, #1e1e1e);
+    }
+
+    /* ===== PAGE HEADER ===== */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .page-header h1 {
+      font-family: var(--font-display, 'Fraunces', serif);
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    .page-header p {
+      color: var(--text-secondary, #5a5a5a);
+      font-size: 0.88rem;
+    }
+
+    /* ===== BILLING DASHBOARD ===== */
+    .billing-dashboard {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .billing-plan-summary,
+    .billing-payment-methods,
+    .billing-invoices {
+      background: var(--bg-card, #fff);
+      border-radius: var(--radius-md, 16px);
+      padding: 18px 16px;
+      border: 1px solid var(--basket-line, #e8e6e1);
+      box-shadow: var(--shadow-sm, 0 2px 8px rgba(0,0,0,0.04));
+    }
+
+    /* ===== PLAN SUMMARY ===== */
+    .plan-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .plan-name {
+      font-family: var(--font-display, 'Fraunces', serif);
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+
+    .membership-badge {
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 3px 12px;
+      border-radius: 30px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .membership-badge.free {
+      background: var(--basket-line, #e8e6e1);
+      color: var(--text-secondary, #5a5a5a);
+    }
+
+    .membership-badge.premium {
+      background: #fef6e0;
+      color: #b8860b;
+    }
+
+    .plan-price {
+      font-family: var(--font-display, 'Fraunces', serif);
+      font-weight: 900;
+      font-size: 1.6rem;
+      margin: 6px 0 2px;
+    }
+
+    .plan-price small {
+      font-size: 0.85rem;
+      font-weight: 400;
+      color: var(--text-muted, #8a8a8a);
+    }
+
+    /* ===== FEATURES LIST ===== */
+    .plan-features-list {
+      list-style: none;
+      margin: 10px 0 14px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3px 12px;
+    }
+
+    .plan-features-list li {
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-secondary, #5a5a5a);
+      padding: 2px 0;
+    }
+
+    .plan-features-list li i {
+      width: 16px;
+      font-size: 0.65rem;
+      color: var(--sukuma, #2b7a4b);
+      flex-shrink: 0;
+    }
+
+    .plan-features-list li i.fa-xmark {
+      color: #d1d1d1;
+    }
+
+    .plan-features-list li .feature-locked {
+      opacity: 0.5;
+    }
+
+    .billing-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .billing-actions .btn {
+      font-size: 0.78rem;
+      padding: 8px 16px;
+      min-height: 36px;
+    }
+
+    /* ===== PREMIUM FEATURES HIGHLIGHT ===== */
+    .premium-features-showcase {
+      background: linear-gradient(135deg, #fef6e0, #fde68a);
+      border-radius: var(--radius-md, 16px);
+      padding: 16px 18px;
+      border: 1px solid #f59e0b;
+      margin-bottom: 20px;
+    }
+
+    .premium-features-showcase .showcase-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .premium-features-showcase .showcase-header .crown {
+      font-size: 1.6rem;
+    }
+
+    .premium-features-showcase .showcase-header h3 {
+      font-family: var(--font-display, 'Fraunces', serif);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #78350f;
+    }
+
+    .premium-features-showcase .showcase-header .badge-premium-show {
+      background: #d97706;
+      color: #fff;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 0.6rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-left: auto;
+    }
+
+    .premium-features-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .premium-feature-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 4px;
+      background: rgba(255,255,255,0.6);
+      padding: 10px 8px;
+      border-radius: var(--radius-sm, 10px);
+    }
+
+    .premium-feature-item i {
+      font-size: 1.3rem;
+      color: #d97706;
+    }
+
+    .premium-feature-item span {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #78350f;
+    }
+
+    .premium-feature-item small {
+      font-size: 0.6rem;
+      color: #92400e;
+      opacity: 0.8;
+    }
+
+    /* ===== USAGE STATS ===== */
+    .billing-usage-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .billing-usage-item {
+      background: var(--bg-card, #fff);
+      border-radius: var(--radius-sm, 10px);
+      padding: 14px 12px;
+      border: 1px solid var(--basket-line, #e8e6e1);
+      text-align: center;
+    }
+
+    .usage-value {
+      font-family: var(--font-display, 'Fraunces', serif);
+      font-weight: 700;
+      font-size: 1.4rem;
+      display: block;
+      line-height: 1.2;
+    }
+
+    .usage-label {
+      font-size: 0.7rem;
+      color: var(--text-secondary, #5a5a5a);
+      display: block;
+      margin-top: 2px;
+    }
+
+    .usage-bar {
+      width: 100%;
+      height: 4px;
+      background: var(--basket-line, #e8e6e1);
+      border-radius: 10px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+
+    .usage-bar .fill {
+      height: 100%;
+      border-radius: 10px;
+      background: var(--sukuma, #2b7a4b);
+      transition: width 0.4s ease;
+    }
+
+    .usage-sub {
+      font-size: 0.65rem;
+      color: var(--text-muted, #8a8a8a);
+      margin-top: 4px;
+    }
+
+    /* ===== PAYMENT METHODS ===== */
+    .method-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .method-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 8px 12px;
+      background: var(--bg-body, #f8f7f4);
+      border-radius: var(--radius-sm, 10px);
+      border-left: 3px solid var(--sukuma, #2b7a4b);
+    }
+
+    .method-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .method-info i {
+      font-size: 1.1rem;
+      width: 24px;
+      text-align: center;
+      color: var(--sukuma, #2b7a4b);
+    }
+
+    .method-info strong {
+      font-size: 0.8rem;
+    }
+
+    .method-info span {
+      font-size: 0.7rem;
+      color: var(--text-muted, #8a8a8a);
+      display: block;
+    }
+
+    .method-status {
+      font-size: 0.55rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 20px;
+      background: var(--accent-light, #eaf5ee);
+      color: var(--sukuma, #2b7a4b);
+    }
+
+    /* ===== INVOICES ===== */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .section-header h3 {
+      font-family: var(--font-display, 'Fraunces', serif);
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .invoice-status {
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 2px 10px;
+      border-radius: 30px;
+      text-transform: capitalize;
+    }
+
+    .invoice-status.paid {
+      background: #e0f2e6;
+      color: #1f6a3e;
+    }
+
+    .invoice-status.pending {
+      background: #fff3d6;
+      color: #a67c00;
+    }
+
+    .invoice-status.overdue {
+      background: #fce4e4;
+      color: #b33c3c;
+    }
+
+    .invoice-actions button {
+      background: transparent;
+      border: none;
+      padding: 4px 6px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--text-secondary, #5a5a5a);
+      transition: background 0.2s;
+    }
+
+    .invoice-actions button:hover {
+      background: var(--basket-line, #e8e6e1);
+    }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+      font-family: var(--font-body, 'Inter', sans-serif);
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 30px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      min-height: 36px;
+    }
+
+    .btn-sm {
+      padding: 5px 12px;
+      font-size: 0.7rem;
+      min-height: 30px;
+    }
+
+    .btn-primary {
+      background: var(--sukuma, #2b7a4b);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--sukuma-dark, #1f5f3a);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: var(--basket-line, #e8e6e1);
+      color: var(--text-primary, #1e1e1e);
+    }
+
+    .btn-secondary:hover {
+      background: #d6d3cc;
+    }
+
+    .btn-accent {
+      background: #d97706;
+      color: #fff;
+    }
+
+    .btn-accent:hover {
+      background: #b45309;
+      transform: translateY(-1px);
+    }
+
+    .btn-danger {
+      background: #dc2626;
+      color: #fff;
+    }
+
+    .btn-danger:hover {
+      background: #b91c1c;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--sukuma, #2b7a4b);
+      border: 1.5px solid var(--sukuma, #2b7a4b);
+    }
+
+    .btn-outline:hover {
+      background: var(--accent-light, #eaf5ee);
+    }
+
+    /* ===== PAYMENT MODAL ===== */
+    .payment-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 2000;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .payment-modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .payment-modal {
+      background: #fff;
+      width: 100%;
+      max-width: 480px;
+      max-height: 92vh;
+      border-radius: 24px 24px 0 0;
+      padding: 24px 20px 30px;
+      transform: translateY(40px);
+      transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+      overflow-y: auto;
+      box-shadow: 0 -8px 40px rgba(0,0,0,0.12);
+    }
+
+    .payment-modal-overlay.open .payment-modal {
+      transform: translateY(0);
+    }
+
+    .payment-modal .modal-handle {
+      width: 40px;
+      height: 4px;
+      background: var(--basket-line, #e8e6e1);
+      border-radius: 10px;
+      margin: 0 auto 14px;
+    }
+
+    .payment-modal h2 {
+      font-family: var(--font-display, 'Fraunces', serif);
+      font-weight: 700;
+      font-size: 1.3rem;
+      margin-bottom: 2px;
+    }
+
+    .payment-modal .sub {
+      color: var(--text-secondary, #5a5a5a);
+      font-size: 0.82rem;
+      margin-bottom: 16px;
+    }
+
+    .payment-method-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .payment-method-tabs button {
+      flex: 1;
+      min-width: 70px;
+      padding: 8px 10px;
+      border: 2px solid var(--basket-line, #e8e6e1);
+      border-radius: var(--radius-sm, 10px);
+      background: transparent;
+      font-weight: 600;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: var(--font-body, 'Inter', sans-serif);
+    }
+
+    .payment-method-tabs button.active {
+      border-color: var(--sukuma, #2b7a4b);
+      background: var(--accent-light, #eaf5ee);
+      color: var(--sukuma, #2b7a4b);
+    }
+
+    .payment-form .form-group {
+      margin-bottom: 12px;
+    }
+
+    .payment-form label {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-secondary, #5a5a5a);
+      margin-bottom: 3px;
+    }
+
+    .payment-form input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--basket-line, #e8e6e1);
+      border-radius: var(--radius-sm, 10px);
+      font-size: 0.85rem;
+      font-family: var(--font-body, 'Inter', sans-serif);
+      transition: border 0.2s;
+    }
+
+    .payment-form input:focus {
+      outline: none;
+      border-color: var(--sukuma, #2b7a4b);
+    }
+
+    .payment-form .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .payment-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .payment-actions .btn {
+      flex: 1;
+      justify-content: center;
+    }
+
+    /* ===== TOAST ===== */
+    .toast-stack {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-width: 340px;
+    }
+
+    .toast {
+      background: #1e1e1e;
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      animation: slideIn 0.3s ease;
+      transition: opacity 0.3s, transform 0.3s;
+    }
+
+    .toast i {
+      color: var(--sukuma, #2b7a4b);
+      font-size: 1rem;
+    }
+
+    .toast.error i {
+      color: #dc2626;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(40px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* ===== MOBILE RESPONSIVE ===== */
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+
+      .billing-topbar .brand span {
+        display: none;
+      }
+
+      .billing-topbar .brand .mark {
+        width: 36px;
+        height: 36px;
+        font-size: 1.1rem;
+      }
+
+      .page-header h1 {
+        font-size: 1.2rem;
+      }
+
+      .page-header p {
+        font-size: 0.8rem;
+      }
+
+      .billing-usage-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .billing-usage-item {
+        padding: 10px 8px;
+      }
+
+      .usage-value {
+        font-size: 1.2rem;
+      }
+
+      .plan-features-list {
+        grid-template-columns: 1fr;
+        gap: 2px;
+      }
+
+      .plan-features-list li {
+        font-size: 0.75rem;
+      }
+
+      .billing-plan-summary,
+      .billing-payment-methods,
+      .billing-invoices {
+        padding: 14px 12px;
+      }
+
+      .payment-modal {
+        padding: 20px 16px 24px;
+        border-radius: 20px 20px 0 0;
+      }
+
+      .payment-form .row {
+        grid-template-columns: 1fr;
+      }
+
+      .payment-method-tabs button {
+        min-width: 50px;
+        font-size: 0.65rem;
+        padding: 6px 8px;
+      }
+
+      .method-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+      }
+
+      .method-item > div:last-child {
+        align-self: flex-end;
+      }
+
+      .billing-invoices table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+
+      .billing-invoices thead,
+      .billing-invoices tbody {
+        display: table;
+        width: 100%;
+      }
+
+      .billing-invoices table td,
+      .billing-invoices table th {
+        font-size: 0.7rem;
+        padding: 6px 8px;
+      }
+
+      .account-dropdown .dropdown-menu {
+        right: -10px;
+        min-width: 160px;
+      }
+
+      .premium-features-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+      }
+
+      .premium-feature-item {
+        padding: 8px 6px;
+      }
+
+      .premium-feature-item i {
+        font-size: 1.1rem;
+      }
+
+      .premium-feature-item span {
+        font-size: 0.65rem;
+      }
+
+      .premium-feature-item small {
+        font-size: 0.55rem;
+      }
+
+      .billing-actions .btn {
+        font-size: 0.7rem;
+        padding: 6px 12px;
+        min-height: 32px;
+      }
+
+      .back-home {
+        font-size: 0.75rem;
+        margin-bottom: 10px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .billing-usage-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .premium-features-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .billing-topbar .profile-chip .label {
+        display: none;
+      }
+
+      .billing-topbar .profile-chip {
+        padding: 3px 6px 3px 3px;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .billing-usage-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .premium-features-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== AUTH CHECK ===== -->
+<script>
+(function() {
+  const token = localStorage.getItem('access_token') || localStorage.getItem('smartlishe_token');
+  if (!token) {
+    window.location.href = 'home.html';
+    return;
+  }
+})();
+</script>
+
+<!-- ===== BILLING PAGE ===== -->
+<div class="billing-wrapper">
+
+  <!-- ===== TOP BAR ===== -->
+  <div class="billing-topbar">
+    <a href="home.html" class="brand">
+      <div class="mark"><i class="fa-solid fa-seedling"></i></div>
+      <span>Smart Lishe</span>
+    </a>
+    <div class="topbar-actions">
+      <button class="icon-btn" id="notifBtn"><i class="fa-regular fa-bell"></i><span class="dot"></span></button>
+      <div class="account-dropdown" id="accountDropdown">
+        <button class="profile-chip" id="dropdownToggle">
+          <div class="avatar" id="profileAvatar">U</div>
+          <span class="label" id="profileName">User</span>
+          <i class="fa-solid fa-chevron-down chevron"></i>
+        </button>
+        <div class="dropdown-menu" id="dropdownMenu">
+          <a href="profile.html"><i class="fa-regular fa-user"></i> Profile</a>
+          <a href="settings.html"><i class="fa-regular fa-gear"></i> Settings</a>
+          <div class="divider"></div>
+          <a href="#" id="logoutLink" style="color:#dc2626;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== BACK TO HOME ===== -->
+  <a href="home.html" class="back-home"><i class="fa-solid fa-arrow-left"></i> Back to Home</a>
+
+  <!-- ===== PAGE HEADER ===== -->
+  <div class="page-header">
+    <div>
+      <h1>💳 Billing &amp; Subscription</h1>
+      <p>Manage your plan, payment methods, and billing history.</p>
+    </div>
+  </div>
+
+  <!-- ===== BILLING DASHBOARD ===== -->
+  <div class="billing-dashboard">
+
+    <!-- ===== PLAN SUMMARY ===== -->
+    <div class="billing-plan-summary" id="planSummary">
+      <div style="text-align:center; padding:20px; color:var(--text-secondary);">Loading plan...</div>
+    </div>
+
+    <!-- ===== PREMIUM FEATURES SHOWCASE ===== -->
+    <div class="premium-features-showcase" id="premiumShowcase">
+      <div class="showcase-header">
+        <span class="crown">👑</span>
+        <h3>Premium Features</h3>
+        <span class="badge-premium-show">Pro</span>
+      </div>
+      <div class="premium-features-grid">
+        <div class="premium-feature-item">
+          <i class="fa-solid fa-infinity"></i>
+          <span>Unlimited AI</span>
+          <small>No request limits</small>
+        </div>
+        <div class="premium-feature-item">
+          <i class="fa-solid fa-chart-line"></i>
+          <span>Advanced Analytics</span>
+          <small>Detailed nutrition insights</small>
+        </div>
+        <div class="premium-feature-item">
+          <i class="fa-solid fa-headset"></i>
+          <span>Priority Support</span>
+          <small>Fast response times</small>
+        </div>
+        <div class="premium-feature-item">
+          <i class="fa-solid fa-utensils"></i>
+          <span>Premium Recipes</span>
+          <small>Exclusive meal plans</small>
+        </div>
+        <div class="premium-feature-item">
+          <i class="fa-solid fa-file-export"></i>
+          <span>Export Reports</span>
+          <small>PDF &amp; CSV downloads</small>
+        </div>
+        <div class="premium-feature-item">
+          <i class="fa-solid fa-user-md"></i>
+          <span>Professional Access</span>
+          <small>Connect with dietitians</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== USAGE STATS ===== -->
+    <div class="billing-usage-grid" id="usageGrid"></div>
+
+    <!-- ===== PAYMENT METHODS ===== -->
+    <div class="billing-payment-methods" id="paymentMethods"></div>
+
+    <!-- ===== INVOICES ===== -->
+    <div class="billing-invoices" id="invoicesSection"></div>
+
+  </div>
+
+</div>
+
+<!-- ===== PAYMENT MODAL ===== -->
+<div class="payment-modal-overlay" id="paymentModal">
+  <div class="payment-modal">
+    <div class="modal-handle"></div>
+    <h2>💳 Upgrade to Premium</h2>
+    <p class="sub" id="modalPlanPrice">KES 2,500 / month</p>
+
+    <div class="payment-method-tabs" id="paymentTabs">
+      <button class="active" data-method="mpesa"><i class="fa-solid fa-mobile-screen-button"></i> M-Pesa</button>
+      <button data-method="card"><i class="fa-regular fa-credit-card"></i> Card</button>
+    </div>
+
+    <div class="payment-form" id="paymentForm"></div>
+
+    <div class="payment-actions">
+      <button class="btn btn-secondary" id="cancelPaymentBtn">Cancel</button>
+      <button class="btn btn-primary" id="confirmPaymentBtn"><i class="fa-regular fa-lock"></i> Pay Now</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-stack" id="toastStack"></div>
+
+<script>
+// ============================================================
+// SMART LISHE — BILLING (Backend-Integrated) – Fixed
+// ============================================================
+
+(function() {
+  'use strict';
+
+  const API_BASE = 'http://127.0.0.1:5000/api';
+
+  // ===== Helpers =====
+  function getToken() {
+    return localStorage.getItem('access_token') || localStorage.getItem('smartlishe_token') || '';
+  }
+
+  function apiRequest(endpoint, method = 'GET', body = null) {
+    const url = API_BASE + endpoint;
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + getToken()
+    };
+    const options = { method, headers };
+    if (body) options.body = JSON.stringify(body);
+    return fetch(url, options).then(async res => {
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || data.message || 'API error');
+      return data;
+    });
+  }
+
+  function showToast(message, type = 'success') {
+    const stack = document.getElementById('toastStack');
+    if (!stack) return;
+    const toast = document.createElement('div');
+    toast.className = 'toast' + (type === 'error' ? ' error' : '');
+    const icon = type === 'error' ? 'fa-circle-exclamation' : 'fa-regular fa-check-circle';
+    toast.innerHTML = `<i class="fa-regular ${icon}"></i><span>${message}</span>`;
+    stack.appendChild(toast);
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateX(40px)';
+      setTimeout(() => toast.remove(), 300);
+    }, 3500);
+  }
+
+  // ===== State =====
+  let currentUser = null;
+  let currentSubscription = null;
+  let availablePlans = [];
+  let selectedPlanId = null;
+  let selectedPlanPrice = 0;
+  let selectedPlanCurrency = 'KES';
+
+  // ===== DOM Refs =====
+  const planSummary = document.getElementById('planSummary');
+  const usageGrid = document.getElementById('usageGrid');
+  const paymentMethodsEl = document.getElementById('paymentMethods');
+  const invoicesSection = document.getElementById('invoicesSection');
+  const paymentModal = document.getElementById('paymentModal');
+  const paymentForm = document.getElementById('paymentForm');
+  const paymentTabs = document.getElementById('paymentTabs');
+  const modalPlanPrice = document.getElementById('modalPlanPrice');
+  let selectedMethod = 'mpesa';
+
+  // ===== Fetch Data =====
+  async function fetchUserProfile() {
+    try {
+      const res = await apiRequest('/profile');
+      currentUser = res.data;
+      return currentUser;
+    } catch (e) {
+      console.warn('Could not fetch profile:', e);
+      return null;
+    }
+  }
+
+  async function fetchSubscription() {
+    try {
+      const res = await apiRequest('/subscriptions/current');
+      currentSubscription = res.data;
+      return currentSubscription;
+    } catch (e) {
+      currentSubscription = null;
+      return null;
+    }
+  }
+
+  async function fetchPlans() {
+    try {
+      const res = await apiRequest('/subscriptions/plans');
+      availablePlans = res.data || [];
+      if (availablePlans.length === 0) {
+        // Fallback: create a mock plan if none exist
+        availablePlans = [{
+          id: 'mock-premium',
+          name: 'Premium',
+          description: 'Unlock all premium features',
+          price: 2500,
+          currency: 'KES',
+          billing_cycle: 'monthly',
+          is_active: true
+        }];
+        console.warn('No plans from API, using mock Premium plan.');
+      }
+      return availablePlans;
+    } catch (e) {
+      console.warn('Could not fetch plans, using mock:', e);
+      // Fallback mock
+      availablePlans = [{
+        id: 'mock-premium',
+        name: 'Premium',
+        description: 'Unlock all premium features',
+        price: 2500,
+        currency: 'KES',
+        billing_cycle: 'monthly',
+        is_active: true
+      }];
+      return availablePlans;
+    }
+  }
+
+  // ===== Render Functions =====
+  function renderPlanSummary() {
+    const isPremium = currentSubscription && currentSubscription.status === 'active';
+    // Find a premium plan (or any active plan)
+    let premiumPlan = availablePlans.find(p => p.is_active !== false && (p.name.toLowerCase().includes('premium') || p.price > 0));
+    if (!premiumPlan && availablePlans.length > 0) {
+      premiumPlan = availablePlans[0]; // fallback to first plan
+    }
+    if (!premiumPlan) {
+      // If still no plan, create a fallback
+      premiumPlan = { name: 'Premium', price: 2500, currency: 'KES', description: 'Premium Plan' };
+    }
+    const planPrice = premiumPlan.price || 2500;
+    const planCurrency = premiumPlan.currency || 'KES';
+
+    const features = [
+      { label: 'AI Meal Assistant', free: true, premium: true },
+      { label: 'Meal Planner', free: true, premium: true },
+      { label: 'Recipe Suggestions', free: true, premium: true },
+      { label: 'Shopping List', free: true, premium: true },
+      { label: 'Goal Tracking', free: true, premium: true },
+      { label: 'Advanced Analytics', free: false, premium: true },
+      { label: 'Unlimited AI Requests', free: false, premium: true },
+      { label: 'Priority Support', free: false, premium: true },
+      { label: 'Premium Recipes', free: false, premium: true },
+      { label: 'Export Reports', free: false, premium: true },
+      { label: 'Professional Access', free: false, premium: true }
+    ];
+
+    let featuresHtml = '';
+    features.forEach(f => {
+      const has = isPremium ? f.premium : f.free;
+      featuresHtml += `<li><i class="fa-solid ${has ? 'fa-check' : 'fa-xmark'}"></i> ${f.label}</li>`;
+    });
+
+    const expiry = currentSubscription && currentSubscription.expires_at ?
+      new Date(currentSubscription.expires_at).toLocaleDateString() :
+      'N/A';
+
+    planSummary.innerHTML = `
+      <div class="plan-header">
+        <span class="plan-name">${isPremium ? '✨ Premium Plan' : 'Free Plan'}</span>
+        <span class="membership-badge ${isPremium ? 'premium' : 'free'}">
+          <i class="fa-regular fa-crown"></i> ${isPremium ? 'Premium' : 'Free'}
+        </span>
+      </div>
+      <div class="plan-price">
+        ${isPremium ? `${planCurrency} ${planPrice}` : `${planCurrency} 0`} <small>/ month</small>
+      </div>
+      <ul class="plan-features-list">${featuresHtml}</ul>
+      <div class="billing-actions">
+        ${isPremium ? `
+          <button class="btn btn-secondary btn-sm" id="cancelPlanBtn"><i class="fa-solid fa-xmark"></i> Cancel Subscription</button>
+          <button class="btn btn-outline btn-sm" id="changePlanBtn"><i class="fa-solid fa-arrows-rotate"></i> Change Plan</button>
+        ` : `
+          <button class="btn btn-primary btn-sm" id="upgradePlanBtn"><i class="fa-regular fa-crown"></i> Upgrade to Premium</button>
+          <span style="font-size:0.7rem;color:var(--text-muted, #8a8a8a);display:flex;align-items:center;gap:4px;margin-left:2px;">
+            <i class="fa-solid fa-lock"></i> Secure checkout
+          </span>
+        `}
+      </div>
+      <div style="font-size:0.72rem; color:var(--text-muted, #8a8a8a); margin-top:8px;">
+        <i class="fa-regular fa-clock"></i> ${isPremium ? `Expires: ${expiry}` : 'No active subscription'}
+      </div>
+    `;
+
+    // Attach events
+    if (isPremium) {
+      document.getElementById('cancelPlanBtn')?.addEventListener('click', async function() {
+        if (confirm('Are you sure you want to cancel your Premium subscription?')) {
+          // Mock cancel – in real app, call API
+          localStorage.setItem('user_membership', 'free');
+          showToast('Subscription cancelled. You are now on the Free plan.');
+          await fetchSubscription();
+          renderAll();
+        }
+      });
+      document.getElementById('changePlanBtn')?.addEventListener('click', function() {
+        showToast('Plan change options coming soon. Contact support for assistance.');
+      });
+    } else {
+      document.getElementById('upgradePlanBtn')?.addEventListener('click', function() {
+        // Find a premium plan (or the first plan)
+        let plan = availablePlans.find(p => p.is_active !== false && (p.name.toLowerCase().includes('premium') || p.price > 0));
+        if (!plan && availablePlans.length > 0) {
+          plan = availablePlans[0];
+        }
+        if (plan) {
+          selectedPlanId = plan.id;
+          selectedPlanPrice = plan.price;
+          selectedPlanCurrency = plan.currency || 'KES';
+          modalPlanPrice.textContent = `${selectedPlanCurrency} ${selectedPlanPrice} / month`;
+          openPaymentModal();
+        } else {
+          showToast('No active plans available. Please contact support.', 'error');
+        }
+      });
+    }
+  }
+
+  function renderUsageStats() {
+    const stats = {
+      aiRequests: parseInt(sessionStorage.getItem('aiUsage') || '0'),
+      mealPlansGenerated: parseInt(localStorage.getItem('mealPlansGenerated') || '0'),
+      recipesSaved: parseInt(localStorage.getItem('recipesSaved') || '0'),
+      shoppingLists: parseInt(localStorage.getItem('shoppingLists') || '0'),
+    };
+    const isPremium = currentSubscription && currentSubscription.status === 'active';
+    const aiRemaining = isPremium ? '♾️ Unlimited' : Math.max(0, 5 - stats.aiRequests);
+
+    usageGrid.innerHTML = `
+      <div class="billing-usage-item">
+        <span class="usage-value">${stats.aiRequests}</span>
+        <span class="usage-label">AI Requests Used</span>
+        <div class="usage-bar">
+          <div class="fill" style="width:${isPremium ? 0 : Math.min(100, (stats.aiRequests / 5) * 100)}%;"></div>
+        </div>
+        <div class="usage-sub">${aiRemaining} remaining</div>
+      </div>
+      <div class="billing-usage-item">
+        <span class="usage-value">${stats.mealPlansGenerated}</span>
+        <span class="usage-label">Meal Plans</span>
+      </div>
+      <div class="billing-usage-item">
+        <span class="usage-value">${stats.recipesSaved}</span>
+        <span class="usage-label">Recipes Saved</span>
+      </div>
+      <div class="billing-usage-item">
+        <span class="usage-value">${stats.shoppingLists}</span>
+        <span class="usage-label">Shopping Lists</span>
+      </div>
+    `;
+  }
+
+  function renderPaymentMethods() {
+    let methods = JSON.parse(localStorage.getItem('user_payment_methods') || '[]');
+    let html = `<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      <h3 style="font-family:var(--font-display, 'Fraunces', serif); font-size:1rem; font-weight:700;">Payment Methods</h3>
+      <button class="btn btn-sm btn-secondary" id="addPaymentMethodBtn"><i class="fa-regular fa-plus"></i> Add Method</button>
+    </div>`;
+
+    if (methods.length === 0) {
+      html += `<div style="padding:16px; text-align:center; color:var(--text-muted, #8a8a8a); font-size:0.85rem;">No payment methods saved.</div>`;
+    } else {
+      html += `<div class="method-list">`;
+      methods.forEach((method, index) => {
+        const isDefault = method.default || index === 0;
+        const iconMap = {
+          'mpesa': 'fa-solid fa-mobile-screen-button',
+          'card': 'fa-regular fa-credit-card',
+          'paypal': 'fa-brands fa-paypal',
+          'bank': 'fa-regular fa-building-columns'
+        };
+        const icon = iconMap[method.type] || 'fa-regular fa-circle';
+        html += `
+          <div class="method-item">
+            <div class="method-info">
+              <i class="${icon}"></i>
+              <div>
+                <strong>${method.label || method.type.charAt(0).toUpperCase() + method.type.slice(1)}</strong>
+                <span>${method.details || ''}</span>
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+              ${isDefault ? `<span class="method-status">Default</span>` : ''}
+              <button class="btn btn-sm btn-secondary" style="padding:2px 8px; font-size:0.65rem;" data-method-index="${index}" data-action="remove">Remove</button>
+            </div>
+          </div>
+        `;
+      });
+      html += `</div>`;
+    }
+    paymentMethodsEl.innerHTML = html;
+
+    paymentMethodsEl.querySelectorAll('[data-action="remove"]').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const idx = parseInt(this.dataset.methodIndex);
+        const methods = JSON.parse(localStorage.getItem('user_payment_methods') || '[]');
+        methods.splice(idx, 1);
+        localStorage.setItem('user_payment_methods', JSON.stringify(methods));
+        renderPaymentMethods();
+        showToast('Payment method removed.');
+      });
+    });
+
+    document.getElementById('addPaymentMethodBtn')?.addEventListener('click', function() {
+      const type = prompt('Enter payment type (mpesa, card, paypal, bank):', 'mpesa');
+      if (type) {
+        const methods = JSON.parse(localStorage.getItem('user_payment_methods') || '[]');
+        let label = '', details = '';
+        if (type === 'mpesa') {
+          label = 'M-Pesa';
+          details = prompt('Enter M-Pesa phone number:', '+254 700 123 456');
+        } else if (type === 'card') {
+          label = 'Credit Card';
+          details = prompt('Enter card ending (e.g., 4242):', '•••• 4242');
+        } else if (type === 'paypal') {
+          label = 'PayPal';
+          details = prompt('Enter PayPal email:', 'user@paypal.com');
+        } else {
+          label = 'Bank Transfer';
+          details = prompt('Enter account reference:', 'Bank Account');
+        }
+        if (details !== null) {
+          methods.push({
+            type: type,
+            label: label,
+            details: details || '',
+            default: methods.length === 0
+          });
+          localStorage.setItem('user_payment_methods', JSON.stringify(methods));
+          renderPaymentMethods();
+          showToast('Payment method added.');
+        }
+      }
+    });
+  }
+
+  function renderInvoices() {
+    let invoices = JSON.parse(localStorage.getItem('user_invoices') || '[]');
+    let html = `
+      <div class="section-header">
+        <h3>📄 Billing History</h3>
+        <button class="btn btn-sm btn-secondary" id="downloadAllBtn"><i class="fa-regular fa-download"></i> Download All</button>
+      </div>
+    `;
+
+    if (invoices.length === 0) {
+      html += `<div style="padding:16px; text-align:center; color:var(--text-muted, #8a8a8a); font-size:0.85rem;">No invoices yet.</div>`;
+    } else {
+      html += `<div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; font-size:0.8rem;">
+        <thead><tr style="background:var(--bg-body, #f8f7f4);">
+          <th style="padding:8px 12px; text-align:left; font-size:0.65rem; text-transform:uppercase; color:var(--text-secondary, #5a5a5a);">Invoice</th>
+          <th style="padding:8px 12px; text-align:left; font-size:0.65rem; text-transform:uppercase; color:var(--text-secondary, #5a5a5a);">Date</th>
+          <th style="padding:8px 12px; text-align:right; font-size:0.65rem; text-transform:uppercase; color:var(--text-secondary, #5a5a5a);">Amount</th>
+          <th style="padding:8px 12px; text-align:right; font-size:0.65rem; text-transform:uppercase; color:var(--text-secondary, #5a5a5a);">Status</th>
+          <th style="padding:8px 12px; text-align:right; font-size:0.65rem; text-transform:uppercase; color:var(--text-secondary, #5a5a5a);">Actions</th>
+        </tr></thead><tbody>`;
+      invoices.forEach(inv => {
+        const statusClass = inv.status === 'paid' ? 'paid' : inv.status === 'pending' ? 'pending' : 'overdue';
+        html += `
+          <tr style="border-bottom:1px solid var(--basket-line, #e8e6e1);">
+            <td style="padding:8px 12px; font-weight:600;">${inv.id || 'INV-0001'}</td>
+            <td style="padding:8px 12px;">${inv.date || 'N/A'}</td>
+            <td style="padding:8px 12px; text-align:right;">${inv.amount || 'KES 0'}</td>
+            <td style="padding:8px 12px; text-align:right;"><span class="invoice-status ${statusClass}">${inv.status.charAt(0).toUpperCase() + inv.status.slice(1)}</span></td>
+            <td style="padding:8px 12px; text-align:right;">
+              <div class="invoice-actions" style="display:flex; gap:4px; justify-content:flex-end;">
+                <button data-action="view" data-id="${inv.id || ''}"><i class="fa-regular fa-eye"></i></button>
+                <button data-action="download" data-id="${inv.id || ''}"><i class="fa-regular fa-download"></i></button>
+              </div>
+            </td>
+          </tr>
+        `;
+      });
+      html += `</tbody></table></div>`;
+    }
+    invoicesSection.innerHTML = html;
+
+    invoicesSection.querySelectorAll('[data-action="view"]').forEach(btn => {
+      btn.addEventListener('click', function() {
+        showToast('Viewing invoice ' + (this.dataset.id || 'N/A'));
+      });
+    });
+    invoicesSection.querySelectorAll('[data-action="download"]').forEach(btn => {
+      btn.addEventListener('click', function() {
+        showToast('Downloading invoice ' + (this.dataset.id || 'N/A'));
+      });
+    });
+
+    document.getElementById('downloadAllBtn')?.addEventListener('click', function() {
+      showToast('Downloading all invoices (simulated)');
+    });
+  }
+
+  // ===== PAYMENT MODAL =====
+  function openPaymentModal() {
+    paymentModal.classList.add('open');
+    selectedMethod = 'mpesa';
+    updatePaymentForm('mpesa');
+    document.querySelectorAll('#paymentTabs button').forEach(b => b.classList.remove('active'));
+    document.querySelector('#paymentTabs button[data-method="mpesa"]')?.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closePaymentModal() {
+    paymentModal.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function updatePaymentForm(method) {
+    let html = '';
+    if (method === 'mpesa') {
+      html = `
+        <div class="form-group">
+          <label for="mpesaNumber">M-Pesa Phone Number</label>
+          <input type="tel" id="mpesaNumber" placeholder="+254 700 123 456" value="+254 700 123 456">
+        </div>
+        <div class="form-group">
+          <label>You will receive a prompt on your phone to confirm.</label>
+          <div style="font-size:0.7rem; color:var(--text-muted, #8a8a8a); padding:4px 0;">M-Pesa Express checkout</div>
+        </div>
+      `;
+    } else {
+      html = `
+        <div class="form-group">
+          <label for="cardNumber">Card Number</label>
+          <input type="text" id="cardNumber" placeholder="4242 4242 4242 4242" value="4242 4242 4242 4242">
+        </div>
+        <div class="row">
+          <div class="form-group">
+            <label for="cardExpiry">Expiry</label>
+            <input type="text" id="cardExpiry" placeholder="MM/YY" value="12/26">
+          </div>
+          <div class="form-group">
+            <label for="cardCvc">CVC</label>
+            <input type="text" id="cardCvc" placeholder="123" value="123">
+          </div>
+        </div>
+      `;
+    }
+    paymentForm.innerHTML = html;
+  }
+
+  paymentTabs?.addEventListener('click', function(e) {
+    const btn = e.target.closest('button');
+    if (!btn || !btn.dataset.method) return;
+    document.querySelectorAll('#paymentTabs button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedMethod = btn.dataset.method;
+    updatePaymentForm(selectedMethod);
+  });
+
+  document.getElementById('cancelPaymentBtn')?.addEventListener('click', closePaymentModal);
+
+  paymentModal?.addEventListener('click', function(e) {
+    if (e.target === this) closePaymentModal();
+  });
+
+  // ===== CONFIRM PAYMENT =====
+  document.getElementById('confirmPaymentBtn')?.addEventListener('click', async function() {
+    if (!selectedPlanId) {
+      showToast('No plan selected.', 'error');
+      return;
+    }
+    this.disabled = true;
+    this.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+
+    try {
+      await apiRequest('/billing/mock-subscribe', 'POST', { plan_id: selectedPlanId });
+      showToast('🎉 Payment successful! You are now a Premium member.');
+      await fetchSubscription(); // refresh subscription state
+      renderAll();
+      closePaymentModal();
+    } catch (err) {
+      showToast('Payment failed: ' + err.message, 'error');
+    } finally {
+      this.disabled = false;
+      this.innerHTML = '<i class="fa-regular fa-lock"></i> Pay Now';
+    }
+  });
+
+  // ===== RENDER ALL =====
+  async function renderAll() {
+    await fetchPlans();
+    await fetchSubscription();
+    const profile = await fetchUserProfile();
+
+    const avatarEl = document.getElementById('profileAvatar');
+    const nameEl = document.getElementById('profileName');
+    if (profile) {
+      const name = profile.first_name && profile.last_name ? `${profile.first_name} ${profile.last_name}` : profile.email || 'User';
+      if (avatarEl) avatarEl.textContent = name.charAt(0).toUpperCase();
+      if (nameEl) nameEl.textContent = name;
+      localStorage.setItem('smartlishe_profile', JSON.stringify({ name }));
+    }
+
+    renderPlanSummary();
+    renderUsageStats();
+    renderPaymentMethods();
+    renderInvoices();
+  }
+
+  // ===== ACCOUNT DROPDOWN =====
+  const dropdownToggle = document.getElementById('dropdownToggle');
+  const dropdownMenu = document.getElementById('dropdownMenu');
+  const accountDropdown = document.getElementById('accountDropdown');
+
+  if (dropdownToggle) {
+    dropdownToggle.addEventListener('click', function(e) {
+      e.stopPropagation();
+      dropdownMenu.classList.toggle('open');
+    });
+  }
+
+  document.addEventListener('click', function(e) {
+    if (accountDropdown && !accountDropdown.contains(e.target)) {
+      dropdownMenu.classList.remove('open');
+    }
+  });
+
+  document.getElementById('logoutLink')?.addEventListener('click', function(e) {
+    e.preventDefault();
+    localStorage.clear();
+    sessionStorage.clear();
+    window.location.href = '../user/home.html';
+  });
+
+  document.getElementById('notifBtn')?.addEventListener('click', function() {
+    showToast('You have no new notifications.');
+  });
+
+  // ===== BOOT =====
+  renderAll();
+
+})();
+</script>
+
+</body>
+</html>
